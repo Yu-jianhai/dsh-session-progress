@@ -1,0 +1,529 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8">
+<title>进度条样式一览</title><style>
+@property --dsp-p {
+  syntax: "<percentage>";
+  /* must inherit: the value is set on the row, the band is drawn by ::after */
+  inherits: true;
+  initial-value: 0%;
+}
+[data-row-key^="session:"] {
+  position: relative;
+  isolation: isolate;
+}
+[data-row-key^="session:"]::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+  inset-block: 0;
+  inset-inline-start: 0;
+  /* The paint (background, radius, thickness, clip) comes from the look
+     stylesheet below, which the settings can swap at runtime. */
+  width: var(--dsp-p, 0%);
+  opacity: var(--dsp-o, 0);
+  transition:
+    --dsp-p 900ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    opacity 280ms ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-row-key^="session:"]::after {
+    transition: none;
+  }
+}
+.dsp-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 4px 0 8px;
+  font-size: 12px;
+  color: var(--dsw-alias-label-primary, inherit);
+}
+.dsp-error {
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: rgba(255, 107, 107, 0.12);
+  color: #ff8080;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+}
+.dsp-empty {
+  padding: 14px 10px;
+  border: 1px dashed rgba(128, 128, 128, 0.35);
+  border-radius: 8px;
+  color: var(--dsw-alias-label-tertiary, #888);
+}
+.dsp-item {
+  border: 1px solid rgba(128, 128, 128, 0.22);
+  border-radius: 8px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+/* One column per session, left to right: the head names the session, the body
+   scrolls its own samples, so several running sessions stay comparable. */
+.dsp-columns {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 12px;
+  min-height: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 2px;
+}
+.dsp-column {
+  flex: 1 1 300px;
+  min-width: 264px;
+  max-width: 480px;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(128, 128, 128, 0.22);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--dsw-alias-bg-layer-1, transparent);
+}
+/* Inside the full-height rail panel the columns take the remaining height and
+   scroll on their own; in the settings card they simply grow with the page. */
+.dsp-panel-body > .dsp-columns {
+  flex: 1;
+  align-items: stretch;
+}
+.dsp-panel-body > .dsp-columns > .dsp-column {
+  max-height: 100%;
+}
+.dsp-column-head {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 10px;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.22);
+  background: var(--dsw-alias-bg-layer-2, rgba(128, 128, 128, 0.1));
+}
+.dsp-column-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--dsw-alias-label-primary, inherit);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.dsp-column-stat {
+  flex: none;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  color: var(--dsw-alias-label-tertiary, #888);
+}
+.dsp-column-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+}
+.dsp-dot {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset;
+}
+.dsp-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  color: var(--dsw-alias-label-tertiary, #888);
+}
+.dsp-pill {
+  padding: 1px 7px;
+  border-radius: 999px;
+  font-weight: 600;
+  color: var(--dsw-alias-label-primary, #fff);
+}
+.dsp-pill.ok {
+  background: rgba(144, 175, 255, 0.38);
+}
+.dsp-pill.bad {
+  background: rgba(255, 107, 107, 0.32);
+}
+.dsp-note {
+  color: var(--dsw-alias-label-primary, inherit);
+}
+.dsp-raw {
+  margin: 0;
+  max-height: 160px;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  line-height: 1.5;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: rgba(128, 128, 128, 0.1);
+}
+.dsp-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  font-size: 12px;
+  color: var(--dsw-alias-label-primary, inherit);
+}
+.dsp-panel-head {
+  flex: none;
+  padding: 14px 16px 12px;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.dsp-panel-title {
+  font-size: 14px;
+  font-weight: 600;
+}
+.dsp-panel-sub {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  color: var(--dsw-alias-label-tertiary, #888);
+}
+.dsp-panel-body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 12px 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.dsp-swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background: #90AFFF;
+  vertical-align: -1px;
+  margin-right: 5px;
+}
+.dsp-form {
+  display: grid;
+  grid-template-columns: max-content minmax(160px, 280px);
+  gap: 8px 12px;
+  align-items: center;
+}
+.dsp-field {
+  display: contents;
+}
+.dsp-field-label {
+  font-size: 12px;
+  color: var(--dsw-alias-label-secondary, #aaa);
+}
+.dsp-input {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  height: 28px;
+  padding: 0 8px;
+  font: inherit;
+  font-size: 12px;
+  color: var(--dsw-alias-label-primary, inherit);
+  background: var(--dsw-alias-bg-layer-2, rgba(127, 127, 127, 0.12));
+  border: 1px solid var(--dsw-alias-border-l2, rgba(127, 127, 127, 0.28));
+  border-radius: 6px;
+  outline: none;
+}
+.dsp-input:focus {
+  border-color: #90afff;
+}
+.dsp-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+.dsp-btn {
+  height: 28px;
+  padding: 0 14px;
+  font: inherit;
+  font-size: 12px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: #90afff;
+  color: #10203d;
+  cursor: pointer;
+}
+.dsp-btn.ghost {
+  background: transparent;
+  border-color: var(--dsw-alias-border-l2, rgba(127, 127, 127, 0.35));
+  color: var(--dsw-alias-label-secondary, #aaa);
+}
+.dsp-inline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.dsp-inline-wrap {
+  flex-wrap: wrap;
+}
+.dsp-color {
+  width: 44px;
+  padding: 2px;
+  cursor: pointer;
+}
+.dsp-code,
+.dsp-range-value {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  color: var(--dsw-alias-label-tertiary, #888);
+}
+.dsp-range {
+  flex: 1;
+  min-width: 120px;
+  height: 28px;
+}
+.dsp-range-value {
+  flex: none;
+  width: 36px;
+  text-align: right;
+}
+/* The preview carries the same data-row-key prefix as a real session row, so
+   it is painted by exactly the rules the sidebar uses. */
+.dsp-preview-row {
+  display: flex;
+  align-items: center;
+  height: 32px;
+  padding: 0 8px;
+  border: 1px dashed rgba(128, 128, 128, 0.28);
+  border-radius: var(--dsw-radius-md, 8px);
+  overflow: hidden;
+}
+.dsp-preview-title {
+  font-size: 13px;
+  color: var(--dsw-alias-label-primary, inherit);
+}
+.dsp-status {
+  font-size: 11px;
+  color: var(--dsw-alias-label-tertiary, #888);
+}
+
+.row{display:flex;align-items:center;gap:6px;height:32px;padding:0 8px;margin:4px 0;
+border-radius:8px;color:#e6e8eb;font:14px/20px system-ui,sans-serif}
+.row .slot{width:16px;height:20px;flex:none}
+.row .title{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row .time{flex:none;font-size:10px;line-height:16px;color:#8a8f98}
+body{margin:0;padding:24px 28px;background:#17181c;color:#e6e8eb;font:13px/1.6 system-ui,sans-serif}
+h1{font-size:16px;margin:0 0 4px}
+h2{font-size:13px;margin:0;color:#cfd3d8}
+h2 code,.row code{font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#8a8f98}
+.hint{margin:2px 0 8px;color:#8a8f98;font-size:12px}
+.style-block{padding:14px 0 18px;border-bottom:1px solid rgba(128,128,128,.18)}
+.steps,.alphas,.colors{display:flex;flex-direction:column;gap:2px}
+.legend{color:#8a8f98;font-size:12px;margin:0 0 16px}
+[data-preview-style="band"] [data-row-key^="session:"]::after{inset-block:0;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:inherit;background:linear-gradient(90deg,#90AFFF 0%,#90AFFF calc(100% - 10px),rgba(144,175,255,0.35) 100%);}
+[data-preview-style="solid"] [data-row-key^="session:"]::after{inset-block:0;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:inherit;background:#90AFFF;box-shadow:inset -1px 0 0 rgba(255,255,255,0.55);}
+[data-preview-style="underline"] [data-row-key^="session:"]::after{inset-block:auto 3px;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:2px;height:3px;background:#90AFFF;}
+[data-preview-style="stripe"] [data-row-key^="session:"]::after{inset-block:0;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:inherit;background-color:#90AFFF;background-image:repeating-linear-gradient(45deg,rgba(255,255,255,0.28) 0 5px,rgba(255,255,255,0) 5px 10px);}
+[data-preview-style="glow"] [data-row-key^="session:"]::after{inset-block:0;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:inherit;background:linear-gradient(90deg,rgba(144,175,255,0.35) 0%,#90AFFF 62%,#90AFFF 100%);box-shadow:inset -2px 0 0 rgba(255,255,255,0.85), inset -18px 0 14px -12px rgba(255,255,255,0.95);}
+[data-preview-style="segments"] [data-row-key^="session:"]::after{inset-block:0;inset-inline-start:0;width:100%;clip-path:inset(0 calc(100% - var(--dsp-p,0%)) 0 0);background:repeating-linear-gradient(90deg,#90AFFF 0 calc(20% - 3px),rgba(0,0,0,0) calc(20% - 3px) 20%);}
+[data-preview-style="band"] [data-color="0"] [data-row-key^="session:"]::after{inset-block:0;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:inherit;background:linear-gradient(90deg,#90AFFF 0%,#90AFFF calc(100% - 10px),rgba(144,175,255,0.35) 100%);}
+[data-preview-style="solid"] [data-color="0"] [data-row-key^="session:"]::after{inset-block:0;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:inherit;background:#90AFFF;box-shadow:inset -1px 0 0 rgba(255,255,255,0.55);}
+[data-preview-style="underline"] [data-color="0"] [data-row-key^="session:"]::after{inset-block:auto 3px;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:2px;height:3px;background:#90AFFF;}
+[data-preview-style="stripe"] [data-color="0"] [data-row-key^="session:"]::after{inset-block:0;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:inherit;background-color:#90AFFF;background-image:repeating-linear-gradient(45deg,rgba(255,255,255,0.28) 0 5px,rgba(255,255,255,0) 5px 10px);}
+[data-preview-style="glow"] [data-color="0"] [data-row-key^="session:"]::after{inset-block:0;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:inherit;background:linear-gradient(90deg,rgba(144,175,255,0.35) 0%,#90AFFF 62%,#90AFFF 100%);box-shadow:inset -2px 0 0 rgba(255,255,255,0.85), inset -18px 0 14px -12px rgba(255,255,255,0.95);}
+[data-preview-style="segments"] [data-color="0"] [data-row-key^="session:"]::after{inset-block:0;inset-inline-start:0;width:100%;clip-path:inset(0 calc(100% - var(--dsp-p,0%)) 0 0);background:repeating-linear-gradient(90deg,#90AFFF 0 calc(20% - 3px),rgba(0,0,0,0) calc(20% - 3px) 20%);}
+[data-preview-style="band"] [data-color="1"] [data-row-key^="session:"]::after{inset-block:0;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:inherit;background:linear-gradient(90deg,#FF8800 0%,#FF8800 calc(100% - 10px),rgba(255,136,0,0.35) 100%);}
+[data-preview-style="solid"] [data-color="1"] [data-row-key^="session:"]::after{inset-block:0;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:inherit;background:#FF8800;box-shadow:inset -1px 0 0 rgba(255,255,255,0.55);}
+[data-preview-style="underline"] [data-color="1"] [data-row-key^="session:"]::after{inset-block:auto 3px;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:2px;height:3px;background:#FF8800;}
+[data-preview-style="stripe"] [data-color="1"] [data-row-key^="session:"]::after{inset-block:0;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:inherit;background-color:#FF8800;background-image:repeating-linear-gradient(45deg,rgba(255,255,255,0.28) 0 5px,rgba(255,255,255,0) 5px 10px);}
+[data-preview-style="glow"] [data-color="1"] [data-row-key^="session:"]::after{inset-block:0;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:inherit;background:linear-gradient(90deg,rgba(255,136,0,0.35) 0%,#FF8800 62%,#FF8800 100%);box-shadow:inset -2px 0 0 rgba(255,255,255,0.85), inset -18px 0 14px -12px rgba(255,255,255,0.95);}
+[data-preview-style="segments"] [data-color="1"] [data-row-key^="session:"]::after{inset-block:0;inset-inline-start:0;width:100%;clip-path:inset(0 calc(100% - var(--dsp-p,0%)) 0 0);background:repeating-linear-gradient(90deg,#FF8800 0 calc(20% - 3px),rgba(0,0,0,0) calc(20% - 3px) 20%);}
+[data-preview-style="band"] [data-color="2"] [data-row-key^="session:"]::after{inset-block:0;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:inherit;background:linear-gradient(90deg,#5AD6A0 0%,#5AD6A0 calc(100% - 10px),rgba(90,214,160,0.35) 100%);}
+[data-preview-style="solid"] [data-color="2"] [data-row-key^="session:"]::after{inset-block:0;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:inherit;background:#5AD6A0;box-shadow:inset -1px 0 0 rgba(255,255,255,0.55);}
+[data-preview-style="underline"] [data-color="2"] [data-row-key^="session:"]::after{inset-block:auto 3px;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:2px;height:3px;background:#5AD6A0;}
+[data-preview-style="stripe"] [data-color="2"] [data-row-key^="session:"]::after{inset-block:0;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:inherit;background-color:#5AD6A0;background-image:repeating-linear-gradient(45deg,rgba(255,255,255,0.28) 0 5px,rgba(255,255,255,0) 5px 10px);}
+[data-preview-style="glow"] [data-color="2"] [data-row-key^="session:"]::after{inset-block:0;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:inherit;background:linear-gradient(90deg,rgba(90,214,160,0.35) 0%,#5AD6A0 62%,#5AD6A0 100%);box-shadow:inset -2px 0 0 rgba(255,255,255,0.85), inset -18px 0 14px -12px rgba(255,255,255,0.95);}
+[data-preview-style="segments"] [data-color="2"] [data-row-key^="session:"]::after{inset-block:0;inset-inline-start:0;width:100%;clip-path:inset(0 calc(100% - var(--dsp-p,0%)) 0 0);background:repeating-linear-gradient(90deg,#5AD6A0 0 calc(20% - 3px),rgba(0,0,0,0) calc(20% - 3px) 20%);}</style></head>
+<body>
+<h1>进度条样式一览</h1>
+<p class="legend">这 6 种都能在「设置 → 插件 → 会话进度条」里直接选，颜色和不透明度也在那里调。
+下面每一段用同样的三种进度（35 / 62 / 92）、三种不透明度、三种颜色各示范一次。</p>
+<section class="style-block" data-preview-style="band">
+    <h2>渐变横幅 <code>band</code></h2>
+    <p class="hint">整行填充，右端 10px 渐隐（默认）</p>
+    <div class="steps"><div class="row" data-row-key="session:demo" style="--dsp-p:35%;--dsp-o:0.6">
+     <span class="slot"></span><span class="title">进度 35%</span><span class="time">3 分钟前</span>
+   </div><div class="row" data-row-key="session:demo" style="--dsp-p:62%;--dsp-o:0.6">
+     <span class="slot"></span><span class="title">进度 62%</span><span class="time">3 分钟前</span>
+   </div><div class="row" data-row-key="session:demo" style="--dsp-p:92%;--dsp-o:0.6">
+     <span class="slot"></span><span class="title">进度 92%</span><span class="time">3 分钟前</span>
+   </div></div>
+    <div class="alphas"><div class="row" data-row-key="session:demo" style="--dsp-p:62%;--dsp-o:0.35">
+     <span class="slot"></span><span class="title">不透明度 35%</span><span class="time">3 分钟前</span>
+   </div><div class="row" data-row-key="session:demo" style="--dsp-p:62%;--dsp-o:0.62">
+     <span class="slot"></span><span class="title">不透明度 62%</span><span class="time">3 分钟前</span>
+   </div><div class="row" data-row-key="session:demo" style="--dsp-p:62%;--dsp-o:0.92">
+     <span class="slot"></span><span class="title">不透明度 92%</span><span class="time">3 分钟前</span>
+   </div></div>
+    <div class="colors"><div data-color="0"><div class="row" data-row-key="session:demo" style="--dsp-p:62%;--dsp-o:0.6">
+     <span class="slot"></span><span class="title">颜色 <code>#90AFFF</code></span><span class="time">3 分钟前</span>
+   </div></div><div data-color="1"><div class="row" data-row-key="session:demo" style="--dsp-p:62%;--dsp-o:0.6">
+     <span class="slot"></span><span class="title">颜色 <code>#FF8800</code></span><span class="time">3 分钟前</span>
+   </div></div><div data-color="2"><div class="row" data-row-key="session:demo" style="--dsp-p:62%;--dsp-o:0.6">
+     <span class="slot"></span><span class="title">颜色 <code>#5AD6A0</code></span><span class="time">3 分钟前</span>
+   </div></div></div>
+  </section>
+<section class="style-block" data-preview-style="solid">
+    <h2>纯色实条 <code>solid</code></h2>
+    <p class="hint">整行纯色，右端一条 1px 亮边</p>
+    <div class="steps"><div class="row" data-row-key="session:demo" style="--dsp-p:35%;--dsp-o:0.6">
+     <span class="slot"></span><span class="title">进度 35%</span><span class="time">3 分钟前</span>
+   </div><div class="row" data-row-key="session:demo" style="--dsp-p:62%;--dsp-o:0.6">
+     <span class="slot"></span><span class="title">进度 62%</span><span class="time">3 分钟前</span>
+   </div><div class="row" data-row-key="session:demo" style="--dsp-p:92%;--dsp-o:0.6">
+     <span class="slot"></span><span class="title">进度 92%</span><span class="time">3 分钟前</span>
+   </div></div>
+    <div class="alphas"><div class="row" data-row-key="session:demo" style="--dsp-p:62%;--dsp-o:0.35">
+     <span class="slot"></span><span class="title">不透明度 35%</span><span class="time">3 分钟前</span>
+   </div><div class="row" data-row-key="session:demo" style="--dsp-p:62%;--dsp-o:0.62">
+     <span class="slot"></span><span class="title">不透明度 62%</span><span class="time">3 分钟前</span>
+   </div><div class="row" data-row-key="session:demo" style="--dsp-p:62%;--dsp-o:0.92">
+     <span class="slot"></span><span class="title">不透明度 92%</span><span class="time">3 分钟前</span>
+   </div></div>
+    <div class="colors"><div data-color="0"><div class="row" data-row-key="session:demo" style="--dsp-p:62%;--dsp-o:0.6">
+     <span class="slot"></span><span class="title">颜色 <code>#90AFFF</code></span><span class="time">3 分钟前</span>
+   </div></div><div data-color="1"><div class="row" data-row-key="session:demo" style="--dsp-p:62%;--dsp-o:0.6">
+     <span class="slot"></span><span class="title">颜色 <code>#FF8800</code></span><span class="time">3 分钟前</span>
+   </div></div><div data-color="2"><div class="row" data-row-key="session:demo" style="--dsp-p:62%;--dsp-o:0.6">
+     <span class="slot"></span><span class="title">颜色 <code>#5AD6A0</code></span><span class="time">3 分钟前</span>
+   </div></div></div>
+  </section>
+<section class="style-block" data-preview-style="underline">
+    <h2>底部细线 <code>underline</code></h2>
+    <p class="hint">3px 细线贴底，完全不遮文字</p>
+    <div class="steps"><div class="row" data-row-key="session:demo" style="--dsp-p:35%;--dsp-o:0.6">
+     <span class="slot"></span><span class="title">进度 35%</span><span class="time">3 分钟前</span>
+   </div><div class="row" data-row-key="session:demo" style="--dsp-p:62%;--dsp-o:0.6">
+     <span class="slot"></span><span class="title">进度 62%</span><span class="time">3 分钟前</span>
+   </div><div class="row" data-row-key="session:demo" style="--dsp-p:92%;--dsp-o:0.6">
+     <span class="slot"></span><span class="title">进度 92%</span><span class="time">3 分钟前</span>
+   </div></div>
+    <div class="alphas"><div class="row" data-row-key="session:demo" style="--dsp-p:62%;--dsp-o:0.35">
+     <span class="slot"></span><span class="title">不透明度 35%</span><span class="time">3 分钟前</span>
+   </div><div class="row" data-row-key="session:demo" style="--dsp-p:62%;--dsp-o:0.62">
+     <span class="slot"></span><span class="title">不透明度 62%</span><span class="time">3 分钟前</span>
+   </div><div class="row" data-row-key="session:demo" style="--dsp-p:62%;--dsp-o:0.92">
+     <span class="slot"></span><span class="title">不透明度 92%</span><span class="time">3 分钟前</span>
+   </div></div>
+    <div class="colors"><div data-color="0"><div class="row" data-row-key="session:demo" style="--dsp-p:62%;--dsp-o:0.6">
+     <span class="slot"></span><span class="title">颜色 <code>#90AFFF</code></span><span class="time">3 分钟前</span>
+   </div></div><div data-color="1"><div class="row" data-row-key="session:demo" style="--dsp-p:62%;--dsp-o:0.6">
+     <span class="slot"></span><span class="title">颜色 <code>#FF8800</code></span><span class="time">3 分钟前</span>
+   </div></div><div data-color="2"><div class="row" data-row-key="session:demo" style="--dsp-p:62%;--dsp-o:0.6">
+     <span class="slot"></span><span class="title">颜色 <code>#5AD6A0</code></span><span class="time">3 分钟前</span>
+   </div></div></div>
+  </section>
+<section class="style-block" data-preview-style="stripe">
+    <h2>斜纹 <code>stripe</code></h2>
+    <p class="hint">45° 斜纹填充，像施工条</p>
+    <div class="steps"><div class="row" data-row-key="session:demo" style="--dsp-p:35%;--dsp-o:0.6">
+     <span class="slot"></span><span class="title">进度 35%</span><span class="time">3 分钟前</span>
+   </div><div class="row" data-row-key="session:demo" style="--dsp-p:62%;--dsp-o:0.6">
+     <span class="slot"></span><span class="title">进度 62%</span><span class="time">3 分钟前</span>
+   </div><div class="row" data-row-key="session:demo" style="--dsp-p:92%;--dsp-o:0.6">
+     <span class="slot"></span><span class="title">进度 92%</span><span class="time">3 分钟前</span>
+   </div></div>
+    <div class="alphas"><div class="row" data-row-key="session:demo" style="--dsp-p:62%;--dsp-o:0.35">
+     <span class="slot"></span><span class="title">不透明度 35%</span><span class="time">3 分钟前</span>
+   </div><div class="row" data-row-key="session:demo" style="--dsp-p:62%;--dsp-o:0.62">
+     <span class="slot"></span><span class="title">不透明度 62%</span><span class="time">3 分钟前</span>
+   </div><div class="row" data-row-key="session:demo" style="--dsp-p:62%;--dsp-o:0.92">
+     <span class="slot"></span><span class="title">不透明度 92%</span><span class="time">3 分钟前</span>
+   </div></div>
+    <div class="colors"><div data-color="0"><div class="row" data-row-key="session:demo" style="--dsp-p:62%;--dsp-o:0.6">
+     <span class="slot"></span><span class="title">颜色 <code>#90AFFF</code></span><span class="time">3 分钟前</span>
+   </div></div><div data-color="1"><div class="row" data-row-key="session:demo" style="--dsp-p:62%;--dsp-o:0.6">
+     <span class="slot"></span><span class="title">颜色 <code>#FF8800</code></span><span class="time">3 分钟前</span>
+   </div></div><div data-color="2"><div class="row" data-row-key="session:demo" style="--dsp-p:62%;--dsp-o:0.6">
+     <span class="slot"></span><span class="title">颜色 <code>#5AD6A0</code></span><span class="time">3 分钟前</span>
+   </div></div></div>
+  </section>
+<section class="style-block" data-preview-style="glow">
+    <h2>流光 <code>glow</code></h2>
+    <p class="hint">右端一道亮边 + 内侧柔光</p>
+    <div class="steps"><div class="row" data-row-key="session:demo" style="--dsp-p:35%;--dsp-o:0.6">
+     <span class="slot"></span><span class="title">进度 35%</span><span class="time">3 分钟前</span>
+   </div><div class="row" data-row-key="session:demo" style="--dsp-p:62%;--dsp-o:0.6">
+     <span class="slot"></span><span class="title">进度 62%</span><span class="time">3 分钟前</span>
+   </div><div class="row" data-row-key="session:demo" style="--dsp-p:92%;--dsp-o:0.6">
+     <span class="slot"></span><span class="title">进度 92%</span><span class="time">3 分钟前</span>
+   </div></div>
+    <div class="alphas"><div class="row" data-row-key="session:demo" style="--dsp-p:62%;--dsp-o:0.35">
+     <span class="slot"></span><span class="title">不透明度 35%</span><span class="time">3 分钟前</span>
+   </div><div class="row" data-row-key="session:demo" style="--dsp-p:62%;--dsp-o:0.62">
+     <span class="slot"></span><span class="title">不透明度 62%</span><span class="time">3 分钟前</span>
+   </div><div class="row" data-row-key="session:demo" style="--dsp-p:62%;--dsp-o:0.92">
+     <span class="slot"></span><span class="title">不透明度 92%</span><span class="time">3 分钟前</span>
+   </div></div>
+    <div class="colors"><div data-color="0"><div class="row" data-row-key="session:demo" style="--dsp-p:62%;--dsp-o:0.6">
+     <span class="slot"></span><span class="title">颜色 <code>#90AFFF</code></span><span class="time">3 分钟前</span>
+   </div></div><div data-color="1"><div class="row" data-row-key="session:demo" style="--dsp-p:62%;--dsp-o:0.6">
+     <span class="slot"></span><span class="title">颜色 <code>#FF8800</code></span><span class="time">3 分钟前</span>
+   </div></div><div data-color="2"><div class="row" data-row-key="session:demo" style="--dsp-p:62%;--dsp-o:0.6">
+     <span class="slot"></span><span class="title">颜色 <code>#5AD6A0</code></span><span class="time">3 分钟前</span>
+   </div></div></div>
+  </section>
+<section class="style-block" data-preview-style="segments">
+    <h2>分段 <code>segments</code></h2>
+    <p class="hint">5 段等宽格子，一格一格往前走</p>
+    <div class="steps"><div class="row" data-row-key="session:demo" style="--dsp-p:35%;--dsp-o:0.6">
+     <span class="slot"></span><span class="title">进度 35%</span><span class="time">3 分钟前</span>
+   </div><div class="row" data-row-key="session:demo" style="--dsp-p:62%;--dsp-o:0.6">
+     <span class="slot"></span><span class="title">进度 62%</span><span class="time">3 分钟前</span>
+   </div><div class="row" data-row-key="session:demo" style="--dsp-p:92%;--dsp-o:0.6">
+     <span class="slot"></span><span class="title">进度 92%</span><span class="time">3 分钟前</span>
+   </div></div>
+    <div class="alphas"><div class="row" data-row-key="session:demo" style="--dsp-p:62%;--dsp-o:0.35">
+     <span class="slot"></span><span class="title">不透明度 35%</span><span class="time">3 分钟前</span>
+   </div><div class="row" data-row-key="session:demo" style="--dsp-p:62%;--dsp-o:0.62">
+     <span class="slot"></span><span class="title">不透明度 62%</span><span class="time">3 分钟前</span>
+   </div><div class="row" data-row-key="session:demo" style="--dsp-p:62%;--dsp-o:0.92">
+     <span class="slot"></span><span class="title">不透明度 92%</span><span class="time">3 分钟前</span>
+   </div></div>
+    <div class="colors"><div data-color="0"><div class="row" data-row-key="session:demo" style="--dsp-p:62%;--dsp-o:0.6">
+     <span class="slot"></span><span class="title">颜色 <code>#90AFFF</code></span><span class="time">3 分钟前</span>
+   </div></div><div data-color="1"><div class="row" data-row-key="session:demo" style="--dsp-p:62%;--dsp-o:0.6">
+     <span class="slot"></span><span class="title">颜色 <code>#FF8800</code></span><span class="time">3 分钟前</span>
+   </div></div><div data-color="2"><div class="row" data-row-key="session:demo" style="--dsp-p:62%;--dsp-o:0.6">
+     <span class="slot"></span><span class="title">颜色 <code>#5AD6A0</code></span><span class="time">3 分钟前</span>
+   </div></div></div>
+  </section>
+<script>
+window.__probe = () => [...document.querySelectorAll('.style-block')].map((block) => {
+  const id = block.dataset.previewStyle
+  const row = block.querySelector('.steps .row')
+  const after = getComputedStyle(row, '::after')
+  return {
+    id,
+    width: after.width,
+    background: after.backgroundImage !== 'none' ? after.backgroundImage : after.backgroundColor,
+    borderRadius: after.borderTopLeftRadius + ' / ' + after.borderTopRightRadius,
+    clipPath: after.clipPath,
+    height: after.height,
+  }
+})
+</script>
+</body></html>

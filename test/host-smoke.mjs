@@ -149,7 +149,18 @@ function postConfig(body) {
 
 const cfg0 = JSON.parse((await getConfig()).body)
 console.log('config GET      =', JSON.stringify(cfg0.config))
-const saved = JSON.parse((await postConfig({ intervalMs: 45000, reasoningEffort: 'minimal', maxSessions: 99 })).body)
+const saved = JSON.parse(
+  (
+    await postConfig({
+      intervalMs: 45000,
+      reasoningEffort: 'minimal',
+      maxSessions: 99,
+      color: '#FF8800',
+      opacity: 0.35,
+      style: 'glow',
+    })
+  ).body,
+)
 console.log('config POST     =', saved.config.intervalMs, 'ms /', saved.config.reasoningEffort, '/ maxSessions', saved.config.maxSessions)
 const reread = JSON.parse((await getConfig()).body)
 console.log('persisted again =', reread.config.intervalMs, 'ms /', reread.config.reasoningEffort)
@@ -161,6 +172,25 @@ assert.equal(saved.config.intervalMs, 45000)
 assert.equal(saved.config.maxSessions, 10, 'out-of-range input is clamped to [1, 10]')
 assert.equal(reread.config.intervalMs, 45000, 'a POST survives a restart')
 assert.equal(reread.config.reasoningEffort, 'minimal')
+assert.equal(saved.config.color, '#FF8800', 'a hex colour is accepted and normalised to upper case')
+assert.equal(saved.config.opacity, 0.35)
+assert.equal(saved.config.style, 'glow', 'a known look style is accepted')
+assert.equal(cfg0.config.color, '#90AFFF', 'the default colour is the requested blue')
+assert.equal(cfg0.config.style, 'band')
+
+// ---- look settings are validated, never trusted --------------------------
+const dirty = JSON.parse(
+  (
+    await postConfig({
+      color: 'javascript:alert(1)',
+      opacity: 9,
+      style: 'not-a-style',
+    })
+  ).body,
+)
+assert.equal(dirty.config.color, '#FF8800', 'a non-hex colour keeps the previous one')
+assert.equal(dirty.config.opacity, 1, 'opacity is clamped into [0.05, 1]')
+assert.equal(dirty.config.style, 'glow', 'an unknown style keeps the previous one')
 
 for (const cleanup of cleanups) { try { cleanup() } catch {} }
 if (ownStateFile) { try { fs.unlinkSync(process.env.DSP_STATE_FILE) } catch {} }
