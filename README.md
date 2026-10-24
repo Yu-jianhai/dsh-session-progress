@@ -50,6 +50,7 @@ dsh plugin --profile desktop remove dsh-session-progress
 
 1. 用户发来新消息 → 该会话开始采样，色带从 `seedP`（默认 4%）起步，先给一点反馈；
 2. 每 `intervalMs` 采一次，取 `max(上次, 模型给的值)`，封顶 95 —— **不会倒退，也不会提前报满**；
+   例外是**插嘴**：你在一轮还没跑完时又发了消息，剩余工作量已经变了，于是 `interjectDelayMs`（默认 2.5s）后再采一次，这**一次**允许比上一次低（会重新告诉模型"目标变了，请按新要求重估"）。日志里那一条会挂一个橙色的「重估」标记；
 3. `turn/end`（任何结束原因）→ 立刻置 100，`700ms` 后开始淡出，`420ms` 后整条移除；
 4. 采样失败 → 保留上一次的值；色带只在会话真正在跑时存在。
 
@@ -64,6 +65,7 @@ dsh plugin --profile desktop remove dsh-session-progress
 | `model` | `deepseek-flash` | — | 判断用的模型 |
 | `reasoningEffort` | `off` | — | 思考强度；模型不提供该档位时**按档位距离取最近的一档**并打印日志 |
 | `intervalMs` | `30000` | 5000–3600000 | 采样间隔 |
+| `interjectDelayMs` | `2500` | 500–30000 | 插嘴后多久补采一次（这次允许回退） |
 | `firstDelayMs` | `8000` | 0–3600000 | 本轮首次采样前的等待，让模型先做点事 |
 | `maxSessions` | `3` | 1–10 | 同时采样的会话数上限 |
 | `maxContextChars` | `6000` | — | 送进模型的上下文上限（超出截尾） |
@@ -151,6 +153,7 @@ npm run check
 ```
 
 - `test/host-smoke.mjs`：宿主半侧冒烟测试，用临时 state 文件，不碰你真实的 `~/.dsh/*.json`。
+- `test/replan.mjs`：`nextProgress` 的单调性规则——平时的低值被忽略、插嘴后的低值被采纳、上下界都在。
 - `test/client-boot.mjs`：用桩 DOM 把浏览器半侧整个启动起来，喂真实 SSE 帧，断言样式表真的被写出来、清理真的收干净。纯函数测试看不到这类错误——`render()` 里一个未定义的标识符会让色带**整条消失**而控制台只有一行 `bad frame`。
 - `test/route-fallback.mjs`：模拟**别人的机器**——目录里没有默认模型时自动改用一个便宜模型、目录为空时一次模型都不调。
 - `dev/release.cjs`：发布用，「大鲸鱼在线写插件」那句话由它自动加到 Release 正文开头，别再手拼 `curl`。

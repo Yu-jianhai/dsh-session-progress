@@ -30,6 +30,10 @@ const titleEvent = { type: 'session/title', data: { title: '侧栏进度条', me
 const fakeSession = { id: 'session-1', seq: 4, deriveMessages: () => messages, ownEvents: () => [titleEvent] }
 
 let seenOptions = null
+let lastPrompt = ''
+let calls = 0
+let gate = null
+const replies = []
 const fakeLlm = {
   // The model catalog is the source of truth (it lists `off`); resolveModelInfo
   // advertises a smaller set on purpose, so the test proves which one wins.
@@ -40,8 +44,12 @@ const fakeLlm = {
   resolveModelInfo: async () => ({ reasoning: { efforts: [{ id: 'minimal' }, { id: 'low' }, { id: 'high' }], defaultEffort: 'high' } }),
   async *stream(options) {
     seenOptions = options
-    yield { type: 'text-delta', index: 0, text: '{"p": 42, ' }
-    yield { type: 'text-delta', index: 0, text: '"note":"改接口"}' }
+    calls += 1
+    if (gate) await gate
+    const reply = replies.length > 0 ? replies.shift() : '{"p": 42, "note":"改接口"}'
+    lastPrompt = options.messages?.[0]?.content?.[0]?.text ?? ''
+    yield { type: 'text-delta', index: 0, text: reply.slice(0, 12) }
+    yield { type: 'text-delta', index: 0, text: reply.slice(12) }
     yield { type: 'usage', usage: { inputTokens: 812, outputTokens: 24, cacheReadTokens: 100, cacheWriteTokens: 0 } }
     yield { type: 'finish', reason: { kind: 'stop' } }
   },
@@ -164,6 +172,7 @@ const saved = JSON.parse(
   (
     await postConfig({
       intervalMs: 45000,
+      interjectDelayMs: 200,
       reasoningEffort: 'minimal',
       maxSessions: 99,
       color: '#FF8800',
@@ -202,6 +211,66 @@ const dirty = JSON.parse(
 assert.equal(dirty.config.color, '#FF8800', 'a non-hex colour keeps the previous one')
 assert.equal(dirty.config.opacity, 1, 'opacity is clamped into [0.05, 1]')
 assert.equal(dirty.config.style, 'glow', 'an unknown style keeps the previous one')
+
+// ---- 插嘴：允许已画出的进度回退 ------------------------------------------
+replies.push('{"p": 45, "note": "改接口"}', '{"p": 20, "note": "按新要求重估"}')
+handlers['session/event']({ id: 'session-1' }, { type: 'turn/start', data: { turn: 2 } })
+await sleep(500)
+
+const jump = JSON.parse((await call('/plugins/dsh-session-progress/snapshot')).body)
+assert.equal(jump.sessions.find((item) => item.id === 'session-1').p, 45, 'a normal sample sets the bar')
+assert.doesNotMatch(lastPrompt, /用户在你工作途中补充了新的要求/)
+
+// The user speaks mid-turn: the remaining work just got bigger.
+handlers['session/event'](
+  { id: 'session-1' },
+  { type: 'user/message', data: { role: 'user', content: [{ type: 'text', text: '顺便把颜色也改成绿色' }] } },
+)
+await sleep(700)
+
+const rejump = JSON.parse((await call('/plugins/dsh-session-progress/snapshot')).body)
+assert.equal(
+  rejump.sessions.find((item) => item.id === 'session-1').p,
+  20,
+  'after an interjection the estimate may move backwards',
+)
+assert.match(lastPrompt, /用户在你工作途中补充了新的要求/, 'the sampler is told why it may revise')
+
+const revisedLog = JSON.parse((await call('/plugins/dsh-session-progress/log')).body)
+assert.equal(revisedLog.entries[0].p, 20)
+assert.equal(revisedLog.entries[0].revised, true, 'the log marks the revised estimate')
+assert.equal(
+  revisedLog.entries.filter((item) => item.revised).length,
+  1,
+  'only the post-interjection sample is marked',
+)
+
+// A message on an idle session is a new turn, not an interjection.
+handlers['session/event']({ id: 'session-1' }, { type: 'turn/end', data: { turn: 2, reason: { kind: 'completed' } } })
+await sleep(50)
+assert.doesNotThrow(() =>
+  handlers['session/event']({ id: 'session-1' }, { type: 'user/message', data: { role: 'user' } }),
+)
+
+// ---- 同一会话不并发：慢调用期间不叠第二发 --------------------------------
+let release = () => {}
+gate = new Promise((resolve) => { release = resolve })
+calls = 0
+replies.push('{"p": 30, "note": "慢调用"}')
+handlers['session/event']({ id: 'session-1' }, { type: 'turn/start', data: { turn: 3 } })
+await sleep(400)
+assert.equal(calls, 1, 'the first sample is in flight')
+
+handlers['session/event']({ id: 'session-1' }, { type: 'user/message', data: { role: 'user' } })
+await sleep(600)
+assert.equal(calls, 1, 'a beat that lands while a call is out does not start a second one')
+
+release()
+gate = null
+await sleep(600)
+assert.equal(calls, 1, 'the in-flight call finishing does not fire a duplicate')
+const slow = JSON.parse((await call('/plugins/dsh-session-progress/snapshot')).body)
+assert.equal(slow.sessions.find((item) => item.id === 'session-1').p, 30, 'the slow call still lands')
 
 for (const cleanup of cleanups) { try { cleanup() } catch {} }
 if (ownStateFile) { try { fs.unlinkSync(process.env.DSP_STATE_FILE) } catch {} }
