@@ -14,8 +14,8 @@ function sliceFn(name) {
 }
 
 const helpers = new Function(
-  `${['shortId', 'clockOf', 'hueOf', 'groupBySession'].map(sliceFn).join('\n')}
-   return { shortId, hueOf, groupBySession }`,
+  `${['shortId', 'clockOf', 'formatTokens', 'hueOf', 'groupBySession'].map(sliceFn).join('\n')}
+   return { shortId, hueOf, groupBySession, formatTokens }`,
 )()
 
 const entry = (sessionId, at, p, sessionTitle) => ({ sessionId, at, p, sessionTitle: sessionTitle || '', note: 'n' + p })
@@ -54,5 +54,23 @@ if (hue === helpers.hueOf('session-b')) throw new Error('different sessions shou
 
 // An empty log is the empty state, not a crash.
 if (helpers.groupBySession([]).length !== 0) throw new Error('no entries means no groups')
+
+// Token totals in the header use the same compact form everywhere.
+const tokenCases = [
+  [0, '0'],
+  [24, '24'],
+  [950, '950'],
+  [936, '936'],
+  [1240, '1.2k'],
+  [18300, '18.3k'],
+  [120000, '120k'],
+  [null, '0'],
+  ['nope', '0'],
+]
+for (const [input, expected] of tokenCases) {
+  const actual = helpers.formatTokens(input)
+  if (actual !== expected) throw new Error(`formatTokens(${String(input)}) = ${actual}, expected ${expected}`)
+}
+if (!/^[0-9.]+k?$/.test(helpers.formatTokens(9800))) throw new Error('token counts must stay short for the header')
 
 console.log('\npanel grouping assertions passed')

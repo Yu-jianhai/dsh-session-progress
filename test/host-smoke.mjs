@@ -42,6 +42,7 @@ const fakeLlm = {
     seenOptions = options
     yield { type: 'text-delta', index: 0, text: '{"p": 42, ' }
     yield { type: 'text-delta', index: 0, text: '"note":"改接口"}' }
+    yield { type: 'usage', usage: { inputTokens: 812, outputTokens: 24, cacheReadTokens: 100, cacheWriteTokens: 0 } }
     yield { type: 'finish', reason: { kind: 'stop' } }
   },
 }
@@ -94,6 +95,16 @@ assert.equal(log.entries[0].note, '改接口')
 assert.equal(log.entries[0].raw.trim(), '{"p": 42, "note":"改接口"}', 'the raw output is kept verbatim')
 // The panel groups by session; without the title every session looks the same.
 assert.equal(log.entries[0].sessionTitle, '侧栏进度条', 'the session title travels with the sample')
+
+// ---- token accounting ----------------------------------------------------
+assert.deepEqual(
+  log.entries[0].tokens,
+  { input: 812, output: 24, cacheRead: 100, cacheWrite: 0, total: 936 },
+  'the adapter usage travels with the sample',
+)
+assert.equal(log.tokens.total, 936, 'the header total is the sum over every sample')
+assert.equal(log.tokens.samples, 1, 'only samples that reported usage are counted')
+assert.equal(log.tokens.input, 812)
 
 // ---- effort resolution ---------------------------------------------------
 // listModels() advertises `off`; resolveModelInfo() disagrees on purpose.
