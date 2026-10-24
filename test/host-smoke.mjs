@@ -24,7 +24,10 @@ const messages = [
   { role: 'tool', content: [{ type: 'text', text: '.wnFoaW_sessionRow{...}' }] },
 ]
 
-const fakeSession = { id: 'session-1', seq: 4, deriveMessages: () => messages }
+// A session with a title, so the log can be grouped per session on screen.
+const titleEvent = { type: 'session/title', data: { title: '侧栏进度条', messageSeqs: [2], source: 'auto' } }
+
+const fakeSession = { id: 'session-1', seq: 4, deriveMessages: () => messages, ownEvents: () => [titleEvent] }
 
 let seenOptions = null
 const fakeLlm = {
@@ -89,6 +92,8 @@ assert.ok(snapshot.sessions[0].o > 0 && snapshot.sessions[0].o <= 1, 'opacity is
 assert.equal(log.entries.length, 1, 'every sample is logged')
 assert.equal(log.entries[0].note, '改接口')
 assert.equal(log.entries[0].raw.trim(), '{"p": 42, "note":"改接口"}', 'the raw output is kept verbatim')
+// The panel groups by session; without the title every session looks the same.
+assert.equal(log.entries[0].sessionTitle, '侧栏进度条', 'the session title travels with the sample')
 
 // ---- effort resolution ---------------------------------------------------
 // listModels() advertises `off`; resolveModelInfo() disagrees on purpose.

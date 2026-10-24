@@ -1,6 +1,6 @@
 {
   "name": "dsh-session-progress",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "description": "Per-session task progress bar in the DSH sidebar: samples the running turn with a low-effort model, then paints a translucent #90AFFF bar across the session row.",
   "keywords": [
@@ -39,8 +39,8 @@
     "LICENSE"
   ],
   "scripts": {
-    "test": "node test/host-smoke.mjs",
-    "check": "node --check lib/index.js && node --check lib/client.js && node --check test/host-smoke.mjs"
+    "test": "node test/host-smoke.mjs && node test/route-fallback.mjs && node test/panel-group.mjs",
+    "check": "node --check lib/index.js && node --check lib/client.js && node --check test/host-smoke.mjs && node --check test/route-fallback.mjs && node --check test/panel-group.mjs"
   },
   "dsh": {
     "client": {

@@ -8,7 +8,8 @@
 - 颜色 `#90AFFF`，不透明度 60%，`0.9s` 缓动 —— 每轮一次采样，色带就往前跳一步。
 - 色带是**铺在整行底下**的：标题、时间、悬停按钮全部照常可读可点，不插入任何 DOM。
 - 进度**只增不减**，最多到 95；一轮结束（`turn/end`）补满 100，停留一瞬再淡出。
-- 左侧栏多一个「**进度日志**」，把判断模型的**每一次原始输出**（含耗时、档位、JSON 原文）列出来。
+- 左侧栏多一个「**进度日志**」，把判断模型的**每一次原始输出**（含耗时、档位、JSON 原文）列出来，**按会话分组**：每组一个色点、会话标题、最新进度和采样次数。
+- **换一台机器不用改配置**：写死的只是「优先用哪个模型」，本机没有就自动挑一个可用的（详见[换机器](#换一台机器--别的-provider)）。
 
 ![色带样式预览（dev/harness.html 的独立复现页，用于在没有宿主的情况下比对透明度与缓动）](dev/harness.png)
 
@@ -38,7 +39,7 @@ dsh plugin --profile desktop remove dsh-session-progress
 |---|---|
 | 侧栏会话行 | 整行宽的 `#90AFFF` 色带，宽度 = 当前进度，60% 不透明 |
 | 设置 → 插件 → 会话进度条 | 模型 / 思考强度 / 采样间隔 / 并发上限 的可视化表单，配置落在 `~/.dsh/session-progress.config.json` |
-| 左侧栏「进度日志」 | 判断模型的每一次采样：时间、进度、阶段名、会话、耗时、实际档位、原始输出 |
+| 左侧栏「进度日志」 | 判断模型的每一次采样：**按会话分组**（色点 + 会话标题 + 最新进度 + 次数），每条含时间、进度、阶段名、耗时、实际档位、原始输出 |
 | 设置页里的同名卡片 | 与上一条同一份数据，不离开设置也能看 |
 
 进度语义（`lib/index.js`）：
@@ -66,6 +67,16 @@ dsh plugin --profile desktop remove dsh-session-progress
 | `seedP` | `4` | — | 首次采样返回前的起步宽度 |
 
 **思考强度以模型目录为准。** 设置页的下拉框、采样时传给 adapter 的值、以及启动时打印的 `offered: …` 都来自同一份 `listModels()` 目录；`resolveModelInfo()` 与它不一致时以目录为准（`deepseek-flash` 的目录里就有 `off`）。
+
+## 换一台机器 / 别的 provider
+
+`provider` / `model` 的默认值（`deepseek-account/deepseek-flash`）只是一份**偏好**，不是硬依赖。宿主第一次能读到模型目录时会核对：
+
+1. 配置的模型存在 → 直接用；
+2. 不存在 → 按名字挑一个便宜的顶上（`mini`/`lite`/`small`/`nano`/`haiku` 优先，其次 `flash`/`fast`/`instant`，最后 `turbo`，都没有就取目录第一个），并把实际生效的路线写进 `/config` 的 `effectiveRoute`，设置页会显示一行提示「原配置的模型在本机不存在，已自动改用 X」；
+3. 目录是空的（这台机器还没配任何 provider）→ **不调用模型**，`/config` 返回 `catalogEmpty: true`，界面上直接告诉你「先去配置一个 provider」，避免刷一屏失败日志。
+
+`cordis.patch.yml` 里因此**不写死 provider/model**：别人 clone 下来装上，第一次运行就知道该用什么。想锁定，就在设置卡片里选一次，值会落到本机的 `~/.dsh/session-progress.config.json`。
 
 ## 原理（为什么不用 React 组件）
 
@@ -99,6 +110,8 @@ ctx.on('agent/status',       ({ agent, status }) => …)
 ## 已知取舍
 
 - **依赖 `data-row-key` 这个内部属性。** 宿主改渲染方式时，色带会静默消失 —— 不崩溃、不错位、不污染别人的界面。
+- **日志里的会话名来自 `session/title` 事件。** 会话还没被自动命名时，分组表头退化成短 id（仍能区分，只是不好认）。
+- **自动换模型只看名字。** 名字里没有任何便宜档线索时，取目录里的第一个模型 —— 可能是贵的那一个；设置页里改一次即可锁定。
 - **拖拽排序时会闪一下。** 宿主用 `::before` / `::after` 画插入指示线，与我们的伪元素撞车一瞬。
 - **颜色是字面色，不走主题 token。** `#90AFFF` 是需求指定的值，暗色主题下偏亮；只把下拉菜单等原生控件交给 `--dsw-alias-*`。
 - **会真的花 token。** 每个正在跑的会话每 30 秒一次真实模型调用（约 1–2k 输入 token），默认最多 3 个会话；把 `intervalMs` 调大或 `enabled: false` 可以随时停。
@@ -107,11 +120,12 @@ ctx.on('agent/status',       ({ agent, status }) => …)
 ## 开发
 
 ```sh
-npm test    # 假 ctx + 假 llm 跑完整链路，断言进度、日志、档位、淡出、配置往返
+npm test    # 假 ctx + 假 llm 跑完整链路，断言进度、日志、会话标题、档位、淡出、配置往返、换机回落
 npm run check
 ```
 
 - `test/host-smoke.mjs`：宿主半侧冒烟测试，用临时 state 文件，不碰你真实的 `~/.dsh/*.json`。
+- `test/route-fallback.mjs`：模拟**别人的机器**——目录里没有默认模型时自动改用一个便宜模型、目录为空时一次模型都不调。
 - `dev/harness.html`：把宿主真实的行结构与内联 CSS 复刻成独立页面，用来在没有 DSH 的情况下比对色带宽度、透明度与缓动。
 - `dev/select-theme.html` / `dev/theme-probe.html`：验证原生 `<select>` 在深色主题下的弹层配色，以及主题判定函数在五种信号下的结果。
 - 浏览器侧没有 JSX、没有构建：`lib/client.js` 是 `window.__ModuleLoader__.load({ id, factory })` 形式，React 由 `require('react')` 取得。

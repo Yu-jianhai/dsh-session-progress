@@ -1,10 +1,11 @@
 - insert:
     - id: dsh-session-progress
       name: dsh-session-progress
+      # No provider/model here on purpose: another machine has another account
+      # or vendor. The host resolves the route at runtime (see ensureRoute in
+      # lib/index.js) and only falls back to a cheap model when the configured
+      # one does not exist. Set them in the settings card to pin a route.
       config:
-        provider: deepseek-account
-        model: deepseek-flash
-        reasoningEffort: off
         intervalMs: 30000
         firstDelayMs: 8000
         maxSessions: 3
