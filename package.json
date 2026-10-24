@@ -1,6 +1,6 @@
 {
   "name": "dsh-session-progress",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "type": "module",
   "description": "Per-session task progress bar in the DSH sidebar: samples the running turn with a low-effort model, then paints a translucent #90AFFF bar across the session row.",
   "keywords": [

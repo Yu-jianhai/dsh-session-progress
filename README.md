@@ -1,3 +1,5 @@
+<sub>大鲸鱼在线写插件</sub>
+
 # dsh-session-progress
 
 在 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness)（DSH）侧栏的每一个会话行上，铺一条**从行左向右伸长的半透明进度色带**：每 30 秒让一个**最轻思考强度**的模型读一遍当前轮次的上下文，给出 0–100 的进度，CSS 自己把色带平滑地推到那个位置。
@@ -151,6 +153,7 @@ npm run check
 - `test/host-smoke.mjs`：宿主半侧冒烟测试，用临时 state 文件，不碰你真实的 `~/.dsh/*.json`。
 - `test/client-boot.mjs`：用桩 DOM 把浏览器半侧整个启动起来，喂真实 SSE 帧，断言样式表真的被写出来、清理真的收干净。纯函数测试看不到这类错误——`render()` 里一个未定义的标识符会让色带**整条消失**而控制台只有一行 `bad frame`。
 - `test/route-fallback.mjs`：模拟**别人的机器**——目录里没有默认模型时自动改用一个便宜模型、目录为空时一次模型都不调。
+- `dev/release.cjs`：发布用，「大鲸鱼在线写插件」那句话由它自动加到 Release 正文开头，别再手拼 `curl`。
 - `dev/harness.html`：把宿主真实的行结构与内联 CSS 复刻成独立页面，用来在没有 DSH 的情况下比对色带宽度、透明度与缓动。
 - `dev/select-theme.html` / `dev/theme-probe.html`：验证原生 `<select>` 在深色主题下的弹层配色，以及主题判定函数在五种信号下的结果。
 - 浏览器侧没有 JSX、没有构建：`lib/client.js` 是 `window.__ModuleLoader__.load({ id, factory })` 形式，React 由 `require('react')` 取得。
