@@ -1,0 +1,76 @@
+{
+  "name": "dsh-session-progress",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Per-session task progress bar in the DSH sidebar: samples the running turn with a low-effort model, then paints a translucent #90AFFF bar across the session row.",
+  "keywords": [
+    "deepseek-harness",
+    "dsh",
+    "dsh-plugin",
+    "progress",
+    "progress-bar",
+    "sidebar"
+  ],
+  "author": "Ne_Rn (https://github.com/Yu-jianhai)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Yu-jianhai/dsh-session-progress.git"
+  },
+  "homepage": "https://github.com/Yu-jianhai/dsh-session-progress#readme",
+  "bugs": {
+    "url": "https://github.com/Yu-jianhai/dsh-session-progress/issues"
+  },
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/client.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./locale/zh-CN.json": "./locale/zh-CN.json",
+    "./locale/en.json": "./locale/en.json",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib/index.js",
+    "lib/client.js",
+    "cordis.patch.yml",
+    "locale",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node test/host-smoke.mjs",
+    "check": "node --check lib/index.js && node --check lib/client.js && node --check test/host-smoke.mjs"
+  },
+  "dsh": {
+    "client": {
+      "platform": "web"
+    },
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "engines": {
+      "dsh": ">=0.2.0-rc.1 <0.3.0-0"
+    }
+  },
+  "dshhub": {
+    "schemaVersion": 1,
+    "displayName": "会话进度条",
+    "summary": "在 DSH 侧栏的每个会话行上铺一条 60% 透明度的 #90AFFF 进度色带：每 30 秒用一个最轻思考强度的模型读当前轮次上下文、给出 0–100 的进度，并在左侧栏「进度日志」页展示判断模型的每一次原始输出。",
+    "categories": [
+      "界面",
+      "观测"
+    ],
+    "surfaces": [
+      "host",
+      "web"
+    ],
+    "compatibility": {
+      "dsh": ">=0.2.0-rc.1 <0.3.0-0",
+      "node": ">=20"
+    }
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>select theme check</title>
+<style>
+  body { margin: 0; padding: 24px; background: #17181c; color: #e6e8eb; font: 14px/1.5 system-ui, sans-serif; }
+  .card { width: 360px; padding: 14px; border-radius: 10px; background: #1f2025; }
+  .dsp-form { display: grid; grid-template-columns: max-content minmax(160px, 280px); gap: 8px 12px; align-items: center; }
+  .dsp-field { display: contents; }
+  .dsp-field-label { font-size: 12px; color: #a9adb5; }
+  .dsp-input {
+    box-sizing: border-box; width: 100%; min-width: 0; height: 28px; padding: 0 8px;
+    font: inherit; font-size: 12px;
+    color: var(--dsw-alias-label-primary, inherit);
+    background: var(--dsw-alias-bg-layer-2, rgba(127,127,127,0.12));
+    border: 1px solid var(--dsw-alias-border-l2, rgba(127,127,127,0.28));
+    border-radius: 6px; outline: none;
+  }
+  /* what syncTheme() injects */
+  .dsp-input { color-scheme: dark; }
+  .dsp-input option, .dsp-input optgroup {
+    background-color: var(--dsw-alias-bg-layer-2, #232428);
+    color: var(--dsw-alias-label-primary, #e6e8eb);
+  }
+  .open { margin-top: 18px; }
+  .open select { width: 320px; height: auto; padding: 6px; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="dsp-form">
+      <label class="dsp-field"><span class="dsp-field-label">更新间隔（秒）</span>
+        <input class="dsp-input" type="number" value="30"></label>
+      <label class="dsp-field"><span class="dsp-field-label">模型</span>
+        <select class="dsp-input">
+          <option>deepseek-account / deepseek-flash</option>
+          <option>deepseek-account / deepseek-v4-pro</option>
+        </select></label>
+      <label class="dsp-field"><span class="dsp-field-label">思考强度</span>
+        <select class="dsp-input">
+          <option>off</option>
+          <option>low</option>
+          <option selected>high（默认）</option>
+          <option>max</option>
+        </select></label>
+    </div>
+  </div>
+
+  <div class="open">
+    <select class="dsp-input" size="4">
+      <option>off</option>
+      <option>low</option>
+      <option>high（默认）</option>
+      <option>max</option>
+    </select>
+  </div>
+  <script>
+    window.__probe = () => {
+      const plain = document.querySelectorAll('.dsp-input')[2]
+      const option = plain.options[0]
+      const list = document.querySelector('select[size]')
+      return {
+        selectColorScheme: getComputedStyle(plain).colorScheme,
+        selectColor: getComputedStyle(plain).color,
+        selectBg: getComputedStyle(plain).backgroundColor,
+        optionBg: getComputedStyle(option).backgroundColor,
+        optionColor: getComputedStyle(option).color,
+        listOptionBg: getComputedStyle(list.options[1]).backgroundColor,
+        listOptionColor: getComputedStyle(list.options[1]).color,
+      }
+    }
+  </script>
+</body>
+</html>

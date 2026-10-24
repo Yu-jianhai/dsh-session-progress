@@ -1,0 +1,73 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>theme probe</title></head>
+<body>
+<script>
+const isDarkTheme = () => {
+        try {
+          const root = document.documentElement
+          const body = document.body
+
+          if (body && body.hasAttribute('data-ds-dark-theme')) return true
+          const source = root.getAttribute('data-ds-theme-source')
+          if (source === 'dark') return true
+          if (source === 'light') return false
+          const scheme = String(getComputedStyle(root).colorScheme || '').toLowerCase()
+          if (scheme.includes('dark')) return true
+          if (scheme.includes('light')) return false
+
+          const marks = [
+            root.className,
+            root.getAttribute('data-theme'),
+            root.getAttribute('data-mode'),
+            root.getAttribute('data-color-scheme'),
+          ]
+            .filter(Boolean)
+            .join(' ')
+          if (/dark/i.test(marks)) return true
+          if (/light/i.test(marks)) return false
+
+          const luminance = (value) => {
+            const match = /rgba?\(([^)]+)\)/.exec(String(value || ''))
+            if (!match) return null
+            const parts = match[1]
+              .split(/[,\s/]+/)
+              .filter(Boolean)
+              .map(Number)
+            const [r, g, b, a] = parts
+            if (!Number.isFinite(r) || !Number.isFinite(g) || !Number.isFinite(b)) return null
+            const alpha = Number.isFinite(a) ? a : 1
+            if (alpha < 0.05) return null
+            return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255
+          }
+
+          for (const element of [body, root]) {
+            if (!element) continue
+            const level = luminance(getComputedStyle(element).backgroundColor)
+            if (level !== null) return level < 0.5
+          }
+          return Boolean(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
+        } catch {
+          return false
+        }
+      }
+
+const results = [];
+const set = (htmlAttrs, bodyAttrs, bodyBg, rootBg) => {
+  document.documentElement.removeAttribute("style");
+  for (const k of ["data-ds-theme-source","class","data-theme","data-mode","data-color-scheme"]) document.documentElement.removeAttribute(k);
+  document.body.removeAttribute("data-ds-dark-theme");
+  document.body.removeAttribute("style");
+  for (const [k, v] of Object.entries(htmlAttrs)) document.documentElement.setAttribute(k, v);
+  for (const [k, v] of Object.entries(bodyAttrs)) document.body.setAttribute(k, v);
+  document.body.style.background = bodyBg;
+  return isDarkTheme();
+};
+
+results.push(["dark native", set({style:"color-scheme: dark","data-ds-theme-source":"dark"},{"data-ds-dark-theme":""},"#17181c"), true]);
+results.push(["light native", set({style:"color-scheme: light","data-ds-theme-source":"light"},{},"#ffffff"), false]);
+results.push(["system resolved dark", set({style:"color-scheme: dark","data-ds-theme-source":"system"},{"data-ds-dark-theme":""},"#17181c"), true]);
+results.push(["bg fallback dark", set({},{}, "#17181c"), true]);
+results.push(["bg fallback light", set({},{}, "#ffffff"), false]);
+window.__results = results.map(([name, got, want]) => ({name, got, want, pass: got === want}));
+</script>
+</body></html>

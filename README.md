@@ -1,0 +1,121 @@
+# dsh-session-progress
+
+在 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness)（DSH）侧栏的每一个会话行上，铺一条**从行左向右伸长的半透明进度色带**：每 30 秒让一个**最轻思考强度**的模型读一遍当前轮次的上下文，给出 0–100 的进度，CSS 自己把色带平滑地推到那个位置。
+
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![DSH](https://img.shields.io/badge/DSH-%3E%3D0.2.0--rc.1-6b5cff)
+
+- 颜色 `#90AFFF`，不透明度 60%，`0.9s` 缓动 —— 每轮一次采样，色带就往前跳一步。
+- 色带是**铺在整行底下**的：标题、时间、悬停按钮全部照常可读可点，不插入任何 DOM。
+- 进度**只增不减**，最多到 95；一轮结束（`turn/end`）补满 100，停留一瞬再淡出。
+- 左侧栏多一个「**进度日志**」，把判断模型的**每一次原始输出**（含耗时、档位、JSON 原文）列出来。
+
+![色带样式预览（dev/harness.html 的独立复现页，用于在没有宿主的情况下比对透明度与缓动）](dev/harness.png)
+
+## 安装
+
+```sh
+dsh plugin --profile desktop add github:Yu-jianhai/dsh-session-progress
+```
+
+然后**完全退出 DSH 再重新打开**。
+
+想锁定版本，就在后面跟 commit：
+
+```sh
+dsh plugin --profile desktop add github:Yu-jianhai/dsh-session-progress#<commit-sha>
+```
+
+本包是纯 JavaScript、`lib/` 已提交，**没有构建步骤**，所以不需要给 pnpm 授权运行 `prepare`。卸载：
+
+```sh
+dsh plugin --profile desktop remove dsh-session-progress
+```
+
+## 用起来是什么样
+
+| 位置 | 内容 |
+|---|---|
+| 侧栏会话行 | 整行宽的 `#90AFFF` 色带，宽度 = 当前进度，60% 不透明 |
+| 设置 → 插件 → 会话进度条 | 模型 / 思考强度 / 采样间隔 / 并发上限 的可视化表单，配置落在 `~/.dsh/session-progress.config.json` |
+| 左侧栏「进度日志」 | 判断模型的每一次采样：时间、进度、阶段名、会话、耗时、实际档位、原始输出 |
+| 设置页里的同名卡片 | 与上一条同一份数据，不离开设置也能看 |
+
+进度语义（`lib/index.js`）：
+
+1. 用户发来新消息 → 该会话开始采样，色带从 `seedP`（默认 4%）起步，先给一点反馈；
+2. 每 `intervalMs` 采一次，取 `max(上次, 模型给的值)`，封顶 95 —— **不会倒退，也不会提前报满**；
+3. `turn/end`（任何结束原因）→ 立刻置 100，`700ms` 后开始淡出，`420ms` 后整条移除；
+4. 采样失败 → 保留上一次的值；色带只在会话真正在跑时存在。
+
+## 配置
+
+配置文件：`~/.dsh/session-progress.config.json`（UI 保存的覆盖值，优先于 `cordis.patch.yml`）。
+
+| 键 | 默认 | 范围 | 说明 |
+|---|---|---|---|
+| `enabled` | `true` | — | 总开关 |
+| `provider` | `deepseek-account` | — | 模型提供方 |
+| `model` | `deepseek-flash` | — | 判断用的模型 |
+| `reasoningEffort` | `off` | — | 思考强度；模型不提供该档位时**按档位距离取最近的一档**并打印日志 |
+| `intervalMs` | `30000` | 5000–3600000 | 采样间隔 |
+| `firstDelayMs` | `8000` | 0–3600000 | 本轮首次采样前的等待，让模型先做点事 |
+| `maxSessions` | `3` | 1–10 | 同时采样的会话数上限 |
+| `maxContextChars` | `6000` | — | 送进模型的上下文上限（超出截尾） |
+| `timeoutMs` | `30000` | — | 单次采样超时 |
+| `seedP` | `4` | — | 首次采样返回前的起步宽度 |
+
+**思考强度以模型目录为准。** 设置页的下拉框、采样时传给 adapter 的值、以及启动时打印的 `offered: …` 都来自同一份 `listModels()` 目录；`resolveModelInfo()` 与它不一致时以目录为准（`deepseek-flash` 的目录里就有 `off`）。
+
+## 原理（为什么不用 React 组件）
+
+DSH 给每个会话行渲染了稳定属性 `data-row-key="session:<id>"`，但**没有**一个常显的行内插槽：running 时 `sidebar.session.row.leading` 被状态点占着，行尾按钮只在悬停时出现。所以本插件一点 DOM 都不往行里插，只做两件事：
+
+1. 注入一张固定样式表：给行加 `position: relative; isolation: isolate`，用 `::after` 画色带，宽度取 `--dsp-p`、不透明度取 `--dsp-o`，`z-index: -1` 让它待在行背景之上、文字之下；
+2. 每次进度变化时整体重写另一张很小的样式表，按 id 写入 `[data-row-key="session:<id>"]{--dsp-p:42%;--dsp-o:.6}`。
+
+`--dsp-p` 用 `@property` 注册为 `<percentage>`，于是「改变量」就等于「CSS 原生过渡」，完全不需要 React 重绘，也不受会话行重渲染影响。（`inherits` 必须是 `true`：变量写在行上、由伪元素读取，否则伪元素拿到的是初始值 `0%`。）
+
+运行态判定用三个宿主信号，不轮询：
+
+```js
+ctx.on('session/event',      (session, event) => event.type === 'turn/start' ? run() : event.type === 'turn/end' ? idle() : null)
+ctx.on('api-session/status', (sessionId, running) => …)
+ctx.on('agent/status',       ({ agent, status }) => …)
+```
+
+### 端点（只监听回环地址）
+
+| 路径 | 用途 |
+|---|---|
+| `/plugins/dsh-session-progress/events` | SSE，首帧为全量快照，之后每次变化一帧 |
+| `/plugins/dsh-session-progress/snapshot` | 一次性 JSON 快照 |
+| `/plugins/dsh-session-progress/log` | 判断模型的采样历史（环形缓冲，最多 300 条） |
+| `/plugins/dsh-session-progress/config` | 读 / 写配置 |
+| `/plugins/dsh-session-progress/debug` | 运行态、采样器、实际档位、模型目录 |
+
+这些端点拒绝非本机 `Host` 的请求（`isLocalRequest`），不会对外网暴露。
+
+## 已知取舍
+
+- **依赖 `data-row-key` 这个内部属性。** 宿主改渲染方式时，色带会静默消失 —— 不崩溃、不错位、不污染别人的界面。
+- **拖拽排序时会闪一下。** 宿主用 `::before` / `::after` 画插入指示线，与我们的伪元素撞车一瞬。
+- **颜色是字面色，不走主题 token。** `#90AFFF` 是需求指定的值，暗色主题下偏亮；只把下拉菜单等原生控件交给 `--dsw-alias-*`。
+- **会真的花 token。** 每个正在跑的会话每 30 秒一次真实模型调用（约 1–2k 输入 token），默认最多 3 个会话；把 `intervalMs` 调大或 `enabled: false` 可以随时停。
+- 采样不并发：同一会话上一轮没回来就跳过这一拍。
+
+## 开发
+
+```sh
+npm test    # 假 ctx + 假 llm 跑完整链路，断言进度、日志、档位、淡出、配置往返
+npm run check
+```
+
+- `test/host-smoke.mjs`：宿主半侧冒烟测试，用临时 state 文件，不碰你真实的 `~/.dsh/*.json`。
+- `dev/harness.html`：把宿主真实的行结构与内联 CSS 复刻成独立页面，用来在没有 DSH 的情况下比对色带宽度、透明度与缓动。
+- `dev/select-theme.html` / `dev/theme-probe.html`：验证原生 `<select>` 在深色主题下的弹层配色，以及主题判定函数在五种信号下的结果。
+- 浏览器侧没有 JSX、没有构建：`lib/client.js` 是 `window.__ModuleLoader__.load({ id, factory })` 形式，React 由 `require('react')` 取得。
+
+## License
+
+[MIT](LICENSE) © 2026 Ne_Rn

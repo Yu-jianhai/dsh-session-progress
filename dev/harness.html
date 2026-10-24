@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>session progress harness</title>
+<style>
+  :root {
+    --dsw-alias-label-primary: #e8eaf0;
+    --dsw-alias-interactive-bg-hover: rgba(255, 255, 255, 0.07);
+    --dsw-alias-label-tertiary: #8b93a7;
+    --dsw-radius-md: 8px;
+  }
+  body {
+    margin: 0;
+    padding: 40px 32px;
+    background: #17181c;
+    font: 14px/1.5 -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+    color: var(--dsw-alias-label-primary);
+    display: flex;
+    gap: 32px;
+  }
+  .pane { width: 300px; }
+  .pane h2 { font-size: 12px; color: #8b93a7; font-weight: 500; margin: 0 0 12px; }
+  .group { padding: 6px; border-radius: 10px; background: rgba(255,255,255,0.02); }
+
+  /* --- host row, copied shape --- */
+  .row {
+    border-radius: var(--dsw-radius-md);
+    padding: 0 8px;
+    padding-inline-start: calc(8px + var(--dsh-workspace-indent, 0px));
+    display: flex;
+    align-items: center;
+    gap: 0;
+    height: 32px;
+    color: var(--dsw-alias-label-primary);
+    cursor: pointer;
+  }
+  .row.selected { background: var(--dsw-alias-interactive-bg-hover); }
+  .slot { width: 16px; height: 20px; flex: none; display: inline-flex; align-items: center; justify-content: center; }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: #8b93a7; }
+  .title { margin: 0 6px 0 4px; flex: 1; min-width: 0; font-size: 14px; line-height: 20px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .time { flex: none; font-size: 10px; line-height: 16px; color: var(--dsw-alias-label-tertiary); }
+
+  /* --- plugin stylesheet (verbatim from lib/client.js BASE_CSS) --- */
+  @property --dsp-p { syntax: "<percentage>"; inherits: true; initial-value: 0%; }
+  [data-row-key^="session:"] { position: relative; isolation: isolate; }
+  [data-row-key^="session:"]::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset-block: 0;
+    inset-inline-start: 0;
+    width: var(--dsp-p, 0%);
+    border-radius: inherit;
+    background: linear-gradient(90deg, #90AFFF 0%, #90AFFF calc(100% - 10px), rgba(144,175,255,0.35) 100%);
+    opacity: var(--dsp-o, 0);
+    pointer-events: none;
+    transition: --dsp-p 900ms cubic-bezier(0.22,0.61,0.36,1), opacity 280ms ease;
+  }
+</style>
+</head>
+<body>
+<div class="pane">
+  <h2>① 未选中行 · 进度 45%</h2>
+  <div class="group">
+    <div class="row" data-row-key="session:a" style="--dsp-p:45%;--dsp-o:0.6">
+      <span class="slot"><span class="dot"></span></span>
+      <span class="title">修一下登录页的跳转</span>
+      <span class="time">3 分钟前</span>
+    </div>
+  </div>
+
+  <h2 style="margin-top:20px">② 选中行 · 进度 78%（验证色带压过行背景）</h2>
+  <div class="group">
+    <div class="row selected" data-row-key="session:b" style="--dsp-p:78%;--dsp-o:0.6">
+      <span class="slot"><span class="dot"></span></span>
+      <span class="title">读一下 EAMS 课表</span>
+      <span class="time">1 小时前</span>
+    </div>
+  </div>
+
+  <h2 style="margin-top:20px">③ 嵌套缩进 + 进度 20%</h2>
+  <div class="group">
+    <div class="row" data-row-key="session:c" style="--dsp-p:20%;--dsp-o:0.6;--dsh-workspace-indent:14px">
+      <span class="slot"><span class="dot"></span></span>
+      <span class="title">嵌套会话标题比较长看看会不会被盖住</span>
+      <span class="time">昨天</span>
+    </div>
+  </div>
+</div>
+
+<div class="pane">
+  <h2>④ 透明度对比：0.6 / 0.45 / 0.8</h2>
+  <div class="group">
+    <div class="row" data-row-key="session:d" style="--dsp-p:60%;--dsp-o:0.6"><span class="slot"></span><span class="title">opacity .6</span><span class="time">刚刚</span></div>
+    <div class="row" data-row-key="session:e" style="--dsp-p:60%;--dsp-o:0.45"><span class="slot"></span><span class="title">opacity .45</span><span class="time">刚刚</span></div>
+    <div class="row" data-row-key="session:f" style="--dsp-p:60%;--dsp-o:0.8"><span class="slot"></span><span class="title">opacity .8</span><span class="time">刚刚</span></div>
+  </div>
+
+  <h2 style="margin-top:20px">⑤ 过渡演示（2s 后从 5% → 92%）</h2>
+  <div class="group">
+    <div class="row" id="anim" data-row-key="session:g" style="--dsp-p:5%;--dsp-o:0.6"><span class="slot"></span><span class="title">看它怎么滑</span><span class="time">刚刚</span></div>
+  </div>
+  <p style="color:#8b93a7;font-size:12px">文字是否仍清晰可读，是这次唯一要验的事。</p>
+</div>
+
+<script>
+  setTimeout(() => { document.getElementById('anim').style.setProperty('--dsp-p', '92%') }, 2000)
+</script>
+</body>
+</html>

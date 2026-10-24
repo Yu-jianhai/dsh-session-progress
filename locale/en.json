@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Session progress bar",
+    "description": "Samples how far the current turn has got every 30 seconds with the lightest reasoning effort and paints a 60%-opacity #90AFFF band on the sidebar session row. The rail entry Progress log lists every raw model answer."
+  }
+}

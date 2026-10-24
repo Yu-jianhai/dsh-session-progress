@@ -1,0 +1,10 @@
+- insert:
+    - id: dsh-session-progress
+      name: dsh-session-progress
+      config:
+        provider: deepseek-account
+        model: deepseek-flash
+        reasoningEffort: off
+        intervalMs: 30000
+        firstDelayMs: 8000
+        maxSessions: 3
