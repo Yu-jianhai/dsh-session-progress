@@ -144,11 +144,12 @@ ctx.on('agent/status',       ({ agent, status }) => …)
 ## 开发
 
 ```sh
-npm test    # 假 ctx + 假 llm 跑完整链路，断言进度、日志、会话标题、档位、淡出、配置往返、换机回落
+npm test    # 六套：假 ctx + 假 llm 跑宿主链路，桩 DOM 启动浏览器半侧，断言进度、日志、标题、档位、淡出、配置往返、换机回落、样式守卫
 npm run check
 ```
 
 - `test/host-smoke.mjs`：宿主半侧冒烟测试，用临时 state 文件，不碰你真实的 `~/.dsh/*.json`。
+- `test/client-boot.mjs`：用桩 DOM 把浏览器半侧整个启动起来，喂真实 SSE 帧，断言样式表真的被写出来、清理真的收干净。纯函数测试看不到这类错误——`render()` 里一个未定义的标识符会让色带**整条消失**而控制台只有一行 `bad frame`。
 - `test/route-fallback.mjs`：模拟**别人的机器**——目录里没有默认模型时自动改用一个便宜模型、目录为空时一次模型都不调。
 - `dev/harness.html`：把宿主真实的行结构与内联 CSS 复刻成独立页面，用来在没有 DSH 的情况下比对色带宽度、透明度与缓动。
 - `dev/select-theme.html` / `dev/theme-probe.html`：验证原生 `<select>` 在深色主题下的弹层配色，以及主题判定函数在五种信号下的结果。
