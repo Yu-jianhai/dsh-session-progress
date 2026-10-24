@@ -56,4 +56,65 @@ for (const bad of [null, undefined, {}, { color: 'red' }, { color: '#12345' }, {
   assert.ok(!/\burl\(|expression|javascript:/i.test(css), 'no injection vectors in the stylesheet')
 }
 
+// ---- preview vs saved: the host must not stomp an unsaved draft ----------
+// The host re-broadcasts its saved look on every frame (every ~2s), so a
+// preview that is not protected snaps back to the saved style. `routeLook`
+// is that protection, extracted from the real source.
+function sliceFn(name) {
+  const marker = `function ${name}(`
+  const at = source.indexOf(marker)
+  if (at < 0) throw new Error(`lib/client.js no longer defines ${name}()`)
+  const next = source.indexOf('\n    function ', at + marker.length)
+  return source.slice(at, next < 0 ? source.length : next)
+}
+const { routeLook } = new Function(`${sliceFn('routeLook')}; return { routeLook }`)()
+
+const band = { color: '#90AFFF', opacity: 0.6, style: 'band' }
+const glow = { color: '#FF8800', opacity: 0.35, style: 'glow' }
+let state = { painted: null, serverLook: null, previewing: false }
+const step = (incoming, kind) => {
+  const routed = routeLook(state, incoming, kind)
+  state = { painted: routed.paint ? incoming : state.painted, serverLook: routed.serverLook, previewing: routed.previewing }
+  return routed
+}
+
+// 1. The first saved look is painted.
+let routed = step(band, 'server')
+assert.equal(routed.paint, true, 'the saved look is painted on the first frame')
+assert.equal(state.previewing, false)
+
+// 2. A draft repaints immediately.
+routed = step(glow, 'preview')
+assert.equal(routed.paint, true, 'a preview must be visible at once')
+assert.equal(state.previewing, true, 'a draft that differs from the saved look is a preview')
+
+// 3. THE BUG: the host's next frame carries the old saved look. It must not win.
+routed = step(band, 'server')
+assert.equal(routed.paint, false, 'a saved look must not overwrite an unsaved preview')
+assert.equal(state.previewing, true, 'the preview is still live after the frame')
+assert.deepEqual(state.serverLook, band, 'the frame is still remembered as the saved look')
+assert.deepEqual(state.painted, glow, 'the draft stays painted')
+
+// 4. Previewing the saved look itself ends the preview.
+routed = step(band, 'preview')
+assert.equal(state.previewing, false, 'an unchanged draft is not a preview')
+assert.equal(routed.paint, true)
+
+// 5. Someone saves the same style from another window: the preview is over.
+state = { painted: glow, serverLook: band, previewing: true }
+routed = step(glow, 'server')
+assert.equal(routed.paint, true, 'a saved look equal to the draft takes over')
+assert.equal(state.previewing, false)
+
+// 6. After a commit the frames win again.
+state = { painted: glow, serverLook: glow, previewing: false }
+routed = step(band, 'server')
+assert.equal(routed.paint, true, 'a committed look follows the host again')
+
+// 7. Opacity arrives as a string from JSON in some paths.
+assert.equal(
+  routeLook({ painted: band, serverLook: band, previewing: false }, { ...band, opacity: '0.6' }, 'server').paint,
+  true,
+)
+
 console.log('look assertions passed')
