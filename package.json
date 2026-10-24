@@ -1,8 +1,8 @@
 {
   "name": "dsh-session-progress",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "type": "module",
-  "description": "Per-session task progress bar in the DSH sidebar: samples the running turn with a low-effort model, then paints a translucent #90AFFF bar across the session row.",
+  "description": "大鲸鱼在线写插件 · 让鲸鱼去监督鲸鱼：DSH 侧栏每条会话行上的实时进度带，用一个轻量模型读上下文估算进度，可换模型、调思考强度、改颜色与样式。",
   "keywords": [
     "deepseek-harness",
     "dsh",
@@ -56,7 +56,7 @@
   "dshhub": {
     "schemaVersion": 1,
     "displayName": "会话进度条",
-    "summary": "在 DSH 侧栏的每个会话行上铺一条 60% 透明度的 #90AFFF 进度色带：每 30 秒用一个最轻思考强度的模型读当前轮次上下文、给出 0–100 的进度，并在左侧栏「进度日志」页展示判断模型的每一次原始输出。",
+    "summary": "让鲸鱼去监督鲸鱼：在 DSH 侧栏每个会话行上铺一条 60% 透明的进度色带，每 30 秒用一个轻量模型读当前轮次上下文给出 0–100 的进度；可选监督模型、可调思考强度、可改进度条颜色与样式，并在左侧栏「进度日志」里展示判断模型的每一次原始输出。",
     "categories": [
       "界面",
       "观测"
