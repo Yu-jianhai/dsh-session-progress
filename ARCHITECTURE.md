@@ -12,7 +12,7 @@
 
 ```
 turn/start ──► running.add ──► schedule(firstDelayMs)
-user 插嘴 ──► interject ──► replan = true ──► 提前重采样
+user 插嘴 ──► interject ──► replan = true ──► 提前重采样（附「目标变了」提示）
                                   │
                      sampleOnce() ── llm.stream(上下文) ──► {"p":68,"note":"…"}
                                   │
@@ -32,7 +32,7 @@ turn/end ──► closeTurn('completed') ──► p=100 ──► 淡出 ─�
 | `lib/index.js` | 抓事件、调度采样、调 `llm.stream`、维护 `state`/`log`/`turns`、四个 HTTP 端点、持久化配置与日志 | 任何 DOM、任何 CSS |
 | `lib/client.js` | 注入三张样式表、把帧写成 CSS 变量、`SampleLogPanel`/`ProgressLogCard`/`SettingsCard`、`main`+`sidebar.panellist`+`plugins.bundle.config` 三个座位 | 任何模型调用、任何滚动/轮询之外的状态 |
 | `cordis.patch.yml` | 只写 config（间隔、首选模型等），**故意不写 provider/model 的兜底路线** | 大段注释以外的逻辑 |
-| `test/*.mjs` | 七套：`label` `host-smoke` `route-fallback` `panel-group` `look` `client-boot` `replan` | 依赖真实 DSH |
+| `test/*.mjs` | 九套：`label` `look` `direction` `client-boot` `history` `host-smoke` `route-fallback` `panel-group` `perf-contract` | 依赖真实 DSH |
 | `dev/*` | 探针页：`harness.html`（色带外观）、`select-theme.html`（下拉深色）、`styles.html`（六种样式）、`columns.html`（竖列几何） | 被 `package.json files` 排除，不进包 |
 | `scripts/index.cjs` | 重算本文件的符号索引 | — |
 
@@ -78,105 +78,106 @@ turn/end ──► closeTurn('completed') ──► p=100 ──► 淡出 ─�
 | 文件 | 行 | 符号 | 位置 | 类型 |
 |---|---|---|---|---|
 | `lib/index.js` | 53 | `LOG_FILE` | module | const fn |
-| `lib/index.js` | 102 | `nextProgress` | module | const fn |
-| `lib/index.js` | 107 | `name` | module | const |
-| `lib/index.js` | 108 | `inject` | module | const |
-| `lib/index.js` | 121 | `clampNumber` | module | function |
-| `lib/index.js` | 128 | `sanitizeConfig` | module | function |
-| `lib/index.js` | 150 | `readConfigFile` | module | function |
-| `lib/index.js` | 158 | `writeConfigFile` | module | function |
-| `lib/index.js` | 174 | `readLogFile` | module | function |
-| `lib/index.js` | 185 | `slimEntry` | module | function |
-| `lib/index.js` | 190 | `writeLogFile` | module | function |
-| `lib/index.js` | 207 | `resumeSeed` | module | function |
-| `lib/index.js` | 219 | `readJsonBody` | module | function |
-| `lib/index.js` | 249 | `effortIds` | module | function |
-| `lib/index.js` | 255 | `idOf` | module | function |
-| `lib/index.js` | 264 | `isLocalRequest` | module | function |
-| `lib/index.js` | 284 | `jsonResponse` | module | function |
-| `lib/index.js` | 295 | `textOf` | module | function |
-| `lib/index.js` | 310 | `clip` | module | function |
-| `lib/index.js` | 320 | `buildContext` | module | function |
-| `lib/index.js` | 348 | `parseProgress` | module | function |
-| `lib/index.js` | 375 | `closestEffort` | module | function |
-| `lib/index.js` | 395 | `normalizeUsage` | module | function |
-| `lib/index.js` | 397 | `count` | apply | const fn |
-| `lib/index.js` | 408 | `sumTokens` | module | function |
-| `lib/index.js` | 429 | `titleOf` | module | function |
-| `lib/index.js` | 466 | `labelOf` | module | function |
-| `lib/index.js` | 501 | `cheapRank` | module | function |
-| `lib/index.js` | 511 | `pickRoute` | module | function |
-| `lib/index.js` | 525 | `apply` | module | function |
-| `lib/index.js` | 579 | `frame` | apply | const fn |
-| `lib/index.js` | 588 | `frameText` | apply | const fn |
-| `lib/index.js` | 593 | `writeFrame` | apply | const fn |
-| `lib/index.js` | 604 | `push` | apply | const fn |
-| `lib/index.js` | 617 | `broadcast` | apply | const fn |
-| `lib/index.js` | 642 | `bumpLog` | apply | const fn |
-| `lib/index.js` | 647 | `prune` | apply | const fn |
-| `lib/index.js` | 662 | `persist` | apply | const fn |
-| `lib/index.js` | 671 | `record` | apply | const fn |
-| `lib/index.js` | 684 | `closeTurn` | apply | const fn |
-| `lib/index.js` | 710 | `markRunning` | apply | const fn |
-| `lib/index.js` | 722 | `clearTimer` | apply | const fn |
-| `lib/index.js` | 735 | `onTurnStart` | apply | const fn |
-| `lib/index.js` | 762 | `onTurnEnd` | apply | const fn |
-| `lib/index.js` | 778 | `scheduleFadeOut` | apply | const fn |
-| `lib/index.js` | 804 | `interject` | apply | const fn |
-| `lib/index.js` | 848 | `trackCount` | apply | const fn |
-| `lib/index.js` | 854 | `schedule` | apply | const fn |
-| `lib/index.js` | 874 | `declaredEfforts` | apply | const fn |
-| `lib/index.js` | 890 | `probeEffort` | apply | const fn |
-| `lib/index.js` | 915 | `findSession` | apply | const fn |
-| `lib/index.js` | 929 | `sample` | apply | const fn |
-| `lib/index.js` | 943 | `sampleOnce` | apply | const fn |
-| `lib/index.js` | 1079 | `tick` | apply | const fn |
-| `lib/index.js` | 1112 | `snapshotHandler` | apply | const fn |
-| `lib/index.js` | 1117 | `debugHandler` | apply | const fn |
-| `lib/index.js` | 1145 | `logHandler` | apply | const fn |
-| `lib/index.js` | 1147 | `query` | factory | const fn |
-| `lib/index.js` | 1154 | `limit` | factory | const fn |
-| `lib/index.js` | 1187 | `eventsHandler` | apply | const fn |
-| `lib/index.js` | 1201 | `getLlm` | apply | const fn |
-| `lib/index.js` | 1204 | `rescheduleAll` | apply | const fn |
-| `lib/index.js` | 1217 | `applyConfig` | apply | const fn |
-| `lib/index.js` | 1245 | `describeModels` | apply | const fn |
-| `lib/index.js` | 1301 | `ensureRoute` | apply | const fn |
-| `lib/index.js` | 1320 | `configPayload` | apply | const fn |
-| `lib/index.js` | 1338 | `configHandler` | apply | const fn |
+| `lib/index.js` | 105 | `nextProgress` | module | const fn |
+| `lib/index.js` | 108 | `keep` | apply | const fn |
+| `lib/index.js` | 115 | `name` | module | const |
+| `lib/index.js` | 116 | `inject` | module | const |
+| `lib/index.js` | 129 | `clampNumber` | module | function |
+| `lib/index.js` | 136 | `sanitizeConfig` | module | function |
+| `lib/index.js` | 158 | `readConfigFile` | module | function |
+| `lib/index.js` | 166 | `writeConfigFile` | module | function |
+| `lib/index.js` | 182 | `readLogFile` | module | function |
+| `lib/index.js` | 193 | `slimEntry` | module | function |
+| `lib/index.js` | 198 | `writeLogFile` | module | function |
+| `lib/index.js` | 215 | `resumeSeed` | module | function |
+| `lib/index.js` | 227 | `readJsonBody` | module | function |
+| `lib/index.js` | 257 | `effortIds` | module | function |
+| `lib/index.js` | 263 | `idOf` | module | function |
+| `lib/index.js` | 272 | `isLocalRequest` | module | function |
+| `lib/index.js` | 292 | `jsonResponse` | module | function |
+| `lib/index.js` | 303 | `textOf` | module | function |
+| `lib/index.js` | 318 | `clip` | module | function |
+| `lib/index.js` | 328 | `buildContext` | module | function |
+| `lib/index.js` | 356 | `parseProgress` | module | function |
+| `lib/index.js` | 383 | `closestEffort` | module | function |
+| `lib/index.js` | 403 | `normalizeUsage` | module | function |
+| `lib/index.js` | 405 | `count` | apply | const fn |
+| `lib/index.js` | 416 | `sumTokens` | module | function |
+| `lib/index.js` | 437 | `titleOf` | module | function |
+| `lib/index.js` | 474 | `labelOf` | module | function |
+| `lib/index.js` | 509 | `cheapRank` | module | function |
+| `lib/index.js` | 519 | `pickRoute` | module | function |
+| `lib/index.js` | 533 | `apply` | module | function |
+| `lib/index.js` | 587 | `frame` | apply | const fn |
+| `lib/index.js` | 596 | `frameText` | apply | const fn |
+| `lib/index.js` | 601 | `writeFrame` | apply | const fn |
+| `lib/index.js` | 612 | `push` | apply | const fn |
+| `lib/index.js` | 625 | `broadcast` | apply | const fn |
+| `lib/index.js` | 650 | `bumpLog` | apply | const fn |
+| `lib/index.js` | 655 | `prune` | apply | const fn |
+| `lib/index.js` | 670 | `persist` | apply | const fn |
+| `lib/index.js` | 679 | `record` | apply | const fn |
+| `lib/index.js` | 692 | `closeTurn` | apply | const fn |
+| `lib/index.js` | 718 | `markRunning` | apply | const fn |
+| `lib/index.js` | 730 | `clearTimer` | apply | const fn |
+| `lib/index.js` | 743 | `onTurnStart` | apply | const fn |
+| `lib/index.js` | 770 | `onTurnEnd` | apply | const fn |
+| `lib/index.js` | 786 | `scheduleFadeOut` | apply | const fn |
+| `lib/index.js` | 812 | `interject` | apply | const fn |
+| `lib/index.js` | 856 | `trackCount` | apply | const fn |
+| `lib/index.js` | 862 | `schedule` | apply | const fn |
+| `lib/index.js` | 882 | `declaredEfforts` | apply | const fn |
+| `lib/index.js` | 898 | `probeEffort` | apply | const fn |
+| `lib/index.js` | 923 | `findSession` | apply | const fn |
+| `lib/index.js` | 937 | `sample` | apply | const fn |
+| `lib/index.js` | 951 | `sampleOnce` | apply | const fn |
+| `lib/index.js` | 1095 | `tick` | apply | const fn |
+| `lib/index.js` | 1128 | `snapshotHandler` | apply | const fn |
+| `lib/index.js` | 1133 | `debugHandler` | apply | const fn |
+| `lib/index.js` | 1161 | `logHandler` | apply | const fn |
+| `lib/index.js` | 1163 | `query` | factory | const fn |
+| `lib/index.js` | 1170 | `limit` | factory | const fn |
+| `lib/index.js` | 1203 | `eventsHandler` | apply | const fn |
+| `lib/index.js` | 1217 | `getLlm` | apply | const fn |
+| `lib/index.js` | 1220 | `rescheduleAll` | apply | const fn |
+| `lib/index.js` | 1233 | `applyConfig` | apply | const fn |
+| `lib/index.js` | 1261 | `describeModels` | apply | const fn |
+| `lib/index.js` | 1317 | `ensureRoute` | apply | const fn |
+| `lib/index.js` | 1336 | `configPayload` | apply | const fn |
+| `lib/index.js` | 1354 | `configHandler` | apply | const fn |
 | `lib/client.js` | 87 | `hexToRgb` | factory | function |
 | `lib/client.js` | 94 | `styleRules` | factory | function |
-| `lib/client.js` | 511 | `cssEscape` | factory | function |
-| `lib/client.js` | 522 | `shortId` | factory | function |
-| `lib/client.js` | 528 | `formatTokens` | factory | function |
-| `lib/client.js` | 536 | `clockOf` | factory | function |
-| `lib/client.js` | 545 | `useConfig` | factory | function |
-| `lib/client.js` | 589 | `logNotify` | factory | const fn |
-| `lib/client.js` | 593 | `logHidden` | factory | const fn |
-| `lib/client.js` | 595 | `logFetch` | factory | const fn |
-| `lib/client.js` | 622 | `logSchedule` | factory | const fn |
-| `lib/client.js` | 634 | `logWatchVisibility` | factory | const fn |
-| `lib/client.js` | 643 | `useLog` | factory | function |
-| `lib/client.js` | 665 | `metaLine` | factory | function |
-| `lib/client.js` | 694 | `routeWarning` | factory | function |
-| `lib/client.js` | 714 | `renderEntry` | factory | function |
-| `lib/client.js` | 755 | `routeLook` | factory | function |
-| `lib/client.js` | 784 | `hueOf` | factory | function |
-| `lib/client.js` | 797 | `groupBySession` | factory | function |
-| `lib/client.js` | 827 | `groupHistory` | factory | function |
-| `lib/client.js` | 864 | `renderColumn` | factory | function |
-| `lib/client.js` | 896 | `useColumnFlip` | factory | function |
-| `lib/client.js` | 935 | `HistorySegment` | factory | function |
-| `lib/client.js` | 992 | `renderHistoryColumn` | factory | function |
-| `lib/client.js` | 1011 | `ColumnList` | factory | function |
-| `lib/client.js` | 1023 | `renderColumns` | factory | function |
-| `lib/client.js` | 1027 | `emptyState` | factory | function |
-| `lib/client.js` | 1032 | `SettingsCard` | factory | function |
-| `lib/client.js` | 1314 | `SettingsPanel` | factory | function |
-| `lib/client.js` | 1319 | `ProgressLogCard` | factory | function |
-| `lib/client.js` | 1338 | `SampleLogPanel` | factory | function |
-| `lib/client.js` | 1383 | `SampleLogIcon` | factory | function |
-| `lib/client.js` | 1401 | `apply` | factory | function |
+| `lib/client.js` | 525 | `cssEscape` | factory | function |
+| `lib/client.js` | 536 | `shortId` | factory | function |
+| `lib/client.js` | 542 | `formatTokens` | factory | function |
+| `lib/client.js` | 550 | `clockOf` | factory | function |
+| `lib/client.js` | 559 | `useConfig` | factory | function |
+| `lib/client.js` | 603 | `logNotify` | factory | const fn |
+| `lib/client.js` | 607 | `logHidden` | factory | const fn |
+| `lib/client.js` | 609 | `logFetch` | factory | const fn |
+| `lib/client.js` | 636 | `logSchedule` | factory | const fn |
+| `lib/client.js` | 648 | `logWatchVisibility` | factory | const fn |
+| `lib/client.js` | 657 | `useLog` | factory | function |
+| `lib/client.js` | 679 | `metaLine` | factory | function |
+| `lib/client.js` | 708 | `routeWarning` | factory | function |
+| `lib/client.js` | 728 | `renderEntry` | factory | function |
+| `lib/client.js` | 785 | `routeLook` | factory | function |
+| `lib/client.js` | 814 | `hueOf` | factory | function |
+| `lib/client.js` | 827 | `groupBySession` | factory | function |
+| `lib/client.js` | 857 | `groupHistory` | factory | function |
+| `lib/client.js` | 894 | `renderColumn` | factory | function |
+| `lib/client.js` | 926 | `useColumnFlip` | factory | function |
+| `lib/client.js` | 965 | `HistorySegment` | factory | function |
+| `lib/client.js` | 1022 | `renderHistoryColumn` | factory | function |
+| `lib/client.js` | 1041 | `ColumnList` | factory | function |
+| `lib/client.js` | 1053 | `renderColumns` | factory | function |
+| `lib/client.js` | 1057 | `emptyState` | factory | function |
+| `lib/client.js` | 1062 | `SettingsCard` | factory | function |
+| `lib/client.js` | 1344 | `SettingsPanel` | factory | function |
+| `lib/client.js` | 1349 | `ProgressLogCard` | factory | function |
+| `lib/client.js` | 1368 | `SampleLogPanel` | factory | function |
+| `lib/client.js` | 1413 | `SampleLogIcon` | factory | function |
+| `lib/client.js` | 1431 | `apply` | factory | function |
 <!-- INDEX:END -->
 
 ## 绝不能做（每条都真炸过一次）
@@ -189,7 +190,8 @@ turn/end ──► closeTurn('completed') ──► p=100 ──► 淡出 ─�
 6. **不要在宿主半侧 `inject: ['llm']`** —— `llm` 是可选服务，用 `ctx.get('llm')`；写进 inject 会让没配模型的机器加载失败。
 7. **`ensureRoute` 失败时不要死循环重试** —— `warnedNoCatalog` 只警告一次，然后等下一个 `intervalMs`。
 8. **`push()` 写完一帧必须更新 `lastFrameText`** —— 它是新订阅者的首帧，若不认作「当前帧」，下一个 tick 会把同一内容当变化再发一遍（0.7.0 的 `perf-contract` 就是靠这条抓住的）。
-9. **`titleOf` 的缓存必须有 `seq`** —— 没有序号就分不清「旧标题」和「新标题」，测试里的假会话 id 相同、无 `seq`，缓存一开就串味。
+9. **不要把方向判断搬回宿主** —— 曾经用 `max(上次, 新值)` 兜抖动，结果模型永远无法承认「上次估高了」；提示里给了上一次的数字，就该让它自己定。
+10. **`titleOf` 的缓存必须有 `seq`** —— 没有序号就分不清「旧标题」和「新标题」，测试里的假会话 id 相同、无 `seq`，缓存一开就串味。
 
 ## 样式系统（改外观只看这块）
 
@@ -205,18 +207,19 @@ turn/end ──► closeTurn('completed') ──► p=100 ──► 淡出 ─�
 - `closeTurn(id, outcome)`：把该会话所有 `active` 样本冻结；`interrupted` 时用 `resumeSeed()` 算出接续点存进 `resumeP`。
 - 下次 `turn/start`：`entry.p = resumeP.get(id) ?? 0`，并给判断模型加一句「上一轮被打断，已到 X%，接着算」。
 - 持久化：`~/.dsh/session-progress.log.json`（`DSP_LOG_FILE` 可覆盖），1.2 秒防抖写；退出时兜底写一次。启动时把残留的 `active` 全部改判 `interrupted`。
+- **方向由判断模型定**（0.8.0）：`nextProgress(current, parsed)` 只做 0–95 夹紧与取整，不再取 `max`；提示里固定带 `before` 与上一次它自己写的 `note`；日志条目多一个 `prev`，前端据此画 `+5` / `-3`。
 
 ## 测试矩阵
 
 | 文件 | 守住什么 |
 |---|---|
 | `test/label.mjs` | 会话名取值链：`session/title` → 首句 → 短 id |
-| `test/host-smoke.mjs` | 端到端：采样 → 单调 → 插嘴回退 → usage → 配置归一化与持久化 |
+| `test/host-smoke.mjs` | 端到端：采样 → 方向 → 插嘴上调/下调 → usage → 配置归一化与持久化 |
 | `test/route-fallback.mjs` | 目录缺模型 / 目录为空两条路径 |
 | `test/panel-group.mjs` | `groupBySession`/`formatTokens` 等纯函数 |
 | `test/look.mjs` | 六种样式都带颜色、坏输入回落、无 CSS 注入 |
 | `test/client-boot.mjs` | 把浏览器半侧真启动一遍（桩 DOM） |
-| `test/replan.mjs` | `nextProgress` 的单调与回退 |
+| `test/direction.mjs` | `nextProgress` 两个方向都采纳、0–95 夹紧、解析失败保留原值 |
 | `test/history.mjs` | 轮次关闭、中断接续、重启后残留 active 改判 interrupted、磁盘持久化 |
 
 ## 发布

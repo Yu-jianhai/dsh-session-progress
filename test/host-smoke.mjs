@@ -235,6 +235,11 @@ assert.equal(
   'after an interjection the estimate may move backwards',
 )
 assert.match(lastPrompt, /用户在你工作途中补充了新的要求/, 'the sampler is told why it may revise')
+// Since 0.8 the previous estimate travels with the prompt, not just a warning:
+// the model is asked to judge the direction itself.
+assert.match(lastPrompt, /当前进度：45%/, 'the prompt carries the number from last time')
+assert.match(lastPrompt, /当时阶段是「改接口」/, 'and the stage it named then')
+assert.match(lastPrompt, /进度可以往上，也可以往下/, 'the model is told either direction is allowed')
 
 const revisedLog = JSON.parse((await call('/plugins/dsh-session-progress/log')).body)
 assert.equal(revisedLog.entries[0].p, 20)

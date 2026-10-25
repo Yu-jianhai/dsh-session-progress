@@ -1,6 +1,6 @@
 {
   "name": "dsh-session-progress",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "type": "module",
   "description": "大鲸鱼在线写插件 · 让鲸鱼去监督鲸鱼：DSH 侧栏每条会话行上的实时进度带，用一个轻量模型读上下文估算进度，可换模型、调思考强度、改颜色与样式。",
   "keywords": [
@@ -40,8 +40,8 @@
     "LICENSE"
   ],
   "scripts": {
-    "test": "node test/label.mjs && node test/look.mjs && node test/replan.mjs && node test/client-boot.mjs && node test/history.mjs && node test/host-smoke.mjs && node test/route-fallback.mjs && node test/panel-group.mjs && node test/perf-contract.mjs",
-    "check": "node --check lib/index.js && node --check lib/client.js && node --check test/label.mjs && node --check test/look.mjs && node --check test/replan.mjs && node --check test/client-boot.mjs && node --check test/history.mjs && node --check test/host-smoke.mjs && node scripts/index.cjs --check && node --check test/perf-contract.mjs",
+    "test": "node test/label.mjs && node test/look.mjs && node test/direction.mjs && node test/client-boot.mjs && node test/history.mjs && node test/host-smoke.mjs && node test/route-fallback.mjs && node test/panel-group.mjs && node test/perf-contract.mjs",
+    "check": "node --check lib/index.js && node --check lib/client.js && node --check test/label.mjs && node --check test/look.mjs && node --check test/direction.mjs && node --check test/client-boot.mjs && node --check test/history.mjs && node --check test/host-smoke.mjs && node scripts/index.cjs --check && node --check test/perf-contract.mjs",
     "index": "node scripts/index.cjs",
     "index:check": "node scripts/index.cjs --check"
   },
