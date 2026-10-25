@@ -1,0 +1,653 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>history column scroll probe</title>
+<style>
+  body { margin: 0; background: #17181c; color: #e6e8eb; font: 13px/1.5 system-ui, sans-serif; }
+  
+@property --dsp-p {
+  syntax: "<percentage>";
+  /* must inherit: the value is set on the row, the band is drawn by ::after */
+  inherits: true;
+  initial-value: 0%;
+}
+[data-row-key^="session:"] {
+  position: relative;
+  isolation: isolate;
+}
+[data-row-key^="session:"]::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+  inset-block: 0;
+  inset-inline-start: 0;
+  /* The paint (background, radius, thickness, clip) comes from the look
+     stylesheet below, which the settings can swap at runtime. */
+  width: var(--dsp-p, 0%);
+  opacity: var(--dsp-o, 0);
+  transition:
+    --dsp-p 900ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    opacity 280ms ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-row-key^="session:"]::after {
+    transition: none;
+  }
+}
+.dsp-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 4px 0 8px;
+  font-size: 12px;
+  color: var(--dsw-alias-label-primary, inherit);
+}
+.dsp-error {
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: rgba(255, 107, 107, 0.12);
+  color: #ff8080;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+}
+.dsp-empty {
+  padding: 14px 10px;
+  border: 1px dashed rgba(128, 128, 128, 0.35);
+  border-radius: 8px;
+  color: var(--dsw-alias-label-tertiary, #888);
+}
+.dsp-item {
+  border: 1px solid rgba(128, 128, 128, 0.22);
+  border-radius: 8px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+/* One column per session, left to right: the head names the session, the body
+   scrolls its own samples, so several running sessions stay comparable. */
+.dsp-columns {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 12px;
+  min-height: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 2px;
+}
+.dsp-column {
+  flex: 1 1 300px;
+  min-width: 264px;
+  max-width: 480px;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(128, 128, 128, 0.22);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--dsw-alias-bg-layer-1, transparent);
+}
+/* Inside the full-height rail panel the columns take the remaining height and
+   scroll on their own; in the settings card they simply grow with the page. */
+.dsp-panel-body > .dsp-columns {
+  flex: 1;
+  align-items: stretch;
+}
+.dsp-panel-body > .dsp-columns > .dsp-column {
+  max-height: 100%;
+}
+.dsp-column-head {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 10px;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.22);
+  background: var(--dsw-alias-bg-layer-2, rgba(128, 128, 128, 0.1));
+}
+.dsp-column-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--dsw-alias-label-primary, inherit);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.dsp-tokens {
+  font-variant-numeric: tabular-nums;
+}
+
+.dsp-column-stat {
+  flex: none;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  color: var(--dsw-alias-label-tertiary, #888);
+}
+.dsp-column-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+}
+/* A column body is a flex container with a definite height once the panel gives
+   it one, so its children shrink to fit instead of overflowing -- which means
+   the history column silently squashed twelve turns into 39px each and never
+   grew a scrollbar. Nothing in a column may shrink. */
+.dsp-column-body > *,
+.dsp-seg-body > * {
+  flex: none;
+}
+.dsp-dot {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset;
+}
+/* ---- history column: closed and interrupted turns ---------------------- */
+.dsp-history {
+  flex: 0 0 300px;
+  max-width: 340px;
+  background: rgba(128, 128, 128, 0.06);
+}
+.dsp-seg {
+  border: 1px solid rgba(128, 128, 128, 0.22);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.dsp-seg-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 9px;
+  background: rgba(128, 128, 128, 0.08);
+}
+.dsp-seg-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+}
+.dsp-seg-turn {
+  flex: none;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 10px;
+  color: var(--dsw-alias-label-tertiary, #888);
+}
+.dsp-seg-outcome {
+  flex: none;
+  padding: 0 5px;
+  border-radius: 999px;
+  border: 1px solid rgba(120, 190, 140, 0.55);
+  color: rgb(120, 190, 140);
+  font-size: 10px;
+  line-height: 15px;
+}
+.dsp-seg-outcome.interrupted {
+  border-color: rgba(255, 183, 94, 0.55);
+  color: rgb(255, 183, 94);
+}
+.dsp-seg-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 6px;
+}
+.dsp-col-note {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 10px;
+  color: var(--dsw-alias-label-tertiary, #888);
+}
+.dsp-seg-more {
+  align-self: flex-start;
+  padding: 2px 0;
+  border: none;
+  background: none;
+  color: var(--dsw-alias-label-secondary, #b8bec8);
+  font-size: 11px;
+  cursor: pointer;
+}
+.dsp-seg-more:hover {
+  text-decoration: underline;
+}
+.dsp-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  color: var(--dsw-alias-label-tertiary, #888);
+}
+.dsp-pill {
+  padding: 1px 7px;
+  border-radius: 999px;
+  font-weight: 600;
+  color: var(--dsw-alias-label-primary, #fff);
+}
+.dsp-pill.ok {
+  background: rgba(144, 175, 255, 0.38);
+}
+.dsp-pill.bad {
+  background: rgba(255, 107, 107, 0.32);
+}
+.dsp-note {
+  color: var(--dsw-alias-label-primary, inherit);
+}
+.dsp-revised {
+  padding: 0 5px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 183, 94, 0.55);
+  color: rgb(255, 183, 94);
+  font-size: 10px;
+}
+.dsp-delta {
+  padding: 0 5px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+.dsp-delta.up {
+  color: rgb(126, 202, 158);
+  background: rgba(126, 202, 158, 0.14);
+}
+.dsp-delta.down {
+  color: rgb(255, 168, 120);
+  background: rgba(255, 168, 120, 0.14);
+}
+.dsp-raw {
+  margin: 0;
+  max-height: 160px;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  line-height: 1.5;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: rgba(128, 128, 128, 0.1);
+}
+.dsp-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  font-size: 12px;
+  color: var(--dsw-alias-label-primary, inherit);
+}
+.dsp-panel-head {
+  flex: none;
+  padding: 14px 16px 12px;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.dsp-panel-title {
+  font-size: 14px;
+  font-weight: 600;
+}
+.dsp-panel-sub {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  color: var(--dsw-alias-label-tertiary, #888);
+}
+.dsp-panel-body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 12px 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.dsp-swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background: #90AFFF;
+  vertical-align: -1px;
+  margin-right: 5px;
+}
+.dsp-form {
+  display: grid;
+  grid-template-columns: max-content minmax(160px, 280px);
+  gap: 8px 12px;
+  align-items: center;
+}
+.dsp-field {
+  display: contents;
+}
+.dsp-field-label {
+  font-size: 12px;
+  color: var(--dsw-alias-label-secondary, #aaa);
+}
+.dsp-input {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  height: 28px;
+  padding: 0 8px;
+  font: inherit;
+  font-size: 12px;
+  color: var(--dsw-alias-label-primary, inherit);
+  background: var(--dsw-alias-bg-layer-2, rgba(127, 127, 127, 0.12));
+  border: 1px solid var(--dsw-alias-border-l2, rgba(127, 127, 127, 0.28));
+  border-radius: 6px;
+  outline: none;
+}
+.dsp-input:focus {
+  border-color: #90afff;
+}
+.dsp-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+.dsp-btn {
+  height: 28px;
+  padding: 0 14px;
+  font: inherit;
+  font-size: 12px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: #90afff;
+  color: #10203d;
+  cursor: pointer;
+}
+.dsp-btn.ghost {
+  background: transparent;
+  border-color: var(--dsw-alias-border-l2, rgba(127, 127, 127, 0.35));
+  color: var(--dsw-alias-label-secondary, #aaa);
+}
+.dsp-inline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.dsp-inline-wrap {
+  flex-wrap: wrap;
+}
+.dsp-color {
+  width: 44px;
+  padding: 2px;
+  cursor: pointer;
+}
+.dsp-code,
+.dsp-range-value {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  color: var(--dsw-alias-label-tertiary, #888);
+}
+.dsp-range {
+  flex: 1;
+  min-width: 120px;
+  height: 28px;
+}
+.dsp-range-value {
+  flex: none;
+  width: 36px;
+  text-align: right;
+}
+/* The preview carries the same data-row-key prefix as a real session row, so
+   it is painted by exactly the rules the sidebar uses. */
+.dsp-preview-row {
+  display: flex;
+  align-items: center;
+  height: 32px;
+  padding: 0 8px;
+  border: 1px dashed rgba(128, 128, 128, 0.28);
+  border-radius: var(--dsw-radius-md, 8px);
+  overflow: hidden;
+}
+.dsp-preview-title {
+  font-size: 13px;
+  color: var(--dsw-alias-label-primary, inherit);
+}
+.dsp-status {
+  font-size: 11px;
+  color: var(--dsw-alias-label-tertiary, #888);
+}
+
+  .dsp-panel { display: flex; flex-direction: column; height: 640px; width: 1200px; }
+  .dsp-panel-body { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow-y: hidden; }
+</style>
+<div class="dsp-panel">
+  <div class="dsp-panel-body">
+    <div class="dsp-columns" id="columns">
+      <section class="dsp-column dsp-history" data-session-id="history">
+        <div class="dsp-column-head"><span class="dsp-column-title">历史轮次</span><span class="dsp-column-stat">12 轮</span></div>
+        <div class="dsp-column-body" id="historyBody">
+          
+  <section class="dsp-seg">
+    <div class="dsp-seg-head">
+      <span class="dsp-dot" style="background:hsl(47 70% 62%)"></span>
+      <span class="dsp-seg-title">历史里的第 1 条会话</span>
+      <span class="dsp-seg-turn">#1</span>
+      <span class="dsp-seg-outcome interrupted">中断</span>
+    </div>
+    <div class="dsp-seg-body">
+      <div class="dsp-row"><span class="dsp-at">10:00</span><span class="dsp-p">40%</span><span class="dsp-note">第 1 次采样，阶段名在这里</span></div>
+<div class="dsp-row"><span class="dsp-at">10:01</span><span class="dsp-p">41%</span><span class="dsp-note">第 2 次采样，阶段名在这里</span></div>
+<div class="dsp-row"><span class="dsp-at">10:02</span><span class="dsp-p">42%</span><span class="dsp-note">第 3 次采样，阶段名在这里</span></div>
+    </div>
+  </section>
+
+  <section class="dsp-seg">
+    <div class="dsp-seg-head">
+      <span class="dsp-dot" style="background:hsl(94 70% 62%)"></span>
+      <span class="dsp-seg-title">历史里的第 2 条会话</span>
+      <span class="dsp-seg-turn">#2</span>
+      <span class="dsp-seg-outcome ">完成</span>
+    </div>
+    <div class="dsp-seg-body">
+      <div class="dsp-row"><span class="dsp-at">10:00</span><span class="dsp-p">40%</span><span class="dsp-note">第 1 次采样，阶段名在这里</span></div>
+<div class="dsp-row"><span class="dsp-at">10:01</span><span class="dsp-p">41%</span><span class="dsp-note">第 2 次采样，阶段名在这里</span></div>
+<div class="dsp-row"><span class="dsp-at">10:02</span><span class="dsp-p">42%</span><span class="dsp-note">第 3 次采样，阶段名在这里</span></div>
+    </div>
+  </section>
+
+  <section class="dsp-seg">
+    <div class="dsp-seg-head">
+      <span class="dsp-dot" style="background:hsl(141 70% 62%)"></span>
+      <span class="dsp-seg-title">历史里的第 3 条会话</span>
+      <span class="dsp-seg-turn">#3</span>
+      <span class="dsp-seg-outcome ">完成</span>
+    </div>
+    <div class="dsp-seg-body">
+      <div class="dsp-row"><span class="dsp-at">10:00</span><span class="dsp-p">40%</span><span class="dsp-note">第 1 次采样，阶段名在这里</span></div>
+<div class="dsp-row"><span class="dsp-at">10:01</span><span class="dsp-p">41%</span><span class="dsp-note">第 2 次采样，阶段名在这里</span></div>
+<div class="dsp-row"><span class="dsp-at">10:02</span><span class="dsp-p">42%</span><span class="dsp-note">第 3 次采样，阶段名在这里</span></div>
+    </div>
+  </section>
+
+  <section class="dsp-seg">
+    <div class="dsp-seg-head">
+      <span class="dsp-dot" style="background:hsl(188 70% 62%)"></span>
+      <span class="dsp-seg-title">历史里的第 4 条会话</span>
+      <span class="dsp-seg-turn">#4</span>
+      <span class="dsp-seg-outcome interrupted">中断</span>
+    </div>
+    <div class="dsp-seg-body">
+      <div class="dsp-row"><span class="dsp-at">10:00</span><span class="dsp-p">40%</span><span class="dsp-note">第 1 次采样，阶段名在这里</span></div>
+<div class="dsp-row"><span class="dsp-at">10:01</span><span class="dsp-p">41%</span><span class="dsp-note">第 2 次采样，阶段名在这里</span></div>
+<div class="dsp-row"><span class="dsp-at">10:02</span><span class="dsp-p">42%</span><span class="dsp-note">第 3 次采样，阶段名在这里</span></div>
+    </div>
+  </section>
+
+  <section class="dsp-seg">
+    <div class="dsp-seg-head">
+      <span class="dsp-dot" style="background:hsl(235 70% 62%)"></span>
+      <span class="dsp-seg-title">历史里的第 5 条会话</span>
+      <span class="dsp-seg-turn">#5</span>
+      <span class="dsp-seg-outcome ">完成</span>
+    </div>
+    <div class="dsp-seg-body">
+      <div class="dsp-row"><span class="dsp-at">10:00</span><span class="dsp-p">40%</span><span class="dsp-note">第 1 次采样，阶段名在这里</span></div>
+<div class="dsp-row"><span class="dsp-at">10:01</span><span class="dsp-p">41%</span><span class="dsp-note">第 2 次采样，阶段名在这里</span></div>
+<div class="dsp-row"><span class="dsp-at">10:02</span><span class="dsp-p">42%</span><span class="dsp-note">第 3 次采样，阶段名在这里</span></div>
+    </div>
+  </section>
+
+  <section class="dsp-seg">
+    <div class="dsp-seg-head">
+      <span class="dsp-dot" style="background:hsl(282 70% 62%)"></span>
+      <span class="dsp-seg-title">历史里的第 6 条会话</span>
+      <span class="dsp-seg-turn">#6</span>
+      <span class="dsp-seg-outcome ">完成</span>
+    </div>
+    <div class="dsp-seg-body">
+      <div class="dsp-row"><span class="dsp-at">10:00</span><span class="dsp-p">40%</span><span class="dsp-note">第 1 次采样，阶段名在这里</span></div>
+<div class="dsp-row"><span class="dsp-at">10:01</span><span class="dsp-p">41%</span><span class="dsp-note">第 2 次采样，阶段名在这里</span></div>
+<div class="dsp-row"><span class="dsp-at">10:02</span><span class="dsp-p">42%</span><span class="dsp-note">第 3 次采样，阶段名在这里</span></div>
+    </div>
+  </section>
+
+  <section class="dsp-seg">
+    <div class="dsp-seg-head">
+      <span class="dsp-dot" style="background:hsl(329 70% 62%)"></span>
+      <span class="dsp-seg-title">历史里的第 7 条会话</span>
+      <span class="dsp-seg-turn">#7</span>
+      <span class="dsp-seg-outcome interrupted">中断</span>
+    </div>
+    <div class="dsp-seg-body">
+      <div class="dsp-row"><span class="dsp-at">10:00</span><span class="dsp-p">40%</span><span class="dsp-note">第 1 次采样，阶段名在这里</span></div>
+<div class="dsp-row"><span class="dsp-at">10:01</span><span class="dsp-p">41%</span><span class="dsp-note">第 2 次采样，阶段名在这里</span></div>
+<div class="dsp-row"><span class="dsp-at">10:02</span><span class="dsp-p">42%</span><span class="dsp-note">第 3 次采样，阶段名在这里</span></div>
+    </div>
+  </section>
+
+  <section class="dsp-seg">
+    <div class="dsp-seg-head">
+      <span class="dsp-dot" style="background:hsl(16 70% 62%)"></span>
+      <span class="dsp-seg-title">历史里的第 8 条会话</span>
+      <span class="dsp-seg-turn">#8</span>
+      <span class="dsp-seg-outcome ">完成</span>
+    </div>
+    <div class="dsp-seg-body">
+      <div class="dsp-row"><span class="dsp-at">10:00</span><span class="dsp-p">40%</span><span class="dsp-note">第 1 次采样，阶段名在这里</span></div>
+<div class="dsp-row"><span class="dsp-at">10:01</span><span class="dsp-p">41%</span><span class="dsp-note">第 2 次采样，阶段名在这里</span></div>
+<div class="dsp-row"><span class="dsp-at">10:02</span><span class="dsp-p">42%</span><span class="dsp-note">第 3 次采样，阶段名在这里</span></div>
+    </div>
+  </section>
+
+  <section class="dsp-seg">
+    <div class="dsp-seg-head">
+      <span class="dsp-dot" style="background:hsl(63 70% 62%)"></span>
+      <span class="dsp-seg-title">历史里的第 9 条会话</span>
+      <span class="dsp-seg-turn">#9</span>
+      <span class="dsp-seg-outcome ">完成</span>
+    </div>
+    <div class="dsp-seg-body">
+      <div class="dsp-row"><span class="dsp-at">10:00</span><span class="dsp-p">40%</span><span class="dsp-note">第 1 次采样，阶段名在这里</span></div>
+<div class="dsp-row"><span class="dsp-at">10:01</span><span class="dsp-p">41%</span><span class="dsp-note">第 2 次采样，阶段名在这里</span></div>
+<div class="dsp-row"><span class="dsp-at">10:02</span><span class="dsp-p">42%</span><span class="dsp-note">第 3 次采样，阶段名在这里</span></div>
+    </div>
+  </section>
+
+  <section class="dsp-seg">
+    <div class="dsp-seg-head">
+      <span class="dsp-dot" style="background:hsl(110 70% 62%)"></span>
+      <span class="dsp-seg-title">历史里的第 10 条会话</span>
+      <span class="dsp-seg-turn">#10</span>
+      <span class="dsp-seg-outcome interrupted">中断</span>
+    </div>
+    <div class="dsp-seg-body">
+      <div class="dsp-row"><span class="dsp-at">10:00</span><span class="dsp-p">40%</span><span class="dsp-note">第 1 次采样，阶段名在这里</span></div>
+<div class="dsp-row"><span class="dsp-at">10:01</span><span class="dsp-p">41%</span><span class="dsp-note">第 2 次采样，阶段名在这里</span></div>
+<div class="dsp-row"><span class="dsp-at">10:02</span><span class="dsp-p">42%</span><span class="dsp-note">第 3 次采样，阶段名在这里</span></div>
+    </div>
+  </section>
+
+  <section class="dsp-seg">
+    <div class="dsp-seg-head">
+      <span class="dsp-dot" style="background:hsl(157 70% 62%)"></span>
+      <span class="dsp-seg-title">历史里的第 11 条会话</span>
+      <span class="dsp-seg-turn">#11</span>
+      <span class="dsp-seg-outcome ">完成</span>
+    </div>
+    <div class="dsp-seg-body">
+      <div class="dsp-row"><span class="dsp-at">10:00</span><span class="dsp-p">40%</span><span class="dsp-note">第 1 次采样，阶段名在这里</span></div>
+<div class="dsp-row"><span class="dsp-at">10:01</span><span class="dsp-p">41%</span><span class="dsp-note">第 2 次采样，阶段名在这里</span></div>
+<div class="dsp-row"><span class="dsp-at">10:02</span><span class="dsp-p">42%</span><span class="dsp-note">第 3 次采样，阶段名在这里</span></div>
+    </div>
+  </section>
+
+  <section class="dsp-seg">
+    <div class="dsp-seg-head">
+      <span class="dsp-dot" style="background:hsl(204 70% 62%)"></span>
+      <span class="dsp-seg-title">历史里的第 12 条会话</span>
+      <span class="dsp-seg-turn">#12</span>
+      <span class="dsp-seg-outcome ">完成</span>
+    </div>
+    <div class="dsp-seg-body">
+      <div class="dsp-row"><span class="dsp-at">10:00</span><span class="dsp-p">40%</span><span class="dsp-note">第 1 次采样，阶段名在这里</span></div>
+<div class="dsp-row"><span class="dsp-at">10:01</span><span class="dsp-p">41%</span><span class="dsp-note">第 2 次采样，阶段名在这里</span></div>
+<div class="dsp-row"><span class="dsp-at">10:02</span><span class="dsp-p">42%</span><span class="dsp-note">第 3 次采样，阶段名在这里</span></div>
+    </div>
+  </section>
+        </div>
+      </section>
+      <section class="dsp-column" data-session-id="a">
+        <div class="dsp-column-head"><span class="dsp-column-title">正在跑的会话 A</span><span class="dsp-column-stat">62%</span></div>
+        <div class="dsp-column-body" id="bodyA">
+          <div class="dsp-row"><span class="dsp-at">10:00</span><span class="dsp-p">0%</span><span class="dsp-note">采样 0</span></div>
+<div class="dsp-row"><span class="dsp-at">10:01</span><span class="dsp-p">3%</span><span class="dsp-note">采样 1</span></div>
+<div class="dsp-row"><span class="dsp-at">10:02</span><span class="dsp-p">6%</span><span class="dsp-note">采样 2</span></div>
+<div class="dsp-row"><span class="dsp-at">10:03</span><span class="dsp-p">9%</span><span class="dsp-note">采样 3</span></div>
+<div class="dsp-row"><span class="dsp-at">10:04</span><span class="dsp-p">12%</span><span class="dsp-note">采样 4</span></div>
+<div class="dsp-row"><span class="dsp-at">10:05</span><span class="dsp-p">15%</span><span class="dsp-note">采样 5</span></div>
+<div class="dsp-row"><span class="dsp-at">10:06</span><span class="dsp-p">18%</span><span class="dsp-note">采样 6</span></div>
+<div class="dsp-row"><span class="dsp-at">10:07</span><span class="dsp-p">21%</span><span class="dsp-note">采样 7</span></div>
+<div class="dsp-row"><span class="dsp-at">10:08</span><span class="dsp-p">24%</span><span class="dsp-note">采样 8</span></div>
+<div class="dsp-row"><span class="dsp-at">10:09</span><span class="dsp-p">27%</span><span class="dsp-note">采样 9</span></div>
+<div class="dsp-row"><span class="dsp-at">10:10</span><span class="dsp-p">30%</span><span class="dsp-note">采样 10</span></div>
+<div class="dsp-row"><span class="dsp-at">10:11</span><span class="dsp-p">33%</span><span class="dsp-note">采样 11</span></div>
+<div class="dsp-row"><span class="dsp-at">10:12</span><span class="dsp-p">36%</span><span class="dsp-note">采样 12</span></div>
+<div class="dsp-row"><span class="dsp-at">10:13</span><span class="dsp-p">39%</span><span class="dsp-note">采样 13</span></div>
+<div class="dsp-row"><span class="dsp-at">10:14</span><span class="dsp-p">42%</span><span class="dsp-note">采样 14</span></div>
+<div class="dsp-row"><span class="dsp-at">10:15</span><span class="dsp-p">45%</span><span class="dsp-note">采样 15</span></div>
+<div class="dsp-row"><span class="dsp-at">10:16</span><span class="dsp-p">48%</span><span class="dsp-note">采样 16</span></div>
+<div class="dsp-row"><span class="dsp-at">10:17</span><span class="dsp-p">51%</span><span class="dsp-note">采样 17</span></div>
+<div class="dsp-row"><span class="dsp-at">10:18</span><span class="dsp-p">54%</span><span class="dsp-note">采样 18</span></div>
+<div class="dsp-row"><span class="dsp-at">10:19</span><span class="dsp-p">57%</span><span class="dsp-note">采样 19</span></div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+<script>
+  window.__probe = () => {
+    const read = (id) => {
+      const node = document.getElementById(id)
+      const column = node.closest('.dsp-column')
+      return {
+        id,
+        columnHeight: Math.round(column.getBoundingClientRect().height),
+        columnMaxHeight: getComputedStyle(column).maxHeight,
+        columnOverflow: getComputedStyle(column).overflow,
+        bodyClient: node.clientHeight,
+        bodyScroll: node.scrollHeight,
+        scrollable: node.scrollHeight > node.clientHeight && getComputedStyle(node).overflowY !== 'visible',
+        overflowY: getComputedStyle(node).overflowY,
+      }
+    }
+    return { history: read('historyBody'), active: read('bodyA') }
+  }
+</script>

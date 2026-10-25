@@ -148,6 +148,13 @@ assert.ok(dynamic, 'dynamic stylesheet injected')
 assert.ok(theme, 'theme stylesheet injected')
 assert.ok(sheets.indexOf(base) < sheets.indexOf(lookSheet), 'look sheet comes after base')
 assert.match(lookSheet.textContent, /#90AFFF/i, 'look sheet painted the default colour at boot')
+// A column body is a flex container with a definite height in the rail panel,
+// so its children shrink instead of overflowing: twelve archived turns got
+// squashed to 39px each and the column never grew a scrollbar (0.8.1). Nothing
+// inside a column may shrink; the geometry itself is checked in
+// dev/history-scroll.html, this only stops the rule from being dropped.
+assert.match(base.textContent, /\.dsp-column-body > \*/)
+assert.match(base.textContent, /flex: none/)
 assert.equal(constructed, 1, 'one progress stream opened')
 assert.ok(injected.includes('sidebar.panellist'), 'rail entry registered')
 assert.ok(injected.includes('main'), 'panel body registered')
