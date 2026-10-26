@@ -1,6 +1,6 @@
 {
   "name": "dsh-session-progress",
-  "version": "0.20.1",
+  "version": "0.20.2",
   "type": "module",
   "description": "大鲸鱼在线写插件 · 让鲸鱼去监督鲸鱼：DSH 侧栏每条会话行上的实时进度带，用一个轻量模型读上下文估算进度，可换模型、调思考强度、改颜色与样式。",
   "keywords": [
@@ -38,7 +38,8 @@
     "README.md",
     "dev/panel.png",
     "ARCHITECTURE.md",
-    "LICENSE"
+    "LICENSE",
+    "dev/sidebar.png"
   ],
   "scripts": {
     "test": "node test/label.mjs && node test/look.mjs && node test/direction.mjs && node test/client-boot.mjs && node test/history.mjs && node test/host-smoke.mjs && node test/route-fallback.mjs && node test/panel-group.mjs && node test/perf-contract.mjs && node test/render.mjs",
