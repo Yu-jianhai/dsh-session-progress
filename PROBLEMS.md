@@ -141,3 +141,10 @@
 - **修法**：完全退出 DSH 再打开（关窗口不算，`hmr` 在本机是 disabled 的）。
 - **另一个真 bug（同一次修掉）**：`paintLook` 的 key 与 `routeLook` 的 `same()` 只覆盖了颜色/不透明度/样式/动画三项，漏了新加的 `rainbow`，即便宿主管了，帧回来也判定"没变"、不重绘；另外开关的 `onChange` 只 `setDraft` 没 `api.preview`，保存前根本没有预览。
 - **守卫**：`test/look.mjs` 断言「只翻 `rainbow` 的帧也要 paint」；`test/render.mjs` 第 7 段勾上复选框就断言 look 表里出现彩虹渐变。
+
+## P-20 用取色管挑完颜色，色带没反应
+
+- **现象**：点颜色块、用系统取色器里的吸管从屏幕上取一个颜色，确定之后色带还是原来的颜色。
+- **原因**：`input[type=color]` 名义上只回 `#rrggbb`，但系统取色器（以及部分 WebView 构建）会回 `rgb(18, 171, 52)` 这种写法。旧的处理函数把它原样塞进 draft 发出去，宿主的 `/^#[0-9a-fA-F]{6}$/` 校验不认，**静默丢弃、保留旧值**——表现就是"取了色却没效果"。
+- **修法**：客户端加 `normalizeHex()`，接受 `#abc`、`#rrggbb`、`rgb()` / `rgba()`（含百分比通道），一律规范成大写 `#RRGGBB`；解析不出来就 `return`，保留原色而不是回落到默认蓝。
+- **守卫**：`test/look.mjs` 的 `normalizeHex` 八条断言（含空串、颜色名、截断 hex 一律回 `null`）；`test/render.mjs` 第 8 段用 `rgb(18, 171, 52)` 走一遍颜色输入，断言样式表里出现 `#12AB34`。

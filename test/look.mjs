@@ -11,8 +11,8 @@ const source = fs.readFileSync(path.join(here, '..', 'lib', 'client.js'), 'utf8'
 
 const match = /\/\/ #region look([\s\S]*?)\/\/ #endregion look/.exec(source)
 assert.ok(match, 'the #region look markers are missing from lib/client.js')
-const { LOOK_STYLES, LOOK_IDS, styleRules, sheetCss, hexToRgb, flowDecls } = new Function(
-  `${match[1]}; return { LOOK_STYLES, LOOK_IDS, styleRules, sheetCss, hexToRgb, flowDecls }`,
+const { LOOK_STYLES, LOOK_IDS, styleRules, sheetCss, hexToRgb, normalizeHex, flowDecls } = new Function(
+  `${match[1]}; return { LOOK_STYLES, LOOK_IDS, styleRules, sheetCss, hexToRgb, normalizeHex, flowDecls }`,
 )()
 
 // 1. Every style is complete and unique.
@@ -240,6 +240,18 @@ const baseLook = { color: '#90AFFF', opacity: 0.7, style: 'band', flow: true, fl
 const painted = { painted: baseLook, serverLook: baseLook, previewing: false }
 const rainbowFrame = routeLook(painted, { ...baseLook, rainbow: true }, 'server')
 assert.equal(rainbowFrame.paint, true, 'a frame that only flips the rainbow still repaints')
+
+// The colour input can hand back more than `#rrggbb` (the eyedropper in the OS
+// picker returns `rgb(...)`), and the old handler sent it through untouched --
+// the host rejected it and the band kept the previous colour.
+assert.equal(normalizeHex('#12ab34'), '#12AB34', 'hex passes through, upper-cased')
+assert.equal(normalizeHex('#abc'), '#AABBCC', 'shorthand expands')
+assert.equal(normalizeHex('rgb(18, 171, 52)'), '#12AB34', 'rgb() from the eyedropper is accepted')
+assert.equal(normalizeHex('rgba(18,171,52,0.4)'), '#12AB34', 'rgba() too, alpha ignored')
+assert.equal(normalizeHex('  #12AB34  '), '#12AB34', 'whitespace is trimmed')
+assert.equal(normalizeHex(''), null, 'an empty value keeps the old colour')
+assert.equal(normalizeHex('chartreuse'), null, 'names are refused rather than guessed')
+assert.equal(normalizeHex('#12345'), null, 'a truncated hex is refused')
 
 console.log('look assertions passed')
 

@@ -331,6 +331,18 @@ assert.match(
   'ticking it repaints the fill without waiting for a frame',
 )
 
+// 8) Picking a colour (including from the OS eyedropper) must reach the sheet.
+const colourBox = settingsNodes.find(
+  (node) => node.type === 'input' && node.props && node.props.type === 'color',
+)
+assert.ok(colourBox, 'the settings card offers a colour picker')
+colourBox.props.onChange({ target: { value: '#12ab34' } })
+assert.match(lookSheet().textContent, /#12AB34|#12ab34/i, 'a picked colour repaints the band')
+// The picker can hand back rgb() (the eyedropper inside the dialog does), so the
+// card has to normalise it instead of silently keeping the old colour.
+colourBox.props.onChange({ target: { value: 'rgb(18, 171, 52)' } })
+assert.match(lookSheet().textContent, /#12AB34/i, 'an rgb() result from the picker is normalised to hex')
+
 console.log('render assertions passed')
 // The store schedules its next poll, which would keep the runner alive forever.
 process.exit(0)
