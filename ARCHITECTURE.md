@@ -194,11 +194,11 @@ turn/end ──► closeTurn('completed') ──► p=100 ──► 淡出 ─�
 | `lib/client.js` | 1747 | `renderColumns` | factory | function |
 | `lib/client.js` | 1751 | `emptyState` | factory | function |
 | `lib/client.js` | 1756 | `SettingsCard` | factory | function |
-| `lib/client.js` | 2137 | `SettingsPanel` | factory | function |
-| `lib/client.js` | 2149 | `ProgressLogCard` | factory | function |
-| `lib/client.js` | 2188 | `SampleLogPanel` | factory | function |
-| `lib/client.js` | 2249 | `SampleLogIcon` | factory | function |
-| `lib/client.js` | 2267 | `apply` | factory | function |
+| `lib/client.js` | 2178 | `SettingsPanel` | factory | function |
+| `lib/client.js` | 2190 | `ProgressLogCard` | factory | function |
+| `lib/client.js` | 2229 | `SampleLogPanel` | factory | function |
+| `lib/client.js` | 2290 | `SampleLogIcon` | factory | function |
+| `lib/client.js` | 2308 | `apply` | factory | function |
 <!-- INDEX:END -->
 
 ## 绝不能做（每条都真炸过一次）

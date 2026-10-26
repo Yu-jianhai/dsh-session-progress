@@ -303,6 +303,14 @@ assert.equal(calls, 1, 'the in-flight call finishing does not fire a duplicate')
 const slow = JSON.parse((await call('/plugins/dsh-session-progress/snapshot')).body)
 assert.equal(slow.sessions.find((item) => item.id === 'session-1').p, 30, 'the slow call still lands')
 
+// ---- 恢复默认：宿主那份 DEFAULT_CONFIG 才是唯一副本 ------------------------
+await postConfig({ color: '#FF8800', style: 'underline', opacity: 0.4, intervalMs: 9000, maxSessions: 7 })
+const restored = JSON.parse((await postConfig({ reset: true })).body)
+assert.equal(restored.config.color, '#90AFFF', 'reset puts the colour back')
+assert.equal(restored.config.style, 'band', 'and the style')
+assert.equal(restored.config.intervalMs, 30000, 'and the interval')
+assert.equal(restored.config.maxSessions, 3, 'and the visible-band count')
+
 for (const cleanup of cleanups) { try { cleanup() } catch {} }
 if (ownStateFile) { try { fs.unlinkSync(process.env.DSP_STATE_FILE) } catch {} }
 

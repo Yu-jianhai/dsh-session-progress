@@ -292,6 +292,33 @@ assert.ok(
   'and it goes all the way down to a single band',
 )
 
+// 6) Saving must show what the host stored, not re-derive from a stale config.
+const labels = []
+for (const node of render(registrations.find((item) => item.spec.name === 'plugins.bundle.config').component)) {
+  const walk = (item) => {
+    if (typeof item === 'string') {
+      labels.push(item)
+      return
+    }
+    if (Array.isArray(item)) {
+      item.forEach(walk)
+      return
+    }
+    if (!item || typeof item !== 'object') return
+    if (Array.isArray(item.children)) item.children.forEach(walk)
+    if (typeof item.children === 'string') labels.push(item.children)
+    if (item.props && typeof item.props.children === 'string') labels.push(item.props.children)
+  }
+  walk(node)
+}
+assert.ok(labels.includes('恢复默认'), 'the card offers a restore-defaults action')
+const clientSource = fs.readFileSync(new URL('../lib/client.js', import.meta.url), 'utf8')
+assert.match(
+  clientSource,
+  /setDraft\(draftFrom\(payload\.config\)\)/,
+  'a save adopts the config the host returned',
+)
+
 console.log('render assertions passed')
 // The store schedules its next poll, which would keep the runner alive forever.
 process.exit(0)
