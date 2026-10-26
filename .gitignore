@@ -10,3 +10,4 @@ test/.state.json
 .DS_Store
 Thumbs.db
 desktop.ini
+backups/

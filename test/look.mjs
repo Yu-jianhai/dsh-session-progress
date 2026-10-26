@@ -23,7 +23,7 @@ assert.match(flowDecls({}), /--dsp-flow-duration:10\.5s/, 'default cycle is slow
 
 // The highlight must be clipped to the fill's rounded end, not to a square.
 const flowRules = styleRules({ color: '#90AFFF', style: 'underline' })
-assert.match(flowRules, /round 2px/, 'the underline clips with its own radius')
+assert.match(flowRules, /height:3px;border-radius:2px/, 'the underline keeps its own height and radius')
 
 assert.equal(LOOK_STYLES.length, 6, 'six styles are offered')
 assert.equal(new Set(LOOK_IDS).size, LOOK_STYLES.length, 'style ids are unique')
@@ -43,6 +43,24 @@ assert.ok(styleRules({ style: 'underline' }).includes('height:3px'))
 assert.ok(styleRules({ style: 'stripe' }).includes('repeating-linear-gradient(45deg'))
 assert.ok(styleRules({ style: 'glow' }).includes('box-shadow'))
 assert.ok(styleRules({ style: 'segments' }).includes('clip-path'))
+// 3b. The experimental refraction option must reach the stylesheet, and the
+// plainer qualities must not be dragged along with it.
+assert.match(
+  styleRules({ flowQuality: 'refract' }),
+  /::before\{--dsp-flow-duration:[^}]*filter:url\(#dsp-refract\)/,
+  'refract points the sweep at its own filter',
+)
+assert.equal(
+  styleRules({ flowQuality: 'refract' }).includes('#dsp-water'),
+  false,
+  'refract does not also pull in the plain water filter',
+)
+assert.equal(
+  styleRules({ flowQuality: 'low' }).includes('filter:url('),
+  false,
+  'low stays flat',
+)
+
 assert.ok(
   styleRules({ style: 'segments' }).includes('width:100%'),
   'segments must clip a full-width layer, otherwise the 20% grid would shrink with the fill',

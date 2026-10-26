@@ -41,14 +41,16 @@
   position: absolute;
   inset-block: 0;
   inset-inline-start: 0;
-  width: 100%;
+  /* Bounded by its own width instead of by a clip-path. Both pseudo-elements
+     then animate the same property with the same easing, so the highlight can
+     never lag behind the fill -- that lag is what looked like the sweep
+     teleporting when a new sample landed. border-radius clips the pattern at
+     the rounded end by itself, so the square-corner bug from 0.11.0 cannot
+     come back either. */
+  width: var(--dsp-p, 0%);
   border-radius: inherit;
   z-index: -1;
   pointer-events: none;
-  /* The round keyword matters: the clip follows the fill's width, and
-     without it the sweep's right edge is a square corner sticking out of the
-     rounded end (reported on 0.11.0). */
-  clip-path: inset(0 calc(100% - var(--dsp-p, 0%)) 0 0 round var(--dsw-radius-md, 8px));
   /* A dark tail followed by a bright edge: the tail is what makes the sweep
      readable on a light fill like #90AFFF (white alone washes out), the edge is
      what makes it readable on a dark one. Period 200px along the 100deg axis,
@@ -69,7 +71,7 @@
   /* the highlight fades in and out with the band, never on its own */
   opacity: var(--dsp-o, 0);
   transition:
-    clip-path 900ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    width 900ms cubic-bezier(0.22, 0.61, 0.36, 1),
     opacity 280ms ease;
 }
 @keyframes dsp-flow {
@@ -77,7 +79,7 @@
     background-position: 0 0;
   }
   to {
-    background-position: 203.1px 0;
+    background-position: 203.09px 0;
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -538,6 +540,16 @@
   color: #10203d;
   cursor: pointer;
 }
+.dsp-refresh {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.dsp-btn-xs {
+  height: 20px;
+  padding: 0 8px;
+  font-size: 11px;
+}
 .dsp-btn.ghost {
   background: transparent;
   border-color: var(--dsw-alias-border-l2, rgba(127, 127, 127, 0.35));
@@ -605,7 +617,7 @@
 [data-row-key="session:high"]::after{inset-block:0;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:inherit;background:linear-gradient(90deg,#90AFFF 0%,#90AFFF calc(100% - 10px),rgba(144,175,255,0.35) 100%);}[data-row-key="session:high"]::before{--dsp-flow-duration:5.9s;filter:url(#dsp-water);backdrop-filter:blur(1.6px) saturate(1.45) brightness(1.06);}
 [data-row-key="session:off"]::after{inset-block:0;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:inherit;background:linear-gradient(90deg,#90AFFF 0%,#90AFFF calc(100% - 10px),rgba(144,175,255,0.35) 100%);}[data-row-key="session:off"]::before{animation:none;opacity:0;}
 </style>
-<svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden"><defs><filter id="dsp-water" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency="0.006 0.022" numOctaves="2" seed="7" result="warp"/><feDisplacementMap in="SourceGraphic" in2="warp" scale="18" xChannelSelector="R" yChannelSelector="G"/><feGaussianBlur stdDeviation="0.45"/></filter></defs></svg>
+<svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden"><defs><filter id="dsp-water" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency="0.006 0.022" numOctaves="2" seed="7" result="warp"/><feDisplacementMap in="SourceGraphic" in2="warp" scale="18" xChannelSelector="R" yChannelSelector="G"/><feGaussianBlur stdDeviation="0.45"/></filter><filter id="dsp-refract" x="-15%" y="-30%" width="130%" height="160%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency="0.005 0.020" numOctaves="3" seed="11" result="warp"/><feDisplacementMap in="SourceGraphic" in2="warp" scale="24" xChannelSelector="R" yChannelSelector="G" result="bent"/><feOffset in="bent" dx="-1.7" dy="0" result="left"/><feColorMatrix in="left" type="matrix" values="1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0" result="red"/><feOffset in="bent" dx="1.7" dy="0" result="right"/><feColorMatrix in="right" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0" result="blue"/><feBlend in="bent" in2="red" mode="screen" result="mix"/><feBlend in="mix" in2="blue" mode="screen"/></filter></defs></svg>
 
   <div class="case">
     <div class="cap">低 · 扁平高光</div>

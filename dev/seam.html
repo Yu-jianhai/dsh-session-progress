@@ -1,0 +1,13 @@
+<!doctype html><meta charset="utf-8"><style>
+body{margin:0;background:#141518}
+.wrap{padding:24px}
+.row{position:relative;isolation:isolate;height:32px;width:320px;border-radius:8px;
+  background:rgba(144,175,255,.28);overflow:hidden}
+.row::before{content:"";position:absolute;inset:0;z-index:-1;
+  background-image:repeating-linear-gradient(100deg,
+    rgba(0,0,0,0) 0px, rgba(0,0,0,.2) 44px, rgba(255,255,255,.95) 54px,
+    rgba(255,255,255,0) 64px, rgba(0,0,0,0) 200px);
+  background-repeat:repeat;animation:dsp-flow 3.6s linear infinite;animation-play-state:paused}
+@keyframes dsp-flow{from{background-position:0 0}to{background-position:197px 0}}
+</style><div class="wrap"><div class="row"></div></div>
+<script>window.__t=(ms)=>{const a=document.getAnimations()[0];a.pause();a.currentTime=ms;return getComputedStyle(document.querySelector('.row'),'::before').backgroundPosition}</script>

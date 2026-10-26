@@ -204,7 +204,7 @@ assert.match(base.textContent, /\.dsp-row-note\s*\{[\s\S]*?text-overflow: ellips
 // not running shows nothing at all.
 assert.match(base.textContent, /@keyframes dsp-flow/)
 assert.match(base.textContent, /::before\s*\{[\s\S]*?animation: dsp-flow/)
-assert.match(base.textContent, /clip-path: inset\(0 calc\(100% - var\(--dsp-p/)
+assert.match(base.textContent, /width: var\(--dsp-p, 0%\)/, 'the sweep is bounded by its own width, not a clip')
 assert.match(base.textContent, /::before\s*\{[\s\S]*?opacity: var\(--dsp-o/)
 assert.match(base.textContent, /flex: none/)
 assert.equal(constructed, 1, 'one progress stream opened')

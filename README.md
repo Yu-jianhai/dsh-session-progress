@@ -29,7 +29,7 @@ AI 干活最难受的地方不是慢，是**不知道它在哪**。一轮跑了�
 - 颜色 `#90AFFF`，不透明度 60%，`0.9s` 缓动 —— 每轮一次采样，色带就往前跳一步。
 - 色带是**铺在整行底下**的：标题、时间、悬停按钮全部照常可读可点，不插入任何 DOM。
 - 进度**由判断模型自己定方向**：上一次的数字与阶段名会一起交给它，卡住或返工时它会主动下调；宿主只封顶 95，一轮结束（`turn/end`）补满 100，停留一瞬再淡出。
-- 色带里有一道**一直在走的高光**：判断模型半分钟才给一次新数字，中间这段时间它让人知道「还在动」。它是一条平铺的斜纹，用 `background-position` 每 10.5 秒平移一个周期（默认「慢」档），所以**任何时候都有至少一道在带子里**，不会出现"走完一趟空半天"。一个周期 200px、其中只有约 20px 是高光本体，两道之间隔得远，看起来是"偶尔走过来一次"而不是一直在闪。开关、速度（慢 / 标准 / 快）、质感（高级 / 中等 / 低 / 关）都在设置里；系统开了「减少动态效果」（`prefers-reduced-motion`）时自动关掉。
+- 色带里有一道**一直在走的高光**：判断模型半分钟才给一次新数字，中间这段时间它让人知道「还在动」。它是一条平铺的斜纹，用 `background-position` 每 10.5 秒平移一个周期（默认「慢」档），所以**任何时候都有至少一道在带子里**，不会出现"走完一趟空半天"。一个周期 200px、其中只有约 20px 是高光本体，两道之间隔得远，看起来是"偶尔走过来一次"而不是一直在闪。开关、速度（慢 / 标准 / 快）、质感（实验折射 / 高级 / 中等 / 低 / 关）都在设置里；系统开了「减少动态效果」（`prefers-reduced-motion`）时自动关掉。
 - 左侧栏多一个「**进度日志**」，把判断模型的每一次采样列出来，**一个会话一列、从左到右并排**：列头是色点、会话标题、最新进度和采样次数，列内各自滚动。每条采样只占**一行**（时间 / 进度 / 涨跌 / 阶段名 / 耗时），点一下才展开模型、档位、token 拆分和 JSON 原文。
 - **换一台机器不用改配置**：写死的只是「优先用哪个模型」，本机没有就自动挑一个可用的（详见[换机器](#换一台机器--别的-provider)）。
 - **轮次有始有终**：「进度日志」最左边是**历史轮**栏，一轮跑完（`完成`）或被停掉（`中断`）都会收进去，默认显示最近两条，点「展开全部」看全部；每个会话的每一轮单独成块，颜色点跟着会话走。
@@ -102,7 +102,7 @@ dsh plugin --profile desktop remove dsh-session-progress
 | `style` | `band` | 六种之一 | 色带形状，见下节 |
 | `flow` | `true` | 布尔 | 色带里那道流动的高光开不开 |
 | `flowSpeed` | `slow` | `slow` / `normal` / `fast` | 高光走一圈的时间：慢 10.5s、标准 5.9s、快 3s |
-| `flowQuality` | `medium` | `high` / `medium` / `low` / `off` | 高光的质感，见下节 |
+| `flowQuality` | `medium` | `refract` / `high` / `medium` / `low` / `off` | 高光的质感，见下节 |
 
 **思考强度以模型目录为准。** 设置页的下拉框、采样时传给 adapter 的值、以及启动时打印的 `offered: …` 都来自同一份 `listModels()` 目录；`resolveModelInfo()` 与它不一致时以目录为准（`deepseek-flash` 的目录里就有 `off`）。
 
@@ -131,14 +131,17 @@ dsh plugin --profile desktop remove dsh-session-progress
 
 | 值 | 效果 | 代价 |
 |---|---|---|
+| `refract` 实验 · 折射 | 在水波位移上再叠一层**色散**：同一道高光拆成红、蓝两份，各自反向偏移 1.3px 再叠回去，于是亮边的左缘泛品红、右缘泛青白，像隔着水看灯 | 最费 GPU（一趟滤镜里多两组位移与混合），卡就往 `medium` 退 |
 | `high` 高级 | 水波扭曲 + 光学折射：`feTurbulence` + `feDisplacementMap` 让高光边缘随水波摆动，再叠一层 `backdrop-filter` 把底下的颜色轻微晕开、提亮 | 每个正在跑的会话行各多一层滤镜，GPU 吃得最多 |
 | `medium` 中等（默认） | 只有水波扭曲，高光边缘会像水面裂纹那样左右摆；不做背景模糊 | 中等 |
 | `low` 低 | 扁平高光，宽度和形状都不变（0.10 及以前的样子） | 几乎为零 |
 | `off` 关 | 完全没有高光 | 零 |
 
-水波滤镜是一个**挂在 `<body>` 里的 `<svg>`**（`id="dsp-water"`），由插件在启动时创建、卸载时删掉；`filter: url(#dsp-water)` 只是引用它。所以这套效果不依赖任何外部资源，也不需要联网。
+滤镜是一个**挂在 `<body>` 里的 `<svg>`**，由插件在启动时创建、卸载时删掉；规则里只是 `filter: url(#dsp-water)` / `url(#dsp-refract)` 引用它。所以这套效果不依赖任何外部资源，也不需要联网。
 
-想先看四种质感的差别，打开 `dev/water.html`（`node dev/gen-water.mjs` 生成）：上面一行是 4 个行宽的等比例并排，下面一行放大 2.6 倍，底下的说明里写着每种质量的 `filter` / `backdrop-filter` 实际取值。
+滤镜造不出来时（浏览器太老、DOM 被裁过），插件会**静默退回纯色高光**而不是让色带消失——引用一个不存在的 `filter: url(#…)` 会让整个元素都不绘制，这是必须挡住的一种失败。
+
+想先看五种质感的差别，打开 `dev/water.html`（`node dev/gen-water.mjs` 生成）：上面一行是 4 个行宽的等比例并排，下面一行放大 2.6 倍，底下的说明里写着每种质量的 `filter` / `backdrop-filter` 实际取值。
 
 ## 换一台机器 / 别的 provider
 
@@ -192,14 +195,20 @@ ctx.on('agent/status',       ({ agent, status }) => …)
 ## 开发
 
 ```sh
-npm test    # 六套：假 ctx + 假 llm 跑宿主链路，桩 DOM 启动浏览器半侧，断言进度、日志、标题、档位、淡出、配置往返、换机回落、样式守卫
+node scripts/snapshot.cjs pre-<你要干什么>   # 开工先拍快照，崩了一键回滚
+npm test                                     # 十套
 npm run check
 ```
+
+- **改代码前先读 [`AGENTS.md`](AGENTS.md)**（60 秒开工流程）和 [`ARCHITECTURE.md`](ARCHITECTURE.md)（符号索引），**报错先查 [`PROBLEMS.md`](PROBLEMS.md)**（15 条真炸过的坑，现象→原因→修法→哪条测试守着）。
+- `node scripts/snapshot.cjs <label>` 把源码、测试、探针页、文档打包到 `backups/`（不进 git，含 git rev 与逐文件 sha256）；`node scripts/restore.cjs latest`（或快照名）原地恢复，并删掉快照之后新增的散文件。
 
 - `test/host-smoke.mjs`：宿主半侧冒烟测试，用临时 state 文件，不碰你真实的 `~/.dsh/*.json`。
 - `test/direction.mjs`：`nextProgress` 的方向规则——上下都照单全收、封顶 95、解析失败保留原值。
 - `test/client-boot.mjs`：用桩 DOM 把浏览器半侧整个启动起来，喂真实 SSE 帧，断言样式表真的被写出来、清理真的收干净。纯函数测试看不到这类错误——`render()` 里一个未定义的标识符会让色带**整条消失**而控制台只有一行 `bad frame`。
 - `test/route-fallback.mjs`：模拟**别人的机器**——目录里没有默认模型时自动改用一个便宜模型、目录为空时一次模型都不调。
+- `test/render.mjs`：四个 slot（`main` / `sidebar.panellist` / `plugins.bundle.config` / `settings.plugins.tab`）用空 payload 和满 payload 各渲染一次。0.11.2 那次白屏就是 `data.active` 空指针——`Number(null) === 0` 骗过了守卫，只有真渲染才发现。
+- `test/perf-contract.mjs`：空转成本的三条线（增量 `/log`、SSE 去重、落盘瘦身）与客户端自报版本。
 - `dev/release.cjs`：发布用，「大鲸鱼在线写插件」那句话由它自动加到 Release 正文开头，别再手拼 `curl`。
 - `dev/harness.html`：把宿主真实的行结构与内联 CSS 复刻成独立页面，用来在没有 DSH 的情况下比对色带宽度、透明度与缓动。
 - `dev/select-theme.html` / `dev/theme-probe.html`：验证原生 `<select>` 在深色主题下的弹层配色，以及主题判定函数在五种信号下的结果。
