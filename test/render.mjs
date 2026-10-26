@@ -1,0 +1,238 @@
+/**
+ * Every slot component, rendered for real.
+ *
+ * The panel and the settings card used to be checked only by "does the file
+ * parse" and "does the CSS text look right" — and a single `data.active` on a
+ * null payload blanked both of them in production. This mounts each component
+ * the way React would (walking the returned element tree), first with the empty
+ * state a fresh host delivers, then with a full payload.
+ */
+import assert from 'node:assert/strict'
+import fs from 'node:fs'
+import path from 'node:path'
+import { pathToFileURL } from 'node:url'
+
+const fixture = {
+  version: 12,
+  config: {
+    provider: 'deepseek-account',
+    model: 'deepseek-flash',
+    reasoningEffort: 'off',
+    intervalMs: 30000,
+    color: '#90AFFF',
+    opacity: 0.7,
+    style: 'glow',
+    flow: true,
+    flowSpeed: 'slow',
+    flowQuality: 'medium',
+  },
+  effort: 'off',
+  total: 9,
+  active: 3,
+  historyTotal: 6,
+  interruptedTotal: 1,
+  tokens: { input: 900, output: 120, cacheRead: 0, cacheWrite: 0, total: 1020, samples: 3 },
+  entries: [
+    {
+      turn: 2,
+      phase: 'active',
+      outcome: '',
+      at: '2026-10-26T05:56:33.000Z',
+      sessionId: 'session-723cb8f8-a585-4ed2-b191-28b37462f15e',
+      sessionTitle: '每分钟进度条插件方案',
+      model: 'deepseek-account/deepseek-flash',
+      effort: 'off',
+      ms: 953,
+      p: 45,
+      prev: 40,
+      note: '改渲染逻辑',
+      raw: '{"p":45,"note":"改渲染逻辑"}',
+      tokens: { input: 165, output: 10, cacheRead: 256, cacheWrite: 0, total: 431 },
+      revised: true,
+      error: '',
+    },
+    {
+      turn: 2,
+      phase: 'active',
+      outcome: '',
+      at: '2026-10-26T05:56:02.000Z',
+      sessionId: 'session-bili',
+      sessionTitle: '安装 dsh-bili-whale 插件',
+      model: 'deepseek-account/deepseek-flash',
+      effort: 'off',
+      ms: 700,
+      p: 20,
+      prev: 25,
+      note: '排查登录脚本',
+      raw: '{"p":20,"note":"排查登录脚本"}',
+      tokens: { input: 100, output: 8, cacheRead: 0, cacheWrite: 0, total: 108 },
+      revised: false,
+      error: '',
+    },
+  ],
+  history: [
+    {
+      turn: 1,
+      phase: 'closed',
+      outcome: 'interrupted',
+      at: '2026-10-26T05:20:00.000Z',
+      sessionId: 'session-723cb8f8-a585-4ed2-b191-28b37462f15e',
+      sessionTitle: '每分钟进度条插件方案',
+      model: 'deepseek-account/deepseek-flash',
+      effort: 'off',
+      ms: 810,
+      p: 62,
+      prev: 60,
+      note: '写样式',
+      raw: '{"p":62,"note":"写样式"}',
+      tokens: { input: 80, output: 6, cacheRead: 0, cacheWrite: 0, total: 86 },
+      revised: false,
+      error: '',
+    },
+  ],
+}
+
+// --- the browser surface client.js expects -----------------------------------
+const sheets = []
+const styleNode = () => ({
+  attrs: {},
+  textContent: '',
+  setAttribute(name, value) {
+    this.attrs[name] = value
+  },
+  remove() {},
+})
+const bodyChildren = []
+globalThis.window = globalThis
+globalThis.document = {
+  visibilityState: 'visible',
+  head: { append: (...nodes) => sheets.push(...nodes) },
+  body: {
+    appendChild: (node) => bodyChildren.push(node) || node,
+    append: (...nodes) => bodyChildren.push(...nodes),
+    hasAttribute: () => false,
+  },
+  createElement: (tag) => Object.assign(styleNode(), { tagName: tag }),
+  createElementNS: (ns, tag) => Object.assign(styleNode(), { tagName: tag, children: [] }),
+  getElementById: () => null,
+  addEventListener() {},
+  querySelector: () => null,
+  querySelectorAll: () => [],
+  documentElement: { style: {} },
+}
+globalThis.getComputedStyle = () => ({ colorScheme: 'dark', backgroundColor: 'rgb(20, 21, 24)' })
+globalThis.MutationObserver = class {
+  observe() {}
+  disconnect() {}
+}
+globalThis.matchMedia = () => ({ matches: false, addEventListener() {}, removeEventListener() {} })
+globalThis.requestAnimationFrame = (fn) => setTimeout(fn, 0)
+globalThis.CSS = { escape: (value) => String(value) }
+globalThis.EventSource = class {
+  addEventListener() {}
+  close() {}
+}
+
+let served = null
+globalThis.fetch = async () => ({ ok: true, json: async () => served })
+
+// --- the React slice the module needs ----------------------------------------
+const React = {
+  useState: (initial) => [typeof initial === 'function' ? initial() : initial, () => {}],
+  useEffect: (fn) => {
+    fn()
+  },
+  useLayoutEffect: (fn) => {
+    fn()
+  },
+  useMemo: (fn) => fn(),
+  useCallback: (fn) => fn,
+  useRef: (value) => ({ current: value }),
+  createElement: (type, props, ...children) => ({ type, props: props || {}, children }),
+  Fragment: Symbol('fragment'),
+}
+const requireStub = (id) => {
+  if (id === 'react') return React
+  throw new Error(`unexpected require(${id})`)
+}
+
+let api = null
+globalThis.__ModuleLoader__ = {
+  load({ factory }) {
+    api = factory(requireStub)
+  },
+}
+await import(`${pathToFileURL(path.resolve('lib/client.js')).href}?render=${Date.now()}`)
+
+const registrations = []
+api.apply({
+  effect(fn) {
+    fn()
+  },
+  slots: {
+    inject(name, callback) {
+      const result = callback()
+      if (result && typeof result.next === 'function') {
+        while (!result.next().done) {
+          /* generators register on each step */
+        }
+      }
+    },
+    register(spec, component) {
+      registrations.push({ spec, component })
+      return () => {}
+    },
+  },
+})
+
+assert.equal(registrations.length >= 4, true, 'all four slots are registered')
+
+/** Walk an element tree, calling function components the way React would. */
+function render(component) {
+  const seenNodes = []
+  const walk = (node) => {
+    if (node === null || node === undefined || typeof node !== 'object') return
+    if (Array.isArray(node)) {
+      node.forEach(walk)
+      return
+    }
+    if (typeof node.type === 'function') {
+      walk(node.type(node.props || {}))
+      return
+    }
+    if (typeof node.type === 'string') seenNodes.push(node)
+    ;(node.children || []).forEach(walk)
+  }
+  walk(React.createElement(component, {}))
+  return seenNodes
+}
+
+// 1) The empty state a freshly started host delivers. This is the one that broke.
+for (const { spec, component } of registrations) {
+  assert.doesNotThrow(() => render(component), `${spec.name} renders before any sample lands`)
+}
+
+// 2) A full payload: rows, the history column and the delta badges all exist.
+served = fixture
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+// First pass kicks off the fetch; the store holds the payload after it settles.
+for (const { component } of registrations) render(component)
+await sleep(60)
+const classes = new Set()
+for (const { component } of registrations) {
+  const nodes = render(component)
+  for (const node of nodes) {
+    for (const name of String(node.props.className || '').split(/\s+/)) {
+      if (name) classes.add(name)
+    }
+  }
+}
+for (const name of ['dsp-panel-sub', 'dsp-columns', 'dsp-row-line', 'dsp-history', 'dsp-seg']) {
+  assert.equal(classes.has(name), true, `${name} is rendered once data arrives`)
+}
+
+assert.equal(sheets.length >= 3, true, 'the base, look and dynamic stylesheets are injected')
+
+console.log('render assertions passed')
+// The store schedules its next poll, which would keep the runner alive forever.
+process.exit(0)
