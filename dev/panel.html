@@ -12,6 +12,11 @@
 [data-row-key^="session:"] {
   position: relative;
   isolation: isolate;
+  /* One clock for the whole band: the fill and the film animate the same
+     property with the same easing, so they can never slide out of step. */
+  --dsp-progress-ms: 900ms;
+  --dsp-progress-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --dsp-fade-ms: 280ms;
 }
 [data-row-key^="session:"]::after {
   content: "";
@@ -25,8 +30,8 @@
   width: var(--dsp-p, 0%);
   opacity: var(--dsp-o, 0);
   transition:
-    --dsp-p 900ms cubic-bezier(0.22, 0.61, 0.36, 1),
-    opacity 280ms ease;
+    width var(--dsp-progress-ms) var(--dsp-progress-ease),
+    opacity var(--dsp-fade-ms) ease;
 }
 /* A highlight that keeps travelling inside the filled part, so a band that has
    not moved for half a minute still looks alive. It rides on ::before rather
@@ -41,54 +46,74 @@
   position: absolute;
   inset-block: 0;
   inset-inline-start: 0;
-  width: 100%;
+  /* Bounded by its own width instead of by a clip-path. Both pseudo-elements
+     then animate the same property with the same easing, so the highlight can
+     never lag behind the fill -- that lag is what looked like the sweep
+     teleporting when a new sample landed. border-radius clips the pattern at
+     the rounded end by itself, so the square-corner bug from 0.11.0 cannot
+     come back either. */
+  width: var(--dsp-p, 0%);
   border-radius: inherit;
+  /* A filter may paint outside the border box: the water filter displaces
+     pixels, and that displacement is bounded by neither width nor
+     border-radius, so the sweep used to halo past the pill. clip-path is the
+     only thing that clips a filter's output. The shape never animates, so this
+     cannot reintroduce the width/clip desync of 0.11.0. */
+  clip-path: inset(0 round var(--dsw-radius-md, 8px));
   z-index: -1;
   pointer-events: none;
-  /* The round keyword matters: the clip follows the fill's width, and
-     without it the sweep's right edge is a square corner sticking out of the
-     rounded end (reported on 0.11.0). */
-  clip-path: inset(0 calc(100% - var(--dsp-p, 0%)) 0 0 round var(--dsw-radius-md, 8px));
-  /* A dark tail followed by a bright edge: the tail is what makes the sweep
-     readable on a light fill like #90AFFF (white alone washes out), the edge is
-     what makes it readable on a dark one. Period 200px along the 100deg axis,
-     i.e. 203.1px across the row -- the keyframes move by exactly that much.
-     Only ~20px of each 200px is visible, so the gap between two passes is long
-     enough to read as "occasional" rather than "strobing". */
-  background-image: repeating-linear-gradient(
-    100deg,
-    rgba(0, 0, 0, 0) 0px,
-    rgba(0, 0, 0, 0.2) 56px,
-    rgba(255, 255, 255, 0.95) 66px,
-    rgba(255, 255, 255, 0) 76px,
-    rgba(0, 0, 0, 0) 200px
-  );
+  /* The pattern itself lives in the look sheet's flowDecls(), because which
+     pattern it is -- flat, water, or the experimental film -- is a property of
+     the selected surface, not of the layout. Only the plumbing stays here. */
   background-repeat: repeat;
-  /* duration comes from the look sheet so the speed setting can change it */
-  animation: dsp-flow var(--dsp-flow-duration, 3.6s) linear infinite;
+  background-size: auto;
+  /* Name and duration come from the look sheet: which motion a surface uses is
+     a property of that surface, and the speed setting only changes the clock. */
+  animation: none;
+  /* Rows announce themselves through IntersectionObserver: only what can be
+     seen keeps animating. A sidebar keeps dozens of rows mounted; animating
+     all of them to show one is pure waste. */
+  animation-play-state: paused;
   /* the highlight fades in and out with the band, never on its own */
   opacity: var(--dsp-o, 0);
   transition:
-    clip-path 900ms cubic-bezier(0.22, 0.61, 0.36, 1),
-    opacity 280ms ease;
+    width var(--dsp-progress-ms) var(--dsp-progress-ease),
+    opacity var(--dsp-fade-ms) ease;
 }
-@keyframes dsp-flow {
-  from {
-    background-position: 0 0;
-  }
-  to {
-    background-position: 203.1px 0;
-  }
+[data-row-key^="session:"].dsp-live::before {
+  animation-play-state: running;
+}
+/* Nothing on screen, nothing to animate. */
+html[data-dsp-hidden] [data-row-key^="session:"]::before {
+  animation-play-state: paused;
 }
 @media (prefers-reduced-motion: reduce) {
   [data-row-key^="session:"]::after {
     transition: none;
+    animation: none;
   }
   [data-row-key^="session:"]::before {
     animation: none;
     transition: none;
     opacity: 0;
   }
+}
+.dsp-loglink { gap: 6px; }
+.dsp-loglink-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--dsw-alias-label-primary, inherit);
+}
+.dsp-loglink-body {
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--dsw-alias-label-secondary, #9aa0a8);
+}
+.dsp-loglink-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 .dsp-card {
   display: flex;
@@ -225,9 +250,9 @@
   padding-bottom: 2px;
 }
 .dsp-column {
-  flex: 1 1 300px;
+  flex: 1 1 320px;
   min-width: 264px;
-  max-width: 480px;
+  max-width: 560px;
   min-height: 0;
   display: flex;
   flex-direction: column;
@@ -240,7 +265,9 @@
    scroll on their own; in the settings card they simply grow with the page. */
 .dsp-panel-body > .dsp-columns {
   flex: 1;
-  align-items: stretch;
+  /* Hug the rows instead of drawing empty boxes down the screen; a long column
+     is still capped by max-height 100% below and scrolls on its own. */
+  align-items: flex-start;
 }
 .dsp-panel-body > .dsp-columns > .dsp-column {
   max-height: 100%;
@@ -248,11 +275,30 @@
 .dsp-column-head {
   flex: none;
   display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 7px 10px;
+  flex-direction: column;
+  gap: 3px;
+  padding: 7px 10px 6px;
   border-bottom: 1px solid rgba(128, 128, 128, 0.22);
   background: var(--dsw-alias-bg-layer-2, rgba(128, 128, 128, 0.1));
+}
+.dsp-column-head-top {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+.dsp-column-head-sub {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-left: 15px;
+  font-size: 10px;
+  color: var(--dsw-alias-label-tertiary, #888);
+}
+.dsp-column-time {
+  margin-left: auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-variant-numeric: tabular-nums;
 }
 .dsp-column-title {
   flex: 1;
@@ -288,6 +334,33 @@
   font-size: 11px;
 }
 
+.dsp-spark {
+  flex: none;
+  opacity: 0.85;
+  overflow: visible;
+}
+.dsp-row-caret {
+  flex: none;
+  width: 9px;
+  margin-left: -2px;
+  font-size: 12px;
+  line-height: 1;
+  color: var(--dsw-alias-label-tertiary, #888);
+  transition: transform 160ms ease;
+  transform-origin: 50% 45%;
+}
+.dsp-row-caret.open {
+  transform: rotate(90deg);
+}
+.dsp-row-line:hover .dsp-row-caret {
+  color: var(--dsw-alias-label-primary, #fff);
+}
+.dsp-column-empty {
+  padding: 16px 8px;
+  text-align: center;
+  font-size: 11px;
+  color: var(--dsw-alias-label-tertiary, #888);
+}
 .dsp-column-stat {
   flex: none;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
@@ -562,6 +635,13 @@
 .dsp-inline-wrap {
   flex-wrap: wrap;
 }
+.dsp-check {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: var(--dsw-alias-accent, #90afff);
+  cursor: pointer;
+}
 .dsp-color {
   width: 44px;
   padding: 2px;
@@ -619,9 +699,15 @@
     <div class="dsp-columns">
       <section class="dsp-column">
     <div class="dsp-column-head">
-      <span class="dsp-dot" style="background:hsl(20 72% 62%)"></span>
-      <span class="dsp-column-title">每分钟进度条插件方案</span>
-      <span class="dsp-column-stat">52% · 72 次 · 14:00:25</span>
+      <div class="dsp-column-head-top">
+        <span class="dsp-dot" style="background:hsl(20 72% 62%)"></span>
+        <span class="dsp-column-title">每分钟进度条插件方案</span>
+      </div>
+      <div class="dsp-column-head-sub">
+        <span class="dsp-column-stat">52% · 72 次</span>
+        <span class="dsp-column-time">14:00:25</span>
+        <svg class="dsp-spark" width="60" height="18" viewBox="0 0 60 18"><polyline points="0.0,6.5 2.6,5.9 5.2,5.1 7.8,4.5 10.4,4.8 13.0,4.5 15.7,3.7 18.3,3.0 20.9,14.6 23.5,11.8 26.1,9.7 28.7,7.3 31.3,5.9 33.9,3.7 36.5,14.6 39.1,13.5 41.7,12.4 44.3,10.1 47.0,8.3 49.6,9.3 52.2,10.1 54.8,11.1 57.4,9.7 60.0,8.7" fill="none" stroke="hsl(20 72% 62%)" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/></svg>
+      </div>
     </div>
     <div class="dsp-column-body"><div class="dsp-row"><button type="button" class="dsp-row-line" aria-expanded="false">
     <span class="dsp-row-time">14:00:25</span>
@@ -630,6 +716,7 @@
     <span class="dsp-row-note">改刷新逻辑，补丁重试</span>
     
     <span class="dsp-row-ms">1s</span>
+    <span class="dsp-row-caret">›</span>
   </button></div><div class="dsp-row"><button type="button" class="dsp-row-line" aria-expanded="true">
     <span class="dsp-row-time">13:59:54</span>
     <span class="dsp-row-p">45%</span>
@@ -637,6 +724,7 @@
     <span class="dsp-row-note">性能测试通过，改刷新逻辑</span>
     
     <span class="dsp-row-ms">0.9s</span>
+    <span class="dsp-row-caret open">›</span>
   </button><div class="dsp-row-detail">
     <div class="dsp-detail-meta">
       <span>deepseek-account/deepseek-flash</span><span>强度 off</span>
@@ -649,6 +737,7 @@
     <span class="dsp-row-note">新需求插入，测试返工</span>
     <span class="dsp-revised">重估</span>
     <span class="dsp-row-ms">0.9s</span>
+    <span class="dsp-row-caret">›</span>
   </button></div><div class="dsp-row"><button type="button" class="dsp-row-line" aria-expanded="false">
     <span class="dsp-row-time">13:59:08</span>
     <span class="dsp-row-p">42%</span>
@@ -656,6 +745,7 @@
     <span class="dsp-row-note">测试仍失败，排查中</span>
     
     <span class="dsp-row-ms">0.7s</span>
+    <span class="dsp-row-caret">›</span>
   </button></div><div class="dsp-row"><button type="button" class="dsp-row-line" aria-expanded="false">
     <span class="dsp-row-time">13:58:37</span>
     <span class="dsp-row-p">48%</span>
@@ -663,6 +753,7 @@
     <span class="dsp-row-note">轮询改动致测试失败</span>
     
     <span class="dsp-row-ms">1s</span>
+    <span class="dsp-row-caret">›</span>
   </button></div><div class="dsp-row"><button type="button" class="dsp-row-line" aria-expanded="false">
     <span class="dsp-row-time">13:58:06</span>
     <span class="dsp-row-p">55%</span>
@@ -670,6 +761,7 @@
     <span class="dsp-row-note">改轮询后跑测试</span>
     
     <span class="dsp-row-ms">1.1s</span>
+    <span class="dsp-row-caret">›</span>
   </button></div><div class="dsp-row"><button type="button" class="dsp-row-line" aria-expanded="false">
     <span class="dsp-row-time">13:57:35</span>
     <span class="dsp-row-p">42%</span>
@@ -677,6 +769,7 @@
     <span class="dsp-row-note">改日志轮询逻辑</span>
     
     <span class="dsp-row-ms">0.5s</span>
+    <span class="dsp-row-caret">›</span>
   </button></div><div class="dsp-row"><button type="button" class="dsp-row-line" aria-expanded="false">
     <span class="dsp-row-time">13:57:04</span>
     <span class="dsp-row-p">26%</span>
@@ -684,6 +777,7 @@
     <span class="dsp-row-note">读日志轮询代码</span>
     
     <span class="dsp-row-ms">1s</span>
+    <span class="dsp-row-caret">›</span>
   </button></div><div class="dsp-row"><button type="button" class="dsp-row-line" aria-expanded="false">
     <span class="dsp-row-time">13:56:33</span>
     <span class="dsp-row-p">18%</span>
@@ -691,12 +785,19 @@
     <span class="dsp-row-note">排查日志路径</span>
     
     <span class="dsp-row-ms">0.8s</span>
+    <span class="dsp-row-caret">›</span>
   </button></div></div>
   </section><section class="dsp-column">
     <div class="dsp-column-head">
-      <span class="dsp-dot" style="background:hsl(87 72% 62%)"></span>
-      <span class="dsp-column-title">安装 dsh-bili-whale 插件</span>
-      <span class="dsp-column-stat">55% · 14 次 · 13:25:03</span>
+      <div class="dsp-column-head-top">
+        <span class="dsp-dot" style="background:hsl(87 72% 62%)"></span>
+        <span class="dsp-column-title">安装 dsh-bili-whale 插件</span>
+      </div>
+      <div class="dsp-column-head-sub">
+        <span class="dsp-column-stat">55% · 14 次</span>
+        <span class="dsp-column-time">13:25:03</span>
+        <svg class="dsp-spark" width="60" height="18" viewBox="0 0 60 18"><polyline points="0.0,14.6 4.6,12.5 9.2,10.4 13.8,8.3 18.5,14.6 23.1,13.5 27.7,12.5 32.3,13.2 36.9,11.1 41.5,14.6 46.2,14.6 50.8,11.1 55.4,11.1 60.0,8.3" fill="none" stroke="hsl(87 72% 62%)" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/></svg>
+      </div>
     </div>
     <div class="dsp-column-body"><div class="dsp-row"><button type="button" class="dsp-row-line" aria-expanded="false">
     <span class="dsp-row-time">13:25:03</span>
@@ -705,6 +806,7 @@
     <span class="dsp-row-note">依赖体检通过，查会话</span>
     
     <span class="dsp-row-ms">0.7s</span>
+    <span class="dsp-row-caret">›</span>
   </button></div><div class="dsp-row"><button type="button" class="dsp-row-line" aria-expanded="false">
     <span class="dsp-row-time">13:24:32</span>
     <span class="dsp-row-p">35%</span>
@@ -712,6 +814,7 @@
     <span class="dsp-row-note">登录成功，依赖体检</span>
     
     <span class="dsp-row-ms">0.8s</span>
+    <span class="dsp-row-caret">›</span>
   </button></div><div class="dsp-row"><button type="button" class="dsp-row-line" aria-expanded="false">
     <span class="dsp-row-time">13:23:20</span>
     <span class="dsp-row-p">35%</span>
@@ -719,6 +822,7 @@
     <span class="dsp-row-note">调试扫码接口</span>
     
     <span class="dsp-row-ms">1s</span>
+    <span class="dsp-row-caret">›</span>
   </button></div><div class="dsp-row"><button type="button" class="dsp-row-line" aria-expanded="false">
     <span class="dsp-row-time">13:22:49</span>
     <span class="dsp-row-p">10%</span>
@@ -726,6 +830,7 @@
     <span class="dsp-row-note">等用户补充信息</span>
     
     <span class="dsp-row-ms">0.6s</span>
+    <span class="dsp-row-caret">›</span>
   </button></div><div class="dsp-row"><button type="button" class="dsp-row-line" aria-expanded="false">
     <span class="dsp-row-time">13:22:13</span>
     <span class="dsp-row-p">10%</span>
@@ -733,6 +838,7 @@
     <span class="dsp-row-note">排查失效，重启任务</span>
     
     <span class="dsp-row-ms">0.7s</span>
+    <span class="dsp-row-caret">›</span>
   </button></div><div class="dsp-row"><button type="button" class="dsp-row-line" aria-expanded="false">
     <span class="dsp-row-time">13:21:26</span>
     <span class="dsp-row-p">35%</span>
@@ -740,6 +846,7 @@
     <span class="dsp-row-note">修登录脚本</span>
     
     <span class="dsp-row-ms">0.6s</span>
+    <span class="dsp-row-caret">›</span>
   </button></div><div class="dsp-row"><button type="button" class="dsp-row-line" aria-expanded="false">
     <span class="dsp-row-time">13:20:32</span>
     <span class="dsp-row-p">20%</span>
@@ -747,6 +854,7 @@
     <span class="dsp-row-note">排查登录脚本失败</span>
     <span class="dsp-revised">重估</span>
     <span class="dsp-row-ms">0.6s</span>
+    <span class="dsp-row-caret">›</span>
   </button></div><div class="dsp-row"><button type="button" class="dsp-row-line" aria-expanded="false">
     <span class="dsp-row-time">13:20:02</span>
     <span class="dsp-row-p">25%</span>
@@ -754,6 +862,7 @@
     <span class="dsp-row-note">排查浏览器连接</span>
     
     <span class="dsp-row-ms">0.9s</span>
+    <span class="dsp-row-caret">›</span>
   </button></div><div class="dsp-row"><button type="button" class="dsp-row-line" aria-expanded="false">
     <span class="dsp-row-time">13:19:31</span>
     <span class="dsp-row-p">18%</span>
@@ -761,6 +870,7 @@
     <span class="dsp-row-note">排查浏览器连接</span>
     
     <span class="dsp-row-ms">0.7s</span>
+    <span class="dsp-row-caret">›</span>
   </button></div></div>
   </section>
     </div>

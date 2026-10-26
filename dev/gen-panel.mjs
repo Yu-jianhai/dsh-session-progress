@@ -41,6 +41,7 @@ function row(entry, open) {
     <span class="dsp-row-note">${esc(entry.note || '（没写阶段名）')}</span>
     ${entry.revised ? '<span class="dsp-revised">重估</span>' : ''}
     <span class="dsp-row-ms">${ms}s</span>
+    <span class="dsp-row-caret${open ? ' open' : ''}">›</span>
   </button>${
     open
       ? `<div class="dsp-row-detail">
@@ -53,13 +54,35 @@ function row(entry, open) {
   }</div>`
 }
 
+function spark(entries, hue) {
+  const points = entries
+    .slice(0, 24)
+    .map((entry) => (Number.isFinite(Number(entry.p)) ? Number(entry.p) : null))
+    .reverse()
+    .filter((value) => value !== null)
+  if (points.length < 2) return ''
+  const w = 60
+  const hgt = 18
+  const step = w / (points.length - 1)
+  const path = points
+    .map((v, i) => `${(i * step).toFixed(1)},${(hgt - 2 - (v / 100) * (hgt - 4)).toFixed(1)}`)
+    .join(' ')
+  return `<svg class="dsp-spark" width="${w}" height="${hgt}" viewBox="0 0 ${w} ${hgt}"><polyline points="${path}" fill="none" stroke="hsl(${hue} 72% 62%)" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/></svg>`
+}
+
 const column = (group, index) => {
   const latest = group.entries[0] || {}
   return `<section class="dsp-column">
     <div class="dsp-column-head">
-      <span class="dsp-dot" style="background:hsl(${(index * 67 + 20) % 360} 72% 62%)"></span>
-      <span class="dsp-column-title">${esc(group.title || group.id)}</span>
-      <span class="dsp-column-stat">${latest.p == null ? '—' : latest.p + '%'} · ${group.entries.length} 次 · ${esc(clock(latest.at))}</span>
+      <div class="dsp-column-head-top">
+        <span class="dsp-dot" style="background:hsl(${(index * 67 + 20) % 360} 72% 62%)"></span>
+        <span class="dsp-column-title">${esc(group.title || group.id)}</span>
+      </div>
+      <div class="dsp-column-head-sub">
+        <span class="dsp-column-stat">${latest.p == null ? '—' : latest.p + '%'} · ${group.entries.length} 次</span>
+        <span class="dsp-column-time">${esc(clock(latest.at))}</span>
+        ${spark(group.entries, (index * 67 + 20) % 360)}
+      </div>
     </div>
     <div class="dsp-column-body">${group.entries.slice(0, 9).map((entry, i) => row(entry, index === 0 && i === 1)).join('')}</div>
   </section>`
