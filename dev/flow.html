@@ -60,7 +60,8 @@
     rgba(0, 0, 0, 0) 122px
   );
   background-repeat: repeat;
-  animation: dsp-flow 1.6s linear infinite;
+  /* duration comes from the look sheet so the speed setting can change it */
+  animation: dsp-flow var(--dsp-flow-duration, 3.6s) linear infinite;
   /* the highlight fades in and out with the band, never on its own */
   opacity: var(--dsp-o, 0);
   transition:
@@ -107,13 +108,105 @@
   border-radius: 8px;
   color: var(--dsw-alias-label-tertiary, #888);
 }
-.dsp-item {
-  border: 1px solid rgba(128, 128, 128, 0.22);
-  border-radius: 8px;
-  padding: 8px 10px;
+/* One sample is one line. The bordered box, the eight-field meta row that
+   wrapped onto three lines and the raw JSON under every sample were most of the
+   noise: the technical detail now lives one click away. */
+.dsp-row {
+  display: flex;
+  flex-direction: column;
+}
+.dsp-row + .dsp-row {
+  border-top: 1px solid rgba(128, 128, 128, 0.12);
+}
+.dsp-row-line {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  width: 100%;
+  margin: 0;
+  padding: 4px 5px;
+  border: none;
+  border-radius: 5px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.dsp-row-line:hover {
+  background: rgba(128, 128, 128, 0.1);
+}
+.dsp-row-time {
+  flex: none;
+  width: 56px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 10px;
+  color: var(--dsw-alias-label-tertiary, #888);
+  font-variant-numeric: tabular-nums;
+}
+.dsp-row-p {
+  flex: none;
+  width: 34px;
+  text-align: right;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--dsw-alias-label-primary, #fff);
+  font-variant-numeric: tabular-nums;
+}
+.dsp-row-p.bad {
+  color: #ff8080;
+}
+.dsp-row-delta {
+  flex: none;
+  width: 26px;
+  text-align: right;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+.dsp-row-delta.up {
+  color: rgb(126, 202, 158);
+}
+.dsp-row-delta.down {
+  color: rgb(255, 168, 120);
+}
+.dsp-row-note {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  color: var(--dsw-alias-label-primary, inherit);
+}
+.dsp-row.failed .dsp-row-note {
+  color: #ff8080;
+}
+.dsp-row-ms {
+  flex: none;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 10px;
+  color: var(--dsw-alias-label-tertiary, #888);
+  font-variant-numeric: tabular-nums;
+}
+.dsp-row-detail {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  margin: 0 5px 6px;
+  padding: 6px 8px;
+  border-left: 2px solid rgba(144, 175, 255, 0.45);
+  border-radius: 0 6px 6px 0;
+  background: rgba(128, 128, 128, 0.08);
+}
+.dsp-detail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 10px;
+  color: var(--dsw-alias-label-tertiary, #888);
 }
 /* One column per session, left to right: the head names the session, the body
    scrolls its own samples, so several running sessions stay comparable. */
@@ -170,6 +263,26 @@
 .dsp-tokens {
   font-variant-numeric: tabular-nums;
 }
+.dsp-sub-group {
+  white-space: nowrap;
+}
+.dsp-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+.dsp-switch input {
+  width: 15px;
+  height: 15px;
+  margin: 0;
+  accent-color: var(--dsw-alias-accent, #90AFFF);
+  cursor: pointer;
+}
+.dsp-hint {
+  color: var(--dsw-alias-label-tertiary, #888);
+  font-size: 11px;
+}
 
 .dsp-column-stat {
   flex: none;
@@ -183,8 +296,8 @@
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 8px;
+  gap: 2px;
+  padding: 6px 6px 8px;
 }
 /* A column body is a flex container with a definite height once the panel gives
    it one, so its children shrink to fit instead of overflowing -- which means
@@ -249,7 +362,7 @@
 .dsp-seg-body {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 2px;
   padding: 6px;
 }
 .dsp-col-note {
@@ -476,7 +589,7 @@
   color: var(--dsw-alias-label-tertiary, #888);
 }
 
-  [data-row-key^="session:"]::after{inset-block:0;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:inherit;background:linear-gradient(90deg,#90AFFF 0%,#90AFFF calc(100% - 10px),rgba(144,175,255,0.35) 100%);}
+  [data-row-key^="session:"]::after{inset-block:0;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:inherit;background:linear-gradient(90deg,#90AFFF 0%,#90AFFF calc(100% - 10px),rgba(144,175,255,0.35) 100%);}[data-row-key^="session:"]::before{--dsp-flow-duration:3.6s;filter:url(#dsp-water);}
   .row { display: flex; align-items: center; height: 32px; padding: 0 8px; gap: 0;
          border-radius: 8px; color: #e6e8eb; margin-bottom: 8px; width: 320px; }
   .slot { width: 16px; height: 20px; flex: none; }

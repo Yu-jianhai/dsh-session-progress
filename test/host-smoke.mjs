@@ -197,6 +197,9 @@ assert.equal(saved.config.opacity, 0.35)
 assert.equal(saved.config.style, 'glow', 'a known look style is accepted')
 assert.equal(cfg0.config.color, '#90AFFF', 'the default colour is the requested blue')
 assert.equal(cfg0.config.style, 'band')
+assert.equal(cfg0.config.flow, true, 'the flow is on by default')
+assert.equal(cfg0.config.flowSpeed, 'slow', 'default speed is the slow one')
+assert.equal(cfg0.config.flowQuality, 'medium', 'default quality is the water texture')
 
 // ---- look settings are validated, never trusted --------------------------
 const dirty = JSON.parse(
@@ -211,6 +214,19 @@ const dirty = JSON.parse(
 assert.equal(dirty.config.color, '#FF8800', 'a non-hex colour keeps the previous one')
 assert.equal(dirty.config.opacity, 1, 'opacity is clamped into [0.05, 1]')
 assert.equal(dirty.config.style, 'glow', 'an unknown style keeps the previous one')
+
+// ---- flow settings are validated too -------------------------------------
+const flowOn = JSON.parse(
+  (await postConfig({ flow: false, flowSpeed: 'warp', flowQuality: 'ultra' })).body,
+)
+assert.equal(flowOn.config.flow, false, 'the switch is stored')
+assert.equal(flowOn.config.flowSpeed, 'slow', 'an unknown speed keeps the previous one')
+assert.equal(flowOn.config.flowQuality, 'medium', 'an unknown quality keeps the previous one')
+const flowSet = JSON.parse((await postConfig({ flowSpeed: 'fast', flowQuality: 'high' })).body)
+assert.equal(flowSet.config.flowSpeed, 'fast')
+assert.equal(flowSet.config.flowQuality, 'high')
+const lookFrame = JSON.parse((await call('/plugins/dsh-session-progress/snapshot')).body)
+assert.ok(lookFrame, 'snapshot still answers')
 
 // ---- 插嘴：允许已画出的进度回退 ------------------------------------------
 replies.push('{"p": 45, "note": "改接口"}', '{"p": 20, "note": "按新要求重估"}')

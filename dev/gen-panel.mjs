@@ -6,10 +6,8 @@ import path from 'node:path'
 
 const here = import.meta.dirname
 const source = fs.readFileSync(path.join(here, '..', 'lib', 'client.js'), 'utf8')
-const start = source.indexOf('const BASE_CSS = `')
-const cssStart = source.indexOf('`', start) + 1
-const cssEnd = source.indexOf('`;', cssStart)
-const base = source.slice(cssStart, cssEnd)
+const cssStart = source.indexOf('const BASE_CSS = `') + 'const BASE_CSS = `'.length
+const base = source.slice(cssStart, source.indexOf('`', cssStart))
 
 const data = JSON.parse(fs.readFileSync(path.join(here, 'panel-data.json'), 'utf8'))
 const esc = (value) =>

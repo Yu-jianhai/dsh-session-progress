@@ -54,9 +54,24 @@ class EventSourceStub {
   close() {}
 }
 
+const svgs = []
+
 globalThis.window = globalThis
 globalThis.document = {
   createElement: (tag) => makeStyle(tag),
+  // The water filter is an <svg><filter>; the plugin appends it to <body>.
+  createElementNS: (namespace, tag) => {
+    const node = makeStyle(tag)
+    node.namespaceURI = namespace
+    node.setAttribute = (name, value) => {
+      node.attributes = node.attributes || {}
+      node.attributes[name] = String(value)
+    }
+    node.style = {}
+    node.innerHTML = ''
+    svgs.push(node)
+    return node
+  },
   head: {
     append(...nodes) {
       sheets.push(...nodes)
@@ -65,7 +80,12 @@ globalThis.document = {
       sheets.push(node)
     },
   },
-  body: {},
+  body: {
+    appendChild(node) {
+      svgs.push(node)
+    },
+    hasAttribute: () => false,
+  },
   documentElement: { style: {}, attributes: [] },
   getElementById: () => null,
   querySelectorAll: () => [],
@@ -157,6 +177,10 @@ assert.match(base.textContent, /\.dsp-column-body > \*/)
 // One sample is one line and the raw JSON is behind a click (0.10.0): the
 // eight-field meta row plus a <pre> under every sample is what made the log
 // look like a dump.
+// The water filter must actually exist in the document, or `url(#dsp-water)`
+// silently paints nothing and the two higher qualities look like `low`.
+assert.ok(svgs.some((node) => String(node.innerHTML).includes('feDisplacementMap')), 'water filter injected')
+assert.ok(svgs.some((node) => String(node.innerHTML).includes('id="dsp-water"')), 'water filter is addressable')
 assert.match(base.textContent, /\.dsp-row-line/)
 assert.match(base.textContent, /\.dsp-row-detail/)
 assert.match(base.textContent, /\.dsp-row-note\s*\{[\s\S]*?text-overflow: ellipsis/)

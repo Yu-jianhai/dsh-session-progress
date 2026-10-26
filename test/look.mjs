@@ -53,7 +53,10 @@ for (const bad of [null, undefined, {}, { color: 'red' }, { color: '#12345' }, {
   const css = styleRules(bad)
   assert.ok(css.includes('#90AFFF'), `bad look ${JSON.stringify(bad)} must fall back to the default`)
   assert.ok(css.includes('linear-gradient'), 'a bad style falls back to `band`')
-  assert.ok(!/\burl\(|expression|javascript:/i.test(css), 'no injection vectors in the stylesheet')
+  // `url(#dsp-water)` is a same-document SVG filter reference and is fine;
+  // an external or script url is not.
+  assert.ok(!/\burl\((?!\s*['\"]?#)/i.test(css), 'no external url() in the stylesheet')
+  assert.ok(!/expression|javascript:/i.test(css), 'no script vectors in the stylesheet')
 }
 
 // ---- preview vs saved: the host must not stomp an unsaved draft ----------
