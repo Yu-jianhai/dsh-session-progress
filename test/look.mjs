@@ -11,11 +11,20 @@ const source = fs.readFileSync(path.join(here, '..', 'lib', 'client.js'), 'utf8'
 
 const match = /\/\/ #region look([\s\S]*?)\/\/ #endregion look/.exec(source)
 assert.ok(match, 'the #region look markers are missing from lib/client.js')
-const { LOOK_STYLES, LOOK_IDS, styleRules, hexToRgb } = new Function(
-  `${match[1]}; return { LOOK_STYLES, LOOK_IDS, styleRules, hexToRgb }`,
+const { LOOK_STYLES, LOOK_IDS, styleRules, hexToRgb, flowDecls } = new Function(
+  `${match[1]}; return { LOOK_STYLES, LOOK_IDS, styleRules, hexToRgb, flowDecls }`,
 )()
 
 // 1. Every style is complete and unique.
+// The sweep's cycle length is a promise to the user ("慢 10.5 秒一圈").
+assert.match(flowDecls({ flowSpeed: 'slow' }), /--dsp-flow-duration:10\.5s/, 'slow cycle')
+assert.match(flowDecls({ flowSpeed: 'fast' }), /--dsp-flow-duration:3s/, 'fast cycle')
+assert.match(flowDecls({}), /--dsp-flow-duration:10\.5s/, 'default cycle is slow')
+
+// The highlight must be clipped to the fill's rounded end, not to a square.
+const flowRules = styleRules({ color: '#90AFFF', style: 'underline' })
+assert.match(flowRules, /round 2px/, 'the underline clips with its own radius')
+
 assert.equal(LOOK_STYLES.length, 6, 'six styles are offered')
 assert.equal(new Set(LOOK_IDS).size, LOOK_STYLES.length, 'style ids are unique')
 for (const style of LOOK_STYLES) {

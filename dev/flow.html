@@ -46,18 +46,23 @@
   border-radius: inherit;
   z-index: -1;
   pointer-events: none;
-  clip-path: inset(0 calc(100% - var(--dsp-p, 0%)) 0 0);
+  /* The round keyword matters: the clip follows the fill's width, and
+     without it the sweep's right edge is a square corner sticking out of the
+     rounded end (reported on 0.11.0). */
+  clip-path: inset(0 calc(100% - var(--dsp-p, 0%)) 0 0 round var(--dsw-radius-md, 8px));
   /* A dark tail followed by a bright edge: the tail is what makes the sweep
      readable on a light fill like #90AFFF (white alone washes out), the edge is
-     what makes it readable on a dark one. Period 122px along the 100deg axis,
-     i.e. 123.9px across the row -- the keyframes move by exactly that much. */
+     what makes it readable on a dark one. Period 200px along the 100deg axis,
+     i.e. 203.1px across the row -- the keyframes move by exactly that much.
+     Only ~20px of each 200px is visible, so the gap between two passes is long
+     enough to read as "occasional" rather than "strobing". */
   background-image: repeating-linear-gradient(
     100deg,
     rgba(0, 0, 0, 0) 0px,
-    rgba(0, 0, 0, 0.2) 44px,
-    rgba(255, 255, 255, 0.95) 54px,
-    rgba(255, 255, 255, 0) 64px,
-    rgba(0, 0, 0, 0) 122px
+    rgba(0, 0, 0, 0.2) 56px,
+    rgba(255, 255, 255, 0.95) 66px,
+    rgba(255, 255, 255, 0) 76px,
+    rgba(0, 0, 0, 0) 200px
   );
   background-repeat: repeat;
   /* duration comes from the look sheet so the speed setting can change it */
@@ -73,7 +78,7 @@
     background-position: 0 0;
   }
   to {
-    background-position: 123.9px 0;
+    background-position: 203.1px 0;
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -589,7 +594,7 @@
   color: var(--dsw-alias-label-tertiary, #888);
 }
 
-  [data-row-key^="session:"]::after{inset-block:0;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:inherit;background:linear-gradient(90deg,#90AFFF 0%,#90AFFF calc(100% - 10px),rgba(144,175,255,0.35) 100%);}[data-row-key^="session:"]::before{--dsp-flow-duration:3.6s;filter:url(#dsp-water);}
+  [data-row-key^="session:"]::after{inset-block:0;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:inherit;background:linear-gradient(90deg,#90AFFF 0%,#90AFFF calc(100% - 10px),rgba(144,175,255,0.35) 100%);}[data-row-key^="session:"]::before{--dsp-flow-duration:10.5s;filter:url(#dsp-water);}
   .row { display: flex; align-items: center; height: 32px; padding: 0 8px; gap: 0;
          border-radius: 8px; color: #e6e8eb; margin-bottom: 8px; width: 320px; }
   .slot { width: 16px; height: 20px; flex: none; }

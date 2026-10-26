@@ -149,39 +149,39 @@ turn/end ──► closeTurn('completed') ──► p=100 ──► 淡出 ─�
 | `lib/client.js` | 90 | `hexToRgb` | factory | function |
 | `lib/client.js` | 122 | `flowDecls` | factory | function |
 | `lib/client.js` | 134 | `styleRules` | factory | function |
-| `lib/client.js` | 164 | `ensureWaterFilter` | factory | function |
-| `lib/client.js` | 772 | `cssEscape` | factory | function |
-| `lib/client.js` | 783 | `shortId` | factory | function |
-| `lib/client.js` | 789 | `formatTokens` | factory | function |
-| `lib/client.js` | 797 | `clockOf` | factory | function |
-| `lib/client.js` | 806 | `useConfig` | factory | function |
-| `lib/client.js` | 850 | `logNotify` | factory | const fn |
-| `lib/client.js` | 854 | `logHidden` | factory | const fn |
-| `lib/client.js` | 856 | `logFetch` | factory | const fn |
-| `lib/client.js` | 883 | `logSchedule` | factory | const fn |
-| `lib/client.js` | 895 | `logWatchVisibility` | factory | const fn |
-| `lib/client.js` | 904 | `useLog` | factory | function |
-| `lib/client.js` | 930 | `metaLine` | factory | function |
-| `lib/client.js` | 962 | `routeWarning` | factory | function |
-| `lib/client.js` | 988 | `LogRow` | factory | function |
-| `lib/client.js` | 1060 | `renderEntry` | factory | function |
-| `lib/client.js` | 1071 | `routeLook` | factory | function |
-| `lib/client.js` | 1110 | `hueOf` | factory | function |
-| `lib/client.js` | 1123 | `groupBySession` | factory | function |
-| `lib/client.js` | 1153 | `groupHistory` | factory | function |
-| `lib/client.js` | 1190 | `renderColumn` | factory | function |
-| `lib/client.js` | 1222 | `useColumnFlip` | factory | function |
-| `lib/client.js` | 1261 | `HistorySegment` | factory | function |
-| `lib/client.js` | 1318 | `renderHistoryColumn` | factory | function |
-| `lib/client.js` | 1337 | `ColumnList` | factory | function |
-| `lib/client.js` | 1349 | `renderColumns` | factory | function |
-| `lib/client.js` | 1353 | `emptyState` | factory | function |
-| `lib/client.js` | 1358 | `SettingsCard` | factory | function |
-| `lib/client.js` | 1722 | `SettingsPanel` | factory | function |
-| `lib/client.js` | 1727 | `ProgressLogCard` | factory | function |
-| `lib/client.js` | 1746 | `SampleLogPanel` | factory | function |
-| `lib/client.js` | 1791 | `SampleLogIcon` | factory | function |
-| `lib/client.js` | 1809 | `apply` | factory | function |
+| `lib/client.js` | 167 | `ensureWaterFilter` | factory | function |
+| `lib/client.js` | 780 | `cssEscape` | factory | function |
+| `lib/client.js` | 791 | `shortId` | factory | function |
+| `lib/client.js` | 797 | `formatTokens` | factory | function |
+| `lib/client.js` | 805 | `clockOf` | factory | function |
+| `lib/client.js` | 814 | `useConfig` | factory | function |
+| `lib/client.js` | 858 | `logNotify` | factory | const fn |
+| `lib/client.js` | 862 | `logHidden` | factory | const fn |
+| `lib/client.js` | 864 | `logFetch` | factory | const fn |
+| `lib/client.js` | 891 | `logSchedule` | factory | const fn |
+| `lib/client.js` | 903 | `logWatchVisibility` | factory | const fn |
+| `lib/client.js` | 912 | `useLog` | factory | function |
+| `lib/client.js` | 938 | `metaLine` | factory | function |
+| `lib/client.js` | 970 | `routeWarning` | factory | function |
+| `lib/client.js` | 996 | `LogRow` | factory | function |
+| `lib/client.js` | 1068 | `renderEntry` | factory | function |
+| `lib/client.js` | 1079 | `routeLook` | factory | function |
+| `lib/client.js` | 1118 | `hueOf` | factory | function |
+| `lib/client.js` | 1131 | `groupBySession` | factory | function |
+| `lib/client.js` | 1161 | `groupHistory` | factory | function |
+| `lib/client.js` | 1198 | `renderColumn` | factory | function |
+| `lib/client.js` | 1230 | `useColumnFlip` | factory | function |
+| `lib/client.js` | 1269 | `HistorySegment` | factory | function |
+| `lib/client.js` | 1326 | `renderHistoryColumn` | factory | function |
+| `lib/client.js` | 1345 | `ColumnList` | factory | function |
+| `lib/client.js` | 1357 | `renderColumns` | factory | function |
+| `lib/client.js` | 1361 | `emptyState` | factory | function |
+| `lib/client.js` | 1366 | `SettingsCard` | factory | function |
+| `lib/client.js` | 1730 | `SettingsPanel` | factory | function |
+| `lib/client.js` | 1735 | `ProgressLogCard` | factory | function |
+| `lib/client.js` | 1754 | `SampleLogPanel` | factory | function |
+| `lib/client.js` | 1799 | `SampleLogIcon` | factory | function |
+| `lib/client.js` | 1817 | `apply` | factory | function |
 <!-- INDEX:END -->
 
 ## 绝不能做（每条都真炸过一次）
@@ -204,8 +204,9 @@ turn/end ──► closeTurn('completed') ──► p=100 ──► 淡出 ─�
 - 深色判定按权威信号：`body[data-ds-dark-theme]` → `html[data-ds-theme-source]` → `computedStyle.colorScheme` → class/data-* → 背景亮度 → `matchMedia`。
 - `routeLook(state, incoming, source)` 是纯函数：`server` 帧不能盖掉用户正在预览的样式（0.4.1 的 bug）。
 - **色带的两个伪元素分工**：`::after` 是填充本体（宽度 `--dsp-p`，颜色/形状来自 look 表，`z-index: -2`）；`::before` 是流动高光（`z-index: -1`，压在上面），用 `clip-path: inset(0 calc(100% - var(--dsp-p)) 0 0)` 裁到已填充范围。
-  高光是一条 **122px 周期的平铺斜纹**，用 `@keyframes dsp-flow` 平移 `background-position`（0.9.3 从 transform 改过来的：transform 方案里元素只有 100% 宽，走一趟就空半天，看起来像「只在进度变化时闪一下」）。一周期正好等于跨行位移，所以接缝对齐、**任何宽度、任何时刻都有至少一道在带内**。代价是每帧重画这条小渐变。
-  速度由 `--dsp-flow-duration` 决定（慢 6.4s / 标准 3.6s / 快 1.8s），写在 look 表里。它的 `opacity` 也绑 `--dsp-o`，色带淡出时高光跟着淡出，不会给空闲的行留住一道白光。`underline` 样式在 look 表里把它改回 3px 贴底，否则一条全高光带会悬在细线上方。宿主自己也会用 `::before`/`::after`（拖拽放置指示线），但那两条规则只在拖拽瞬间生效，平时不冲突。
+  高光是一条 **200px 周期的平铺斜纹**，用 `@keyframes dsp-flow` 平移 `background-position`（0.9.3 从 transform 改过来的：transform 方案里元素只有 100% 宽，走一趟就空半天，看起来像「只在进度变化时闪一下」）。一周期正好等于跨行位移，所以接缝对齐、**任何宽度、任何时刻都有至少一道在带内**。代价是每帧重画这条小渐变。
+  速度由 `--dsp-flow-duration` 决定（慢 10.5s / 标准 5.9s / 快 3s），写在 look 表里。
+  **裁剪必须带 `round`**：`clip-path: inset(… round var(--dsw-radius-md))`。少了 `round`，高光在色带右端被切成方角，从圆角外面探出来一块（0.11.0 用户截图就是这个问题，0.11.1 修的）；`underline` 样式用自己的 2px 半径覆盖这条 clip。它的 `opacity` 也绑 `--dsp-o`，色带淡出时高光跟着淡出，不会给空闲的行留住一道白光。`underline` 样式在 look 表里把它改回 3px 贴底，否则一条全高光带会悬在细线上方。宿主自己也会用 `::before`/`::after`（拖拽放置指示线），但那两条规则只在拖拽瞬间生效，平时不冲突。
 - **水波质感（0.11.0）**：`::before` 的 `filter: url(#dsp-water)` 指向插件自己注入 `<body>` 的 `<svg id="dsp-water-defs">`，里面是 `feTurbulence`（`baseFrequency="0.006 0.022"`、`numOctaves="2"`）→ `feDisplacementMap`（`scale="18"`，取 R/G 通道）→ `feGaussianBlur`（`stdDeviation="0.45"`）。`high` 另外加 `backdrop-filter: blur(1.6px) saturate(1.45) brightness(1.06)`。
   - **参数不能想当然**：第一版 `baseFrequency 0.014 0.045 / scale 5` 在 32px 高的行上几乎看不见；`0.008 0.028 / scale 13` 仍偏弱；`0.006 0.022 / scale 18` 才在 2.6 倍放大对照图里清楚看出边缘摆动。改参数就去 `dev/water.html` 看。
   - 生成水波规则的是纯函数 `flowDecls(look)`；`styleRules` 现在同时输出 `::after` 与 `::before` 两组规则，`underline` 的 3px 特例仍写在后者里。
