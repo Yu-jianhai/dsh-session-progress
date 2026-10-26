@@ -154,6 +154,13 @@ assert.match(lookSheet.textContent, /#90AFFF/i, 'look sheet painted the default 
 // inside a column may shrink; the geometry itself is checked in
 // dev/history-scroll.html, this only stops the rule from being dropped.
 assert.match(base.textContent, /\.dsp-column-body > \*/)
+// The flowing highlight lives on ::before and must not outlive the band: it is
+// clipped to the filled width and its opacity rides --dsp-o, so a row that is
+// not running shows nothing at all.
+assert.match(base.textContent, /@keyframes dsp-flow/)
+assert.match(base.textContent, /::before\s*\{[\s\S]*?animation: dsp-flow/)
+assert.match(base.textContent, /clip-path: inset\(0 calc\(100% - var\(--dsp-p/)
+assert.match(base.textContent, /::before\s*\{[\s\S]*?opacity: var\(--dsp-o/)
 assert.match(base.textContent, /flex: none/)
 assert.equal(constructed, 1, 'one progress stream opened')
 assert.ok(injected.includes('sidebar.panellist'), 'rail entry registered')

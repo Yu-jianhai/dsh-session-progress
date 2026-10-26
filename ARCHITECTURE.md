@@ -147,37 +147,37 @@ turn/end ──► closeTurn('completed') ──► p=100 ──► 淡出 ─�
 | `lib/index.js` | 1354 | `configHandler` | apply | const fn |
 | `lib/client.js` | 87 | `hexToRgb` | factory | function |
 | `lib/client.js` | 94 | `styleRules` | factory | function |
-| `lib/client.js` | 533 | `cssEscape` | factory | function |
-| `lib/client.js` | 544 | `shortId` | factory | function |
-| `lib/client.js` | 550 | `formatTokens` | factory | function |
-| `lib/client.js` | 558 | `clockOf` | factory | function |
-| `lib/client.js` | 567 | `useConfig` | factory | function |
-| `lib/client.js` | 611 | `logNotify` | factory | const fn |
-| `lib/client.js` | 615 | `logHidden` | factory | const fn |
-| `lib/client.js` | 617 | `logFetch` | factory | const fn |
-| `lib/client.js` | 644 | `logSchedule` | factory | const fn |
-| `lib/client.js` | 656 | `logWatchVisibility` | factory | const fn |
-| `lib/client.js` | 665 | `useLog` | factory | function |
-| `lib/client.js` | 687 | `metaLine` | factory | function |
-| `lib/client.js` | 716 | `routeWarning` | factory | function |
-| `lib/client.js` | 736 | `renderEntry` | factory | function |
-| `lib/client.js` | 793 | `routeLook` | factory | function |
-| `lib/client.js` | 822 | `hueOf` | factory | function |
-| `lib/client.js` | 835 | `groupBySession` | factory | function |
-| `lib/client.js` | 865 | `groupHistory` | factory | function |
-| `lib/client.js` | 902 | `renderColumn` | factory | function |
-| `lib/client.js` | 934 | `useColumnFlip` | factory | function |
-| `lib/client.js` | 973 | `HistorySegment` | factory | function |
-| `lib/client.js` | 1030 | `renderHistoryColumn` | factory | function |
-| `lib/client.js` | 1049 | `ColumnList` | factory | function |
-| `lib/client.js` | 1061 | `renderColumns` | factory | function |
-| `lib/client.js` | 1065 | `emptyState` | factory | function |
-| `lib/client.js` | 1070 | `SettingsCard` | factory | function |
-| `lib/client.js` | 1352 | `SettingsPanel` | factory | function |
-| `lib/client.js` | 1357 | `ProgressLogCard` | factory | function |
-| `lib/client.js` | 1376 | `SampleLogPanel` | factory | function |
-| `lib/client.js` | 1421 | `SampleLogIcon` | factory | function |
-| `lib/client.js` | 1439 | `apply` | factory | function |
+| `lib/client.js` | 584 | `cssEscape` | factory | function |
+| `lib/client.js` | 595 | `shortId` | factory | function |
+| `lib/client.js` | 601 | `formatTokens` | factory | function |
+| `lib/client.js` | 609 | `clockOf` | factory | function |
+| `lib/client.js` | 618 | `useConfig` | factory | function |
+| `lib/client.js` | 662 | `logNotify` | factory | const fn |
+| `lib/client.js` | 666 | `logHidden` | factory | const fn |
+| `lib/client.js` | 668 | `logFetch` | factory | const fn |
+| `lib/client.js` | 695 | `logSchedule` | factory | const fn |
+| `lib/client.js` | 707 | `logWatchVisibility` | factory | const fn |
+| `lib/client.js` | 716 | `useLog` | factory | function |
+| `lib/client.js` | 738 | `metaLine` | factory | function |
+| `lib/client.js` | 767 | `routeWarning` | factory | function |
+| `lib/client.js` | 787 | `renderEntry` | factory | function |
+| `lib/client.js` | 844 | `routeLook` | factory | function |
+| `lib/client.js` | 873 | `hueOf` | factory | function |
+| `lib/client.js` | 886 | `groupBySession` | factory | function |
+| `lib/client.js` | 916 | `groupHistory` | factory | function |
+| `lib/client.js` | 953 | `renderColumn` | factory | function |
+| `lib/client.js` | 985 | `useColumnFlip` | factory | function |
+| `lib/client.js` | 1024 | `HistorySegment` | factory | function |
+| `lib/client.js` | 1081 | `renderHistoryColumn` | factory | function |
+| `lib/client.js` | 1100 | `ColumnList` | factory | function |
+| `lib/client.js` | 1112 | `renderColumns` | factory | function |
+| `lib/client.js` | 1116 | `emptyState` | factory | function |
+| `lib/client.js` | 1121 | `SettingsCard` | factory | function |
+| `lib/client.js` | 1403 | `SettingsPanel` | factory | function |
+| `lib/client.js` | 1408 | `ProgressLogCard` | factory | function |
+| `lib/client.js` | 1427 | `SampleLogPanel` | factory | function |
+| `lib/client.js` | 1472 | `SampleLogIcon` | factory | function |
+| `lib/client.js` | 1490 | `apply` | factory | function |
 <!-- INDEX:END -->
 
 ## 绝不能做（每条都真炸过一次）
@@ -199,6 +199,7 @@ turn/end ──► closeTurn('completed') ──► p=100 ──► 淡出 ─�
 - 结构规则只写 `::after` 的定位与 `transition`；颜色、厚度、裁切都在 `styleRules(look)` 返回的规则里。
 - 深色判定按权威信号：`body[data-ds-dark-theme]` → `html[data-ds-theme-source]` → `computedStyle.colorScheme` → class/data-* → 背景亮度 → `matchMedia`。
 - `routeLook(state, incoming, source)` 是纯函数：`server` 帧不能盖掉用户正在预览的样式（0.4.1 的 bug）。
+- **色带的两个伪元素分工**（0.9.0）：`::after` 是填充本体（宽度 `--dsp-p`，颜色/形状来自 look 表，`z-index: -2`）；`::before` 是流动高光（`z-index: -1`，压在上面），用 `clip-path: inset(0 calc(100% - var(--dsp-p)) 0 0)` 裁到已填充范围，用 `@keyframes dsp-flow` 平移 `transform` —— **只动 transform 不动 background-position**，否则每帧都要重画渐变。它的 `opacity` 也绑 `--dsp-o`，色带淡出时高光跟着淡出，不会给空闲的行留住一道白光。`underline` 样式在 look 表里把它改回 3px 贴底，否则一条全高光带会悬在细线上方。宿主自己也会用 `::before`/`::after`（拖拽放置指示线），但那两条规则只在拖拽瞬间生效，平时不冲突。
 - **列里的东西不许缩**：`.dsp-column-body` 在面板里是有明确高度的 flex 容器，子项默认 `flex-shrink: 1` 会把自己压扁而不是溢出——历史列曾因此把 12 轮压成 39px 且永远不出滚动条（0.8.1）。`.dsp-column-body > *` 与 `.dsp-seg-body > *` 都锁 `flex: none`；几何用 `dev/history-scroll.html` 的 `window.__probe()` 量。
 
 ## 轮次与历史（0.6.0 新增）
