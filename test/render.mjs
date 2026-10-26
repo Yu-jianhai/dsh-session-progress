@@ -248,6 +248,38 @@ assert.equal(settingsOnly.has('dsp-columns'), false, 'nor the two-column log lay
 
 assert.equal(sheets.length >= 3, true, 'the base, look and dynamic stylesheets are injected')
 
+// 4) The preview must repaint on the flow controls too. `paintLook` once keyed
+// only on colour/opacity/style, so switching the tier (or its speed, or the
+// on/off switch) changed nothing until the next SSE frame — the preview looked
+// stuck. Fire the real onChange of the quality select and read the sheet back.
+const lookSheet = () => sheets.find((node) => node.attrs && node.attrs['data-plugin-css'] === 'dsh-session-progress-look')
+assert.ok(lookSheet(), 'the look sheet is injected')
+assert.equal(
+  /dsp-refract/.test(lookSheet().textContent),
+  false,
+  'the fixture starts on the medium tier',
+)
+const settingsNodes = render(registrations.find((item) => item.spec.name === 'plugins.bundle.config').component)
+const flatten = (children) =>
+  (children || []).flatMap((child) => (Array.isArray(child) ? flatten(child) : [child]))
+const qualitySelect = settingsNodes.find(
+  (node) =>
+    node.type === 'select' &&
+    flatten(node.children).some((child) => child && child.props && child.props.value === 'refract'),
+)
+assert.ok(qualitySelect, 'the quality select is rendered')
+qualitySelect.props.onChange({ target: { value: 'refract' } })
+assert.match(
+  lookSheet().textContent,
+  /::before\{[^}]*filter:url\(#dsp-water\)/,
+  'switching to the refract tier repaints the sheet immediately',
+)
+assert.match(
+  lookSheet().textContent,
+  /::before\{[^}]*backdrop-filter:url\(#dsp-refract\)/,
+  'and the film that bends the text comes with it',
+)
+
 console.log('render assertions passed')
 // The store schedules its next poll, which would keep the runner alive forever.
 process.exit(0)

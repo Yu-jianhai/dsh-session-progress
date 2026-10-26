@@ -108,3 +108,12 @@
 - **原因**：`filter: url(#dsp-water)` 指向不存在的 `<filter>` 时，浏览器**不画这个元素**。
 - **修法**：`filtersReady` 标记 + `ensureWaterFilter()` 失败时降级为纯色高光（`flowDecls` 不输出 filter）。
 - **守卫**：`test/look.mjs` 校验 `low` 档不得带任何 `filter: url(`。
+
+## P-16 改「动画质量 / 速率 / 开关」时设置页预览不动
+
+- **现象**：颜色、不透明度、样式一改预览立刻变；但动「动画质量」「动画速率」「流动动画」开关，预览要等下一次保存（或下一个 SSE 帧）才变 —— 看起来像预览坏了。
+- **原因**：`paintLook(next)` 只把 `color / opacity / style` 装进候选对象，用这三项拼重绘 key。0.11.0 之后 `flowDecls` 还要读 `flow / flowSpeed / flowQuality`，这三个字段既不进候选也不进 key，于是「key 没变 → 直接 return」，样式表根本没重写。
+- **修法**：候选与 key 都带上 `flow / flowSpeed / flowQuality`（`lib/client.js` 的 `paintLook`）。
+- **守卫**：`test/render.mjs` 第 4 段 —— 找到设置页里那个含 `refract` 选项的 `<select>`，真的调它的 `onChange`，然后断言 look 样式表里出现了 `backdrop-filter:url(#dsp-refract)`。把 `paintLook` 的 key 改回去，这条会红。
+- **教训**：凡是「纯函数按字段拼 key」的地方，加字段时**候选对象和 key 必须一起加**；测试要打到「触发真实事件 → 读产物」这一层，只断言函数输出会漏掉这种遗漏。
+
