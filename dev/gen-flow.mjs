@@ -4,6 +4,12 @@ import path from 'node:path'
 
 const source = fs.readFileSync(path.join(import.meta.dirname, '..', 'lib', 'client.js'), 'utf8')
 const css = source.match(/const BASE_CSS = `([\s\S]*?)`\n/)[1]
+// The band's paint lives in the look sheet, not in BASE_CSS. Without it the
+// preview shows the highlight floating on nothing -- which is exactly the
+// confusing picture that made this probe worth writing in the first place.
+const lookSource = source.match(/\/\/ #region look([\s\S]*?)\/\/ #endregion look/)[1]
+const styleRules = new Function(`${lookSource}; return styleRules`)()
+const lookRules = styleRules({ color: '#90AFFF', opacity: 0.6, style: 'band' })
 
 const row = (id, p, note) => `
   <div class="row" role="treeitem" data-row-key="session:${id}" style="--dsp-p:${p}%;--dsp-o:0.6">
@@ -18,6 +24,7 @@ const html = `<!doctype html>
 <style>
   body { margin: 0; padding: 24px; background: #17181c; color: #e6e8eb; font: 14px system-ui, sans-serif; }
   ${css}
+  ${lookRules}
   .row { display: flex; align-items: center; height: 32px; padding: 0 8px; gap: 0;
          border-radius: 8px; color: #e6e8eb; margin-bottom: 8px; width: 320px; }
   .slot { width: 16px; height: 20px; flex: none; }
