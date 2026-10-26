@@ -36,6 +36,7 @@
     "cordis.patch.yml",
     "locale",
     "README.md",
+    "dev/panel.png",
     "ARCHITECTURE.md",
     "LICENSE"
   ],
