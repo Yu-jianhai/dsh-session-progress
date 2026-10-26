@@ -245,4 +245,29 @@ try {
   assert.equal(reporter.applied, 1)
 }
 
+// 5) History rides along with the first paint, but only its drawn fields: the
+//    panel never shows the model output of a closed turn, and shipping it would
+//    put a few hundred KB on a poll that runs every three seconds.
+{
+  const { ctx, handlers, routes } = makeCtx()
+  apply(ctx, { firstDelayMs: 10, intervalMs: 60000, seedP: 0 })
+  handlers['session/event'](fakeSession, { type: 'turn/start', data: { turn: 1 } })
+  await sleep(220)
+  handlers['session/event'](fakeSession, { type: 'turn/end', data: { turn: 1 } })
+  await sleep(60)
+
+  const payload = await log(routes, 'limit=20')
+  assert.ok(payload.history.length >= 1, 'closed turns come back with the first paint')
+  const row = payload.history[0]
+  assert.equal(row.raw, undefined, 'history rows drop the model output')
+  assert.equal(row.tokens, undefined, 'and the token breakdown')
+  for (const key of ['at', 'sessionId', 'turn', 'p', 'note', 'outcome']) {
+    assert.ok(key in row, `history rows keep ${key}`)
+  }
+
+  const off = await log(routes, 'limit=20&history=0')
+  assert.equal(off.history.length, 0, 'history=0 still opts out')
+  assert.ok(off.historyTotal >= 1, 'but the count stays available')
+}
+
 console.log('perf contract assertions passed')
