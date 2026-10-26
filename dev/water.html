@@ -49,6 +49,12 @@
      come back either. */
   width: var(--dsp-p, 0%);
   border-radius: inherit;
+  /* A filter may paint outside the border box: the water filter displaces
+     pixels, and that displacement is bounded by neither width nor
+     border-radius, so the sweep used to halo past the pill. clip-path is the
+     only thing that clips a filter's output. The shape never animates, so this
+     cannot reintroduce the width/clip desync of 0.11.0. */
+  clip-path: inset(0 round var(--dsw-radius-md, 8px));
   z-index: -1;
   pointer-events: none;
   /* The pattern itself lives in the look sheet's flowDecls(), because which
@@ -622,7 +628,7 @@
   .row { width: 280px; }
   .row .title { position: relative; z-index: 1; font-size: 13px; }
   .row .time { position: relative; z-index: 1; margin-left: auto; font-size: 10px; color: #9aa3b2; }
-  [data-row-key="session:refract"]::after{inset-block:0;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:inherit;background:linear-gradient(90deg,#90AFFF 0%,#90AFFF calc(100% - 10px),rgba(144,175,255,0.35) 100%);}[data-row-key="session:refract"]::before{--dsp-flow-duration:5.9s;background-image:repeating-linear-gradient(100deg,rgba(0,0,0,0) 0px,rgba(0,0,0,0.22) 44px,rgba(255,255,255,1) 56px,rgba(255,255,255,0) 66px,rgba(0,0,0,0) 132px);filter:url(#dsp-water);backdrop-filter:url(#dsp-refract) blur(1px);z-index:1;}
+  [data-row-key="session:refract"]::after{inset-block:0;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:inherit;background:linear-gradient(90deg,#90AFFF 0%,#90AFFF calc(100% - 10px),rgba(144,175,255,0.35) 100%);}[data-row-key="session:refract"]::before{--dsp-flow-duration:5.9s;background-image:repeating-linear-gradient(100deg,rgba(0,0,0,0) 0px,rgba(0,0,0,0.16) 44px,rgba(255,255,255,0.8) 56px,rgba(255,255,255,0) 68px,rgba(0,0,0,0) 132px);filter:url(#dsp-water);backdrop-filter:url(#dsp-refract) blur(1px);z-index:1;}
 [data-row-key="session:low"]::after{inset-block:0;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:inherit;background:linear-gradient(90deg,#90AFFF 0%,#90AFFF calc(100% - 10px),rgba(144,175,255,0.35) 100%);}[data-row-key="session:low"]::before{--dsp-flow-duration:5.9s;background-image:repeating-linear-gradient(100deg,rgba(0,0,0,0) 0px,rgba(0,0,0,0.16) 46px,rgba(255,255,255,0.92) 56px,rgba(255,255,255,0) 64px,rgba(0,0,0,0) 132px),repeating-linear-gradient(100deg,rgba(255,255,255,0) 0px,rgba(255,255,255,0.10) 96px,rgba(132,170,255,0.12) 168px,rgba(255,255,255,0) 264px);}
 [data-row-key="session:medium"]::after{inset-block:0;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:inherit;background:linear-gradient(90deg,#90AFFF 0%,#90AFFF calc(100% - 10px),rgba(144,175,255,0.35) 100%);}[data-row-key="session:medium"]::before{--dsp-flow-duration:5.9s;background-image:repeating-linear-gradient(100deg,rgba(0,0,0,0) 0px,rgba(0,0,0,0.16) 46px,rgba(255,255,255,0.92) 56px,rgba(255,255,255,0) 64px,rgba(0,0,0,0) 132px),repeating-linear-gradient(100deg,rgba(255,255,255,0) 0px,rgba(255,255,255,0.10) 96px,rgba(132,170,255,0.12) 168px,rgba(255,255,255,0) 264px);filter:url(#dsp-water);}
 [data-row-key="session:high"]::after{inset-block:0;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:inherit;background:linear-gradient(90deg,#90AFFF 0%,#90AFFF calc(100% - 10px),rgba(144,175,255,0.35) 100%);backdrop-filter:blur(1.6px) saturate(1.45) brightness(1.06);}[data-row-key="session:high"]::before{--dsp-flow-duration:5.9s;background-image:repeating-linear-gradient(100deg,rgba(0,0,0,0) 0px,rgba(0,0,0,0.16) 46px,rgba(255,255,255,0.92) 56px,rgba(255,255,255,0) 64px,rgba(0,0,0,0) 132px),repeating-linear-gradient(100deg,rgba(255,255,255,0) 0px,rgba(255,255,255,0.10) 96px,rgba(132,170,255,0.12) 168px,rgba(255,255,255,0) 264px);filter:url(#dsp-water);backdrop-filter:blur(1.6px) saturate(1.45) brightness(1.06);}

@@ -117,3 +117,11 @@
 - **守卫**：`test/render.mjs` 第 4 段 —— 找到设置页里那个含 `refract` 选项的 `<select>`，真的调它的 `onChange`，然后断言 look 样式表里出现了 `backdrop-filter:url(#dsp-refract)`。把 `paintLook` 的 key 改回去，这条会红。
 - **教训**：凡是「纯函数按字段拼 key」的地方，加字段时**候选对象和 key 必须一起加**；测试要打到「触发真实事件 → 读产物」这一层，只断言函数输出会漏掉这种遗漏。
 
+## P-17 高光的亮晕溢出到色带外面
+
+- **现象**：会话行上的亮光在色带边缘之外还能看到一圈晕，短色带时更明显，甚至盖住右边的相对时间。
+- **原因**：`filter: url(#dsp-water)` 会把像素**位移**，滤镜的区域是元素盒子的 `-25% … 150%`，`border-radius` 只裁盒子的内容、裁不住滤镜的输出；`baseFrequency` 越大位移越远，晕得越开。
+- **修法**：表面层加一条**恒定**的 `clip-path: inset(0 round var(--dsw-radius-md, 8px))` —— 只有 `clip-path` 能裁滤镜输出。它不参与 `width` 过渡，所以不会把 0.11.0 的「clip/width 不同步」带回来；`underline` 档单独把它覆盖成 `inset(0 round 2px)`，因为那一条只有 3px 高。
+- **守卫**：`test/look.mjs` 第 3c 段（从模块源码里读 `BASE_CSS` 断言 `::before` 带这条裁剪、`underline` 的覆盖存在、以及水膜档不用全白的高光）。
+- **相邻教训**：水膜档盖在文字上方时，全白峰值 `rgba(255,255,255,1)` 会把字洗掉，于是那一档改用 `SWEEP_FILM`（峰值 0.8、暗尾 0.16）。
+

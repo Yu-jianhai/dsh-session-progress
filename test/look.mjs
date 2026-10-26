@@ -68,6 +68,27 @@ assert.equal(
   'a film above the text must not also blur from the fill layer',
 )
 
+// 3c. Nothing may paint outside the band. A CSS filter is allowed to draw past
+// the border box, and border-radius does not clip it -- so the surface layer
+// carries a constant clip-path shaped like the fill. It does not animate, which
+// is what keeps it from reintroducing the width/clip desync of 0.11.0.
+const baseCss = readBaseCss()
+assert.match(
+  baseCss,
+  /\[data-row-key\^="session:"\]::before \{[^}]*clip-path: inset\(0 round var\(--dsw-radius-md, 8px\)\)/,
+  'the surface layer is clipped to the rounded band shape',
+)
+assert.match(
+  styleRules({ style: 'underline' }),
+  /::before\{[^}]*clip-path:inset\(0 round 2px\)/,
+  'the 3px underline clips to its own shorter shape',
+)
+assert.equal(
+  /rgba\(255,255,255,1\)/.test(refract),
+  false,
+  'the film above the text uses the dimmer streak, not the full-white one',
+)
+
 assert.match(high, /::after\{[^}]*backdrop-filter:blur/, 'high softens the backdrop from the fill')
 assert.match(high, /::before\{[^}]*filter:url\(#dsp-water\)/, 'high wobbles the surface itself too')
 assert.equal(/::before\{[^}]*z-index:1/.test(high), false, 'high stays under the text')
@@ -163,3 +184,14 @@ assert.equal(
 )
 
 console.log('look assertions passed')
+
+// The base sheet lives outside the look region, so it is read straight from the
+// module source instead of being evaluated.
+function readBaseCss() {
+  const source = fs.readFileSync(new URL('../lib/client.js', import.meta.url), 'utf8')
+  const start = source.indexOf('const BASE_CSS = ') + 'const BASE_CSS = '.length
+  assert.ok(start > 0, 'BASE_CSS is findable in the module source')
+  const open = source.indexOf(String.fromCharCode(96), start)
+  const close = source.indexOf(String.fromCharCode(96), open + 1)
+  return source.slice(open, close)
+}
