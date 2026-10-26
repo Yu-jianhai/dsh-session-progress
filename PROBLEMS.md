@@ -132,3 +132,12 @@
 - **修法**：表单状态只由**一个** `draftFrom(cfg)` 生成；保存成功后直接 `setDraft(draftFrom(payload.config))`，用宿主刚回传的那份，不等下一次轮询。`const current = draft || draftFrom(config)` 也复用同一个函数，避免三处各写一份映射（顺带补上了遗漏的 `maxSessions`）。
 - **守卫**：`test/render.mjs` 第 6 段断言 `lib/client.js` 里存在 `setDraft(draftFrom(payload.config))`，以及设置卡里渲染出「恢复默认」按钮。
 - **教训**：`X || { …大段默认值… }` 这种写法一旦出现两次，就一定会有一处漏字段；把它抽成函数比"记得同步"可靠。
+
+## P-19 新加的开关"没效果"：一半的代码没重载
+
+- **现象**：设置里打开了新开关、点了保存，配额和界面都没变化。
+- **原因**：插件分两半跑。浏览器那半在每次页面加载时**重新下载**，宿主那半在 DSH 启动时**加载一次**。所以页面上的客户端可能已经是新版本（`/debug` 的 `clientTags` 里看得到新 tag），宿主却还是旧的：`sanitizeConfig` 不认识新字段，`POST /config` 时**直接丢掉**，`frame()` 里也不会带出来，于是"保存成功、毫无变化"。
+  快速判据：`curl -s http://127.0.0.1:<端口>/plugins/dsh-session-progress/config`，看返回的 `config` 里有没有这个字段。没有 = 宿主是旧代码。
+- **修法**：完全退出 DSH 再打开（关窗口不算，`hmr` 在本机是 disabled 的）。
+- **另一个真 bug（同一次修掉）**：`paintLook` 的 key 与 `routeLook` 的 `same()` 只覆盖了颜色/不透明度/样式/动画三项，漏了新加的 `rainbow`，即便宿主管了，帧回来也判定"没变"、不重绘；另外开关的 `onChange` 只 `setDraft` 没 `api.preview`，保存前根本没有预览。
+- **守卫**：`test/look.mjs` 断言「只翻 `rainbow` 的帧也要 paint」；`test/render.mjs` 第 7 段勾上复选框就断言 look 表里出现彩虹渐变。

@@ -319,6 +319,18 @@ assert.match(
   'a save adopts the config the host returned',
 )
 
+// 7) The rainbow switch is a paint change: ticking it must reach the sheet now.
+const rainbowBox = settingsNodes.find(
+  (node) => node.type === 'input' && node.props && node.props.type === 'checkbox' && node.props.checked === false,
+)
+assert.ok(rainbowBox, 'the settings card offers the experimental rainbow checkbox')
+rainbowBox.props.onChange({ target: { checked: true } })
+assert.match(
+  lookSheet().textContent,
+  /::after\{[^}]*repeating-linear-gradient\(100deg,#ff5f6d/,
+  'ticking it repaints the fill without waiting for a frame',
+)
+
 console.log('render assertions passed')
 // The store schedules its next poll, which would keep the runner alive forever.
 process.exit(0)

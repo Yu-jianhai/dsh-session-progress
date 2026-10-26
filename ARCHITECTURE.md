@@ -182,23 +182,23 @@ turn/end ──► closeTurn('completed') ──► p=100 ──► 淡出 ─�
 | `lib/client.js` | 1375 | `LogRow` | factory | function |
 | `lib/client.js` | 1447 | `renderEntry` | factory | function |
 | `lib/client.js` | 1458 | `routeLook` | factory | function |
-| `lib/client.js` | 1497 | `hueOf` | factory | function |
-| `lib/client.js` | 1510 | `groupBySession` | factory | function |
-| `lib/client.js` | 1540 | `groupHistory` | factory | function |
-| `lib/client.js` | 1577 | `renderColumn` | factory | function |
-| `lib/client.js` | 1623 | `useColumnFlip` | factory | function |
-| `lib/client.js` | 1662 | `HistorySegment` | factory | function |
-| `lib/client.js` | 1719 | `renderHistoryColumn` | factory | function |
-| `lib/client.js` | 1738 | `ColumnList` | factory | function |
-| `lib/client.js` | 1753 | `renderHistoryPlaceholder` | factory | function |
-| `lib/client.js` | 1782 | `renderColumns` | factory | function |
-| `lib/client.js` | 1786 | `emptyState` | factory | function |
-| `lib/client.js` | 1791 | `SettingsCard` | factory | function |
-| `lib/client.js` | 2236 | `SettingsPanel` | factory | function |
-| `lib/client.js` | 2248 | `ProgressLogCard` | factory | function |
-| `lib/client.js` | 2287 | `SampleLogPanel` | factory | function |
-| `lib/client.js` | 2348 | `SampleLogIcon` | factory | function |
-| `lib/client.js` | 2366 | `apply` | factory | function |
+| `lib/client.js` | 1498 | `hueOf` | factory | function |
+| `lib/client.js` | 1511 | `groupBySession` | factory | function |
+| `lib/client.js` | 1541 | `groupHistory` | factory | function |
+| `lib/client.js` | 1578 | `renderColumn` | factory | function |
+| `lib/client.js` | 1624 | `useColumnFlip` | factory | function |
+| `lib/client.js` | 1663 | `HistorySegment` | factory | function |
+| `lib/client.js` | 1720 | `renderHistoryColumn` | factory | function |
+| `lib/client.js` | 1739 | `ColumnList` | factory | function |
+| `lib/client.js` | 1754 | `renderHistoryPlaceholder` | factory | function |
+| `lib/client.js` | 1783 | `renderColumns` | factory | function |
+| `lib/client.js` | 1787 | `emptyState` | factory | function |
+| `lib/client.js` | 1792 | `SettingsCard` | factory | function |
+| `lib/client.js` | 2241 | `SettingsPanel` | factory | function |
+| `lib/client.js` | 2253 | `ProgressLogCard` | factory | function |
+| `lib/client.js` | 2292 | `SampleLogPanel` | factory | function |
+| `lib/client.js` | 2353 | `SampleLogIcon` | factory | function |
+| `lib/client.js` | 2371 | `apply` | factory | function |
 <!-- INDEX:END -->
 
 ## 绝不能做（每条都真炸过一次）

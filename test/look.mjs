@@ -227,6 +227,12 @@ const still = styleRules({ color: '#90AFFF', style: 'band', flowQuality: 'low', 
 assert.doesNotMatch(still, /animation:dsp-rainbow/, 'turning motion off leaves a still rainbow')
 assert.match(sheetCss({ color: '#90AFFF', style: 'band', flowQuality: 'low', rainbow: true }), /@keyframes dsp-rainbow\{from\{background-position:0 0\}to\{background-position:170\.592px 0\}\}/, 'the marquee keyframes are generated with the travel')
 
+// A saved rainbow is a different paint, so the next server frame must repaint.
+const baseLook = { color: '#90AFFF', opacity: 0.7, style: 'band', flow: true, flowSpeed: 'slow', flowQuality: 'low', rainbow: false }
+const painted = { painted: baseLook, serverLook: baseLook, previewing: false }
+const rainbowFrame = routeLook(painted, { ...baseLook, rainbow: true }, 'server')
+assert.equal(rainbowFrame.paint, true, 'a frame that only flips the rainbow still repaints')
+
 console.log('look assertions passed')
 
 // The base sheet lives outside the look region, so it is read straight from the
