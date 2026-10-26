@@ -154,6 +154,12 @@ assert.match(lookSheet.textContent, /#90AFFF/i, 'look sheet painted the default 
 // inside a column may shrink; the geometry itself is checked in
 // dev/history-scroll.html, this only stops the rule from being dropped.
 assert.match(base.textContent, /\.dsp-column-body > \*/)
+// One sample is one line and the raw JSON is behind a click (0.10.0): the
+// eight-field meta row plus a <pre> under every sample is what made the log
+// look like a dump.
+assert.match(base.textContent, /\.dsp-row-line/)
+assert.match(base.textContent, /\.dsp-row-detail/)
+assert.match(base.textContent, /\.dsp-row-note\s*\{[\s\S]*?text-overflow: ellipsis/)
 // The flowing highlight lives on ::before and must not outlive the band: it is
 // clipped to the filled width and its opacity rides --dsp-o, so a row that is
 // not running shows nothing at all.
