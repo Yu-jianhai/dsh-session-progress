@@ -7,6 +7,7 @@
  * no visible error. Only running the factory catches that class of bug.
  */
 import assert from 'node:assert/strict'
+import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { pathToFileURL } from 'node:url'
 
@@ -105,15 +106,20 @@ globalThis.matchMedia = () => ({
   addEventListener() {},
   removeEventListener() {},
 })
-globalThis.fetch = async () => ({
-  ok: true,
-  json: async () => ({
-    config: { color: '#90AFFF', opacity: 0.6, style: 'band', intervalMs: 30000 },
-    effort: 'off',
-    total: 0,
-    entries: [],
-  }),
-})
+const fetchUrls = []
+globalThis.fetch = async (url) => {
+  fetchUrls.push(String(url))
+  return {
+    ok: true,
+    json: async () => ({
+      version: 1,
+      config: { color: '#90AFFF', opacity: 0.6, style: 'band', intervalMs: 30000 },
+      effort: 'off',
+      total: 0,
+      entries: [],
+    }),
+  }
+}
 globalThis.EventSource = EventSourceStub
 const realError = console.error
 console.error = (...args) => {
@@ -179,6 +185,15 @@ assert.match(base.textContent, /\.dsp-column-body > \*/)
 // look like a dump.
 // The water filter must actually exist in the document, or `url(#dsp-water)`
 // silently paints nothing and the two higher qualities look like `low`.
+// A frozen panel is usually a frozen poll loop, so the request must carry the
+// client tag and a beat counter: `/debug` shows exactly where the loop stopped.
+// The panels only run inside a real React render, which this harness does not
+// perform, so the request shape is guarded at the source level instead.
+const clientSource = readFileSync(new URL('../lib/client.js', import.meta.url), 'utf8')
+assert.ok(clientSource.includes('&beat=${logStore.beat}&client=${CLIENT_TAG}'), 'the log poll identifies the client build')
+assert.ok(clientSource.includes('&applied=${logStore.applied}'), 'the log poll reports which version it holds')
+assert.ok(clientSource.includes('AbortSignal.timeout(LOG_FETCH_MS)'), 'a hung poll cannot stall the panel forever')
+assert.ok(clientSource.includes('logStore.inflightSince'), 'a hung request is forgiven by the watchdog')
 assert.ok(svgs.some((node) => String(node.innerHTML).includes('feDisplacementMap')), 'water filter injected')
 assert.ok(svgs.some((node) => String(node.innerHTML).includes('id="dsp-water"')), 'water filter is addressable')
 assert.match(base.textContent, /\.dsp-row-line/)

@@ -178,5 +178,29 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
   assert.equal(resume.get('session-dead'), 68, 'the resume point is the last number the turn reached')
 }
 
+// ---- a turn that dies without a turn/end must not linger as "active" ------
+{
+  const { ctx, handlers, routes } = makeCtx()
+  ctx.sessions.list = () => [fakeSession]
+  const fresh = await import(`${pathToFileURL(path.resolve('lib/index.js')).href}?reap=${Date.now()}`)
+  fresh.apply(ctx, { firstDelayMs: 20, intervalMs: 60000 })
+
+  handlers['session/event'](fakeSession, { type: 'turn/start', data: { turn: 1 } })
+  await sleep(260)
+  const before = await log(routes)
+  assert.ok((before.entries || []).length > 0, 'the sample is live while the turn runs')
+
+  // The conversation is closed: no turn/end ever lands, only agent/disposed.
+  handlers['agent/disposed']({ agent: { id: fakeSession.id } })
+
+  const after = await log(routes)
+  const live = (after.entries || []).filter((entry) => entry.sessionId === fakeSession.id)
+  assert.equal(live.length, 0, 'a disposed turn is out of the live list right away')
+  const reaped = (after.history || []).find((entry) => entry.sessionId === fakeSession.id)
+  assert.ok(reaped, 'it lands in history instead of vanishing')
+  assert.equal(reaped.phase, 'closed')
+  assert.equal(reaped.outcome, 'interrupted')
+}
+
 fs.rmSync(dir, { recursive: true, force: true })
 console.log('history assertions passed')

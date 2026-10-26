@@ -227,4 +227,22 @@ try {
   /* nothing to clean */
 }
 
+// ---- 5) the endpoint counts hits, so a frozen panel can be diagnosed -----
+{
+  const { ctx: diagCtx, handlers: diagHandlers, routes: diagRoutes } = makeCtx()
+  apply(diagCtx, { firstDelayMs: 20, intervalMs: 60000 })
+  diagHandlers['session/event'](fakeSession, { type: 'turn/start', data: { turn: 1 } })
+  await sleep(200)
+
+  const logUrl = '/plugins/dsh-session-progress/log?limit=5&client=test-client&beat=3&applied=1'
+  await call(diagRoutes, logUrl)
+  const after = JSON.parse((await call(diagRoutes, '/plugins/dsh-session-progress/debug')).body)
+  assert.ok(after.logHits >= 1, 'the endpoint counts its hits')
+  assert.ok(after.logHitAt, 'the endpoint remembers the last hit')
+  const reporter = (after.logApply || []).find((item) => item.tag === 'test-client')
+  assert.ok(reporter, 'a client that asks is remembered')
+  assert.equal(reporter.beat, 3)
+  assert.equal(reporter.applied, 1)
+}
+
 console.log('perf contract assertions passed')
