@@ -159,46 +159,46 @@ turn/end ──► closeTurn('completed') ──► p=100 ──► 淡出 ─�
 | `lib/client.js` | 113 | `styleCss` | factory | function |
 | `lib/client.js` | 139 | `hexToRgb` | factory | function |
 | `lib/client.js` | 236 | `gradient` | factory | const fn |
-| `lib/client.js` | 320 | `flowDecls` | factory | function |
-| `lib/client.js` | 354 | `sheetCss` | factory | function |
-| `lib/client.js` | 359 | `styleRules` | factory | function |
-| `lib/client.js` | 438 | `ensureWaterFilter` | factory | function |
-| `lib/client.js` | 1093 | `cssEscape` | factory | function |
-| `lib/client.js` | 1104 | `shortId` | factory | function |
-| `lib/client.js` | 1110 | `formatTokens` | factory | function |
-| `lib/client.js` | 1118 | `clockOf` | factory | function |
-| `lib/client.js` | 1127 | `useConfig` | factory | function |
-| `lib/client.js` | 1179 | `logNotify` | factory | const fn |
-| `lib/client.js` | 1183 | `logHidden` | factory | const fn |
-| `lib/client.js` | 1190 | `logFetch` | factory | const fn |
-| `lib/client.js` | 1240 | `logWantHistory` | factory | const fn |
-| `lib/client.js` | 1248 | `logMoreRows` | factory | const fn |
-| `lib/client.js` | 1253 | `logSchedule` | factory | const fn |
-| `lib/client.js` | 1266 | `logRefresh` | factory | const fn |
-| `lib/client.js` | 1272 | `logWatchVisibility` | factory | const fn |
-| `lib/client.js` | 1281 | `useLog` | factory | function |
-| `lib/client.js` | 1307 | `metaLine` | factory | function |
-| `lib/client.js` | 1349 | `routeWarning` | factory | function |
-| `lib/client.js` | 1375 | `LogRow` | factory | function |
-| `lib/client.js` | 1447 | `renderEntry` | factory | function |
-| `lib/client.js` | 1458 | `routeLook` | factory | function |
-| `lib/client.js` | 1498 | `hueOf` | factory | function |
-| `lib/client.js` | 1511 | `groupBySession` | factory | function |
-| `lib/client.js` | 1541 | `groupHistory` | factory | function |
-| `lib/client.js` | 1578 | `renderColumn` | factory | function |
-| `lib/client.js` | 1624 | `useColumnFlip` | factory | function |
-| `lib/client.js` | 1663 | `HistorySegment` | factory | function |
-| `lib/client.js` | 1720 | `renderHistoryColumn` | factory | function |
-| `lib/client.js` | 1739 | `ColumnList` | factory | function |
-| `lib/client.js` | 1754 | `renderHistoryPlaceholder` | factory | function |
-| `lib/client.js` | 1783 | `renderColumns` | factory | function |
-| `lib/client.js` | 1787 | `emptyState` | factory | function |
-| `lib/client.js` | 1792 | `SettingsCard` | factory | function |
-| `lib/client.js` | 2241 | `SettingsPanel` | factory | function |
-| `lib/client.js` | 2253 | `ProgressLogCard` | factory | function |
-| `lib/client.js` | 2292 | `SampleLogPanel` | factory | function |
-| `lib/client.js` | 2353 | `SampleLogIcon` | factory | function |
-| `lib/client.js` | 2371 | `apply` | factory | function |
+| `lib/client.js` | 329 | `flowDecls` | factory | function |
+| `lib/client.js` | 363 | `sheetCss` | factory | function |
+| `lib/client.js` | 368 | `styleRules` | factory | function |
+| `lib/client.js` | 465 | `ensureWaterFilter` | factory | function |
+| `lib/client.js` | 1120 | `cssEscape` | factory | function |
+| `lib/client.js` | 1131 | `shortId` | factory | function |
+| `lib/client.js` | 1137 | `formatTokens` | factory | function |
+| `lib/client.js` | 1145 | `clockOf` | factory | function |
+| `lib/client.js` | 1154 | `useConfig` | factory | function |
+| `lib/client.js` | 1206 | `logNotify` | factory | const fn |
+| `lib/client.js` | 1210 | `logHidden` | factory | const fn |
+| `lib/client.js` | 1217 | `logFetch` | factory | const fn |
+| `lib/client.js` | 1267 | `logWantHistory` | factory | const fn |
+| `lib/client.js` | 1275 | `logMoreRows` | factory | const fn |
+| `lib/client.js` | 1280 | `logSchedule` | factory | const fn |
+| `lib/client.js` | 1293 | `logRefresh` | factory | const fn |
+| `lib/client.js` | 1299 | `logWatchVisibility` | factory | const fn |
+| `lib/client.js` | 1308 | `useLog` | factory | function |
+| `lib/client.js` | 1334 | `metaLine` | factory | function |
+| `lib/client.js` | 1376 | `routeWarning` | factory | function |
+| `lib/client.js` | 1402 | `LogRow` | factory | function |
+| `lib/client.js` | 1474 | `renderEntry` | factory | function |
+| `lib/client.js` | 1485 | `routeLook` | factory | function |
+| `lib/client.js` | 1525 | `hueOf` | factory | function |
+| `lib/client.js` | 1538 | `groupBySession` | factory | function |
+| `lib/client.js` | 1568 | `groupHistory` | factory | function |
+| `lib/client.js` | 1605 | `renderColumn` | factory | function |
+| `lib/client.js` | 1651 | `useColumnFlip` | factory | function |
+| `lib/client.js` | 1690 | `HistorySegment` | factory | function |
+| `lib/client.js` | 1747 | `renderHistoryColumn` | factory | function |
+| `lib/client.js` | 1766 | `ColumnList` | factory | function |
+| `lib/client.js` | 1781 | `renderHistoryPlaceholder` | factory | function |
+| `lib/client.js` | 1810 | `renderColumns` | factory | function |
+| `lib/client.js` | 1814 | `emptyState` | factory | function |
+| `lib/client.js` | 1819 | `SettingsCard` | factory | function |
+| `lib/client.js` | 2268 | `SettingsPanel` | factory | function |
+| `lib/client.js` | 2280 | `ProgressLogCard` | factory | function |
+| `lib/client.js` | 2319 | `SampleLogPanel` | factory | function |
+| `lib/client.js` | 2380 | `SampleLogIcon` | factory | function |
+| `lib/client.js` | 2398 | `apply` | factory | function |
 <!-- INDEX:END -->
 
 ## 绝不能做（每条都真炸过一次）
@@ -234,7 +234,7 @@ turn/end ──► closeTurn('completed') ──► p=100 ──► 淡出 ─�
   }
   ```
   `FLOW_QUALITIES` 由这张表派生，**加一档只改这里**。`flowDecls(look)` 只做三件事：按 `pattern` 取渐变、按 `motion` 取动画名、按 `water`/`glass` 追加滤镜。
-- **实验 · 彩虹走马灯（0.17.0）**：`rainbow: true` 时 `styleRules` 在**填充层**追加 `background:${RAINBOW}` 与 `animation:dsp-rainbow <beat> linear infinite`（`RAINBOW_PERIOD = 168`、`RAINBOW_TRAVEL = 168 / sin(100°) = 170.592px`，和表面用的是同一套数学），并压一层 `box-shadow:inset 0 0 0 100px rgba(0,0,0,0.12)` 保证文字可读。`flow: false` 时只上静态彩虹、不加动画。`@keyframes dsp-rainbow` 由 `MOTION_CSS` 一并生成，所以永远和图上的周期一致。
+- **实验 · 彩虹走马灯（0.17.0，0.18.0 改成柔光版）**：`rainbow: true` 时 `styleRules` 在**填充层**追加 `background:${RAINBOW}` 与 `animation:dsp-rainbow <beat> linear infinite`（`RAINBOW_PERIOD = 168`、`RAINBOW_TRAVEL = 168 / sin(100°) = 170.592px`，和表面用的是同一套数学），并压一层 `box-shadow:inset 0 0 0 100px rgba(0,0,0,0.12)` 保证文字可读。`flow: false` 时只上静态彩虹、不加动画。`@keyframes dsp-rainbow` 由 `MOTION_CSS` 一并生成，所以永远和图上的周期一致。 0.18.0 起色标改成等距（不再用 `0 24px` 这种硬边写法，浏览器会在相邻色标之间插值），并把**表面层借来当光晕**：同一份 `RAINBOW` 加上 `filter:blur(6px) saturate(1.35)` 与 `mix-blend-mode:screen; opacity:0.45;`，再叠 `animation:dsp-rainbow` 与填充同步。这三条追加在 `layer`（表面声明数组）里、`flowDecls` 之后，所以后写的 `background-image` / `filter` / `animation` 会覆盖表面那套高光——这是有意的：打开彩虹时表面就从扫光换成光晕。
 - **可见才动（0.16.0）**：`BASE_CSS` 的 `::before` 是 `animation-play-state: paused`，`[data-row-key^="session:"].dsp-live::before` 才 `running`。`apply()` 里的 `startRowGating()` 用 `IntersectionObserver`（`rootMargin: 120px`）给行加 `dsp-live`，另用 `MutationObserver`（rAF 合并）重扫新增行——侧栏有虚拟化，行会被替换掉。`html[data-dsp-hidden] ::before{animation-play-state:paused}` 在 `visibilitychange` 时切换。**这两处都是"减载"，不改变任何视觉效果**。
 - **为什么位移没用 transform**：伪元素只有 `::before`/`::after` 两个，表面层同时要承担 `width: var(--dsp-p)` 与裁切。把位移改成 `transform` 就必须把裁切交给第三个元素（不存在），或在宿主行上加 mask（等于改宿主 DOM，AGENTS.md 禁止）。所以保留 `background-position`，靠"动画范围本来就限制在 `width` 内 + `clip-path` 裁外溢"来兜住成本。
 - **日志按需（0.16.0）**：`/log` 带 `since` 短路、`history=0` 不带历史；客户端一列只画 `logStore.rowLimit = 40` 条，多出「还有 N 条」；历史为空时渲染 `renderHistoryPlaceholder()`（「加载历史」按钮 → `logWantHistory()`）。

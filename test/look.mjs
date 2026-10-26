@@ -223,6 +223,14 @@ assert.match(rainbow, /::after\{[^}]*animation:dsp-rainbow 4\.4s linear infinite
 assert.match(rainbow, /::after\{[^}]*width:var\(--dsp-p,0%\)/, 'the shape is still driven by progress')
 assert.match(rainbow, /::after\{[^}]*box-shadow:inset 0 0 0 100px rgba\(0,0,0,0\.12\)/, 'a scrim keeps the text readable over the bright stops')
 assert.doesNotMatch(plain, /ff5f6d/, 'off by default')
+// Continuous hues, not six hard bands: even stops let the browser interpolate.
+assert.match(rainbow, /#ffa14f 24\.0px/, 'the hues are evenly spaced so they can blend')
+assert.doesNotMatch(rainbow, /#ff5f6d 0 24px/, 'no hard-edged band stops any more')
+// The bloom rides on the surface layer, screened so it reads as light.
+assert.match(rainbow, /::before\{[^}]*background-image:repeating-linear-gradient\(100deg,#ff5f6d/, 'the surface glows with the same hues')
+assert.match(rainbow, /::before\{[^}]*mix-blend-mode:screen/, 'the bloom adds light instead of milking the band')
+assert.match(rainbow, /::before\{[^}]*filter:blur\(6px\)/, 'the bloom is a blurred copy')
+
 const still = styleRules({ color: '#90AFFF', style: 'band', flowQuality: 'low', rainbow: true, flow: false })
 assert.doesNotMatch(still, /animation:dsp-rainbow/, 'turning motion off leaves a still rainbow')
 assert.match(sheetCss({ color: '#90AFFF', style: 'band', flowQuality: 'low', rainbow: true }), /@keyframes dsp-rainbow\{from\{background-position:0 0\}to\{background-position:170\.592px 0\}\}/, 'the marquee keyframes are generated with the travel')
