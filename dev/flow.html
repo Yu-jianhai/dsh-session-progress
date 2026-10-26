@@ -32,9 +32,11 @@
 /* A highlight that keeps travelling inside the filled part, so a band that has
    not moved for half a minute still looks alive. It rides on ::before rather
    than ::after because the fill already owns ::after; z-index -1 puts it over
-   the fill (-2) and both stay under the row's text. The sweep is a transform, so
-   it runs on the compositor instead of repainting the gradient sixty times a
-   second; the clip keeps it inside the filled width. */
+   the fill (-2) and both stay under the row's text.
+
+   The pattern is periodic and the animation shifts it by exactly one period, so
+   the loop has no seam and no dead time: something is always crossing the band,
+   regardless of how wide the band happens to be. */
 [data-row-key^="session:"]::before {
   content: "";
   position: absolute;
@@ -47,16 +49,18 @@
   clip-path: inset(0 calc(100% - var(--dsp-p, 0%)) 0 0);
   /* A dark tail followed by a bright edge: the tail is what makes the sweep
      readable on a light fill like #90AFFF (white alone washes out), the edge is
-     what makes it readable on a dark one. */
-  background: linear-gradient(
+     what makes it readable on a dark one. Period 122px along the 100deg axis,
+     i.e. 123.9px across the row -- the keyframes move by exactly that much. */
+  background-image: repeating-linear-gradient(
     100deg,
-    rgba(0, 0, 0, 0) 26%,
-    rgba(0, 0, 0, 0.22) 42%,
-    rgba(255, 255, 255, 1) 50%,
-    rgba(255, 255, 255, 0) 58%,
-    rgba(0, 0, 0, 0) 70%
+    rgba(0, 0, 0, 0) 0px,
+    rgba(0, 0, 0, 0.2) 44px,
+    rgba(255, 255, 255, 0.95) 54px,
+    rgba(255, 255, 255, 0) 64px,
+    rgba(0, 0, 0, 0) 122px
   );
-  animation: dsp-flow 3.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  background-repeat: repeat;
+  animation: dsp-flow 1.6s linear infinite;
   /* the highlight fades in and out with the band, never on its own */
   opacity: var(--dsp-o, 0);
   transition:
@@ -65,10 +69,10 @@
 }
 @keyframes dsp-flow {
   from {
-    transform: translateX(-108%);
+    background-position: 0 0;
   }
   to {
-    transform: translateX(108%);
+    background-position: 123.9px 0;
   }
 }
 @media (prefers-reduced-motion: reduce) {
