@@ -19,13 +19,9 @@ const waterStart = source.indexOf('const WATER_SVG = [')
 const waterEnd = source.indexOf("].join('')", waterStart) + "].join('')".length
 const water = new Function(`${source.slice(waterStart, waterEnd)}; return WATER_SVG`)()
 
-const cases = [
-  ['refract', '实验 · 折射（盖在文字上方）'],
-  ['low', '低 · 扁平高光'],
-  ['medium', '中等 · 水面波纹'],
-  ['high', '高级 · 水面 + 光学扭曲'],
-  ['off', '关'],
-]
+// Labels come from the same table the settings dropdown uses, so a preview can
+// never drift from what people actually see in the menu.
+const cases = look.FLOW_QUALITIES.map((item) => [item.id, item.label])
 
 const rows = cases
   .map(

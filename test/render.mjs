@@ -271,13 +271,13 @@ assert.ok(qualitySelect, 'the quality select is rendered')
 qualitySelect.props.onChange({ target: { value: 'refract' } })
 assert.match(
   lookSheet().textContent,
-  /::before\{[^}]*filter:url\(#dsp-water\)/,
-  'switching to the refract tier repaints the sheet immediately',
+  /::before\{[^}]*animation:dsp-cross/,
+  'switching to the experimental tier repaints the sheet immediately',
 )
 assert.match(
   lookSheet().textContent,
-  /::before\{[^}]*backdrop-filter:url\(#dsp-refract\)/,
-  'and the film that bends the text comes with it',
+  /::after\{[^}]*box-shadow:inset 1px -1px 1px/,
+  'and the glassy edge comes with it',
 )
 
 console.log('render assertions passed')

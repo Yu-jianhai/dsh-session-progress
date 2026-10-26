@@ -50,22 +50,38 @@ const refract = styleRules({ flowQuality: 'refract' })
 const high = styleRules({ flowQuality: 'high' })
 const low = styleRules({ flowQuality: 'low' })
 
-assert.match(refract, /::before\{[^}]*z-index:1;/, 'the film paints above the row text')
-assert.match(refract, /::before\{[^}]*filter:url\(#dsp-water\)/, 'the sweep wobbles like water too')
+// The experimental tier circulates a conic light instead of dragging a streak
+// across, and it stays *under* the text: its whole point is motion, so it must
+// not smear the title the way the old film did.
 assert.match(
   refract,
-  /::before\{[^}]*backdrop-filter:url\(#dsp-refract\)/,
-  'and it bends what is under it, with the dispersive filter',
+  /::before\{[^}]*background-image:repeating-linear-gradient[^;]*,repeating-linear-gradient/,
+  'the experimental tier paints two bands so they can move against each other',
+)
+assert.match(
+  refract,
+  /::before\{[^}]*animation:dsp-cross/,
+  'and it is driven by the cross keyframes, not the sweep ones',
 )
 assert.equal(
-  /::before\{[^}]*background-color/.test(refract),
+  /::before\{[^}]*z-index:1/.test(refract),
   false,
-  'no tint on the film: the chroma filter would screen-blend it into a lavender wash',
+  'the light stays under the text so the title never gets smeared',
+)
+assert.equal(
+  /::before\{[^}]*filter:url\(#/.test(refract),
+  false,
+  'the experimental tier does not need an SVG filter at all',
 )
 assert.equal(
   /::after\{[^}]*backdrop-filter/.test(refract),
   false,
-  'a film above the text must not also blur from the fill layer',
+  'nothing on this tier distorts what is under the band',
+)
+assert.match(
+  refract,
+  /::after\{[^}]*box-shadow:inset 1px -1px 1px/,
+  'the fill carries the embossed glass edge',
 )
 
 // 3c. Nothing may paint outside the band. A CSS filter is allowed to draw past
@@ -83,10 +99,10 @@ assert.match(
   /::before\{[^}]*clip-path:inset\(0 round 2px\)/,
   'the 3px underline clips to its own shorter shape',
 )
-assert.equal(
-  /rgba\(255,255,255,1\)/.test(refract),
-  false,
-  'the film above the text uses the dimmer streak, not the full-white one',
+assert.match(
+  baseCss,
+  /@keyframes dsp-cross[\s\S]{0,220}?268\.073px 0, -268\.073px 0/,
+  'the two bands travel one whole period in opposite directions',
 )
 
 assert.match(high, /::after\{[^}]*backdrop-filter:blur/, 'high softens the backdrop from the fill')

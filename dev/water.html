@@ -81,6 +81,17 @@
     background-position: 268.073px 0, 268.073px 0;
   }
 }
+/* The experimental tier slides two layers past each other inside one loop:
+   the light travels forward, the shade travels back. Both travel exactly one
+   period, so the pair is in phase again at the end and the loop has no seam. */
+@keyframes dsp-cross {
+  from {
+    background-position: 0 0, 0 0;
+  }
+  to {
+    background-position: 268.073px 0, -268.073px 0;
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   [data-row-key^="session:"]::after {
     transition: none;
@@ -628,39 +639,39 @@
   .row { width: 280px; }
   .row .title { position: relative; z-index: 1; font-size: 13px; }
   .row .time { position: relative; z-index: 1; margin-left: auto; font-size: 10px; color: #9aa3b2; }
-  [data-row-key="session:refract"]::after{inset-block:0;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:inherit;background:linear-gradient(90deg,#90AFFF 0%,#90AFFF calc(100% - 10px),rgba(144,175,255,0.35) 100%);}[data-row-key="session:refract"]::before{--dsp-flow-duration:5.9s;background-image:repeating-linear-gradient(100deg,rgba(0,0,0,0) 0px,rgba(0,0,0,0.16) 44px,rgba(255,255,255,0.8) 56px,rgba(255,255,255,0) 68px,rgba(0,0,0,0) 132px);filter:url(#dsp-water);backdrop-filter:url(#dsp-refract) blur(1px);z-index:1;}
-[data-row-key="session:low"]::after{inset-block:0;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:inherit;background:linear-gradient(90deg,#90AFFF 0%,#90AFFF calc(100% - 10px),rgba(144,175,255,0.35) 100%);}[data-row-key="session:low"]::before{--dsp-flow-duration:5.9s;background-image:repeating-linear-gradient(100deg,rgba(0,0,0,0) 0px,rgba(0,0,0,0.16) 46px,rgba(255,255,255,0.92) 56px,rgba(255,255,255,0) 64px,rgba(0,0,0,0) 132px),repeating-linear-gradient(100deg,rgba(255,255,255,0) 0px,rgba(255,255,255,0.10) 96px,rgba(132,170,255,0.12) 168px,rgba(255,255,255,0) 264px);}
-[data-row-key="session:medium"]::after{inset-block:0;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:inherit;background:linear-gradient(90deg,#90AFFF 0%,#90AFFF calc(100% - 10px),rgba(144,175,255,0.35) 100%);}[data-row-key="session:medium"]::before{--dsp-flow-duration:5.9s;background-image:repeating-linear-gradient(100deg,rgba(0,0,0,0) 0px,rgba(0,0,0,0.16) 46px,rgba(255,255,255,0.92) 56px,rgba(255,255,255,0) 64px,rgba(0,0,0,0) 132px),repeating-linear-gradient(100deg,rgba(255,255,255,0) 0px,rgba(255,255,255,0.10) 96px,rgba(132,170,255,0.12) 168px,rgba(255,255,255,0) 264px);filter:url(#dsp-water);}
+  [data-row-key="session:refract"]::after{inset-block:0;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:inherit;background:linear-gradient(90deg,#90AFFF 0%,#90AFFF calc(100% - 10px),rgba(144,175,255,0.35) 100%);box-shadow:inset 1px -1px 1px -0.5px rgba(255,255,255,0.75),inset -1px 1px 1px -0.5px rgba(0,0,0,0.35),inset 0 0 10px rgba(255,255,255,0.14);}[data-row-key="session:refract"]::before{--dsp-flow-duration:5.9s;background-image:repeating-linear-gradient(100deg,rgba(255,255,255,0) 0px,rgba(255,255,255,0.55) 34px,rgba(255,255,255,0) 92px,rgba(255,255,255,0) 268.073px),repeating-linear-gradient(100deg,rgba(0,0,0,0) 0px,rgba(0,0,0,0.3) 44px,rgba(0,0,0,0) 104px,rgba(0,0,0,0) 268.073px);animation:dsp-cross var(--dsp-flow-duration, 10.5s) linear infinite;filter:blur(1.5px) saturate(1.06);}
 [data-row-key="session:high"]::after{inset-block:0;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:inherit;background:linear-gradient(90deg,#90AFFF 0%,#90AFFF calc(100% - 10px),rgba(144,175,255,0.35) 100%);backdrop-filter:blur(1.6px) saturate(1.45) brightness(1.06);}[data-row-key="session:high"]::before{--dsp-flow-duration:5.9s;background-image:repeating-linear-gradient(100deg,rgba(0,0,0,0) 0px,rgba(0,0,0,0.16) 46px,rgba(255,255,255,0.92) 56px,rgba(255,255,255,0) 64px,rgba(0,0,0,0) 132px),repeating-linear-gradient(100deg,rgba(255,255,255,0) 0px,rgba(255,255,255,0.10) 96px,rgba(132,170,255,0.12) 168px,rgba(255,255,255,0) 264px);filter:url(#dsp-water);backdrop-filter:blur(1.6px) saturate(1.45) brightness(1.06);}
+[data-row-key="session:medium"]::after{inset-block:0;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:inherit;background:linear-gradient(90deg,#90AFFF 0%,#90AFFF calc(100% - 10px),rgba(144,175,255,0.35) 100%);}[data-row-key="session:medium"]::before{--dsp-flow-duration:5.9s;background-image:repeating-linear-gradient(100deg,rgba(0,0,0,0) 0px,rgba(0,0,0,0.16) 46px,rgba(255,255,255,0.92) 56px,rgba(255,255,255,0) 64px,rgba(0,0,0,0) 132px),repeating-linear-gradient(100deg,rgba(255,255,255,0) 0px,rgba(255,255,255,0.10) 96px,rgba(132,170,255,0.12) 168px,rgba(255,255,255,0) 264px);filter:url(#dsp-water);}
+[data-row-key="session:low"]::after{inset-block:0;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:inherit;background:linear-gradient(90deg,#90AFFF 0%,#90AFFF calc(100% - 10px),rgba(144,175,255,0.35) 100%);}[data-row-key="session:low"]::before{--dsp-flow-duration:5.9s;background-image:repeating-linear-gradient(100deg,rgba(0,0,0,0) 0px,rgba(0,0,0,0.16) 46px,rgba(255,255,255,0.92) 56px,rgba(255,255,255,0) 64px,rgba(0,0,0,0) 132px),repeating-linear-gradient(100deg,rgba(255,255,255,0) 0px,rgba(255,255,255,0.10) 96px,rgba(132,170,255,0.12) 168px,rgba(255,255,255,0) 264px);}
 [data-row-key="session:off"]::after{inset-block:0;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:inherit;background:linear-gradient(90deg,#90AFFF 0%,#90AFFF calc(100% - 10px),rgba(144,175,255,0.35) 100%);}[data-row-key="session:off"]::before{animation:none;opacity:0;}
 </style>
-<svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden"><defs><filter id="dsp-water" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency="0.006 0.022" numOctaves="2" seed="7" result="warp"/><feDisplacementMap in="SourceGraphic" in2="warp" scale="18" xChannelSelector="R" yChannelSelector="G"/><feGaussianBlur stdDeviation="0.45"/></filter><filter id="dsp-refract" x="-15%" y="-30%" width="130%" height="160%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency="0.005 0.020" numOctaves="3" seed="11" result="warp"/><feDisplacementMap in="SourceGraphic" in2="warp" scale="16" xChannelSelector="R" yChannelSelector="G"/></filter></filter></defs></svg>
+<svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden"><defs><filter id="dsp-water" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency="0.006 0.022" numOctaves="2" seed="7" result="warp"/><feDisplacementMap in="SourceGraphic" in2="warp" scale="18" xChannelSelector="R" yChannelSelector="G"/><feGaussianBlur stdDeviation="0.45"/></filter></defs></svg>
 
   <div class="case">
-    <div class="cap">实验 · 折射（盖在文字上方）</div>
+    <div class="cap">实验 · 流光</div>
     <div class="row" data-row-key="session:refract" style="--dsp-p:78%;--dsp-o:0.7">
-      <span class="title">实验 · 折射（盖在文字上方）</span>
+      <span class="title">实验 · 流光</span>
       <span class="time">3 分钟前</span>
     </div>
   </div>
   <div class="case">
-    <div class="cap">低 · 扁平高光</div>
-    <div class="row" data-row-key="session:low" style="--dsp-p:78%;--dsp-o:0.7">
-      <span class="title">低 · 扁平高光</span>
-      <span class="time">3 分钟前</span>
-    </div>
-  </div>
-  <div class="case">
-    <div class="cap">中等 · 水面波纹</div>
-    <div class="row" data-row-key="session:medium" style="--dsp-p:78%;--dsp-o:0.7">
-      <span class="title">中等 · 水面波纹</span>
-      <span class="time">3 分钟前</span>
-    </div>
-  </div>
-  <div class="case">
-    <div class="cap">高级 · 水面 + 光学扭曲</div>
+    <div class="cap">高级 · 水波 + 光学</div>
     <div class="row" data-row-key="session:high" style="--dsp-p:78%;--dsp-o:0.7">
-      <span class="title">高级 · 水面 + 光学扭曲</span>
+      <span class="title">高级 · 水波 + 光学</span>
+      <span class="time">3 分钟前</span>
+    </div>
+  </div>
+  <div class="case">
+    <div class="cap">中等 · 水波</div>
+    <div class="row" data-row-key="session:medium" style="--dsp-p:78%;--dsp-o:0.7">
+      <span class="title">中等 · 水波</span>
+      <span class="time">3 分钟前</span>
+    </div>
+  </div>
+  <div class="case">
+    <div class="cap">低 · 扁平</div>
+    <div class="row" data-row-key="session:low" style="--dsp-p:78%;--dsp-o:0.7">
+      <span class="title">低 · 扁平</span>
       <span class="time">3 分钟前</span>
     </div>
   </div>
@@ -673,30 +684,30 @@
   </div>
 
   <div class="case" style="zoom:2.6">
-    <div class="cap">实验 · 折射（盖在文字上方）</div>
+    <div class="cap">实验 · 流光</div>
     <div class="row" data-row-key="session:refract" style="--dsp-p:78%;--dsp-o:0.7">
-      <span class="title">实验 · 折射（盖在文字上方）</span>
+      <span class="title">实验 · 流光</span>
       <span class="time">3 分钟前</span>
     </div>
   </div>
   <div class="case" style="zoom:2.6">
-    <div class="cap">低 · 扁平高光</div>
-    <div class="row" data-row-key="session:low" style="--dsp-p:78%;--dsp-o:0.7">
-      <span class="title">低 · 扁平高光</span>
-      <span class="time">3 分钟前</span>
-    </div>
-  </div>
-  <div class="case" style="zoom:2.6">
-    <div class="cap">中等 · 水面波纹</div>
-    <div class="row" data-row-key="session:medium" style="--dsp-p:78%;--dsp-o:0.7">
-      <span class="title">中等 · 水面波纹</span>
-      <span class="time">3 分钟前</span>
-    </div>
-  </div>
-  <div class="case" style="zoom:2.6">
-    <div class="cap">高级 · 水面 + 光学扭曲</div>
+    <div class="cap">高级 · 水波 + 光学</div>
     <div class="row" data-row-key="session:high" style="--dsp-p:78%;--dsp-o:0.7">
-      <span class="title">高级 · 水面 + 光学扭曲</span>
+      <span class="title">高级 · 水波 + 光学</span>
+      <span class="time">3 分钟前</span>
+    </div>
+  </div>
+  <div class="case" style="zoom:2.6">
+    <div class="cap">中等 · 水波</div>
+    <div class="row" data-row-key="session:medium" style="--dsp-p:78%;--dsp-o:0.7">
+      <span class="title">中等 · 水波</span>
+      <span class="time">3 分钟前</span>
+    </div>
+  </div>
+  <div class="case" style="zoom:2.6">
+    <div class="cap">低 · 扁平</div>
+    <div class="row" data-row-key="session:low" style="--dsp-p:78%;--dsp-o:0.7">
+      <span class="title">低 · 扁平</span>
       <span class="time">3 分钟前</span>
     </div>
   </div>

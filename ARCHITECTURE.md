@@ -156,42 +156,42 @@ turn/end ──► closeTurn('completed') ──► p=100 ──► 淡出 ─�
 | `lib/index.js` | 1447 | `configHandler` | apply | const fn |
 | `lib/client.js` | 33 | `openLogPanel` | factory | function |
 | `lib/client.js` | 113 | `hexToRgb` | factory | function |
-| `lib/client.js` | 262 | `flowDecls` | factory | function |
-| `lib/client.js` | 298 | `styleRules` | factory | function |
-| `lib/client.js` | 360 | `ensureWaterFilter` | factory | function |
-| `lib/client.js` | 1001 | `cssEscape` | factory | function |
-| `lib/client.js` | 1012 | `shortId` | factory | function |
-| `lib/client.js` | 1018 | `formatTokens` | factory | function |
-| `lib/client.js` | 1026 | `clockOf` | factory | function |
-| `lib/client.js` | 1035 | `useConfig` | factory | function |
-| `lib/client.js` | 1083 | `logNotify` | factory | const fn |
-| `lib/client.js` | 1087 | `logHidden` | factory | const fn |
-| `lib/client.js` | 1094 | `logFetch` | factory | const fn |
-| `lib/client.js` | 1142 | `logSchedule` | factory | const fn |
-| `lib/client.js` | 1155 | `logRefresh` | factory | const fn |
-| `lib/client.js` | 1161 | `logWatchVisibility` | factory | const fn |
-| `lib/client.js` | 1170 | `useLog` | factory | function |
-| `lib/client.js` | 1196 | `metaLine` | factory | function |
-| `lib/client.js` | 1238 | `routeWarning` | factory | function |
-| `lib/client.js` | 1264 | `LogRow` | factory | function |
-| `lib/client.js` | 1336 | `renderEntry` | factory | function |
-| `lib/client.js` | 1347 | `routeLook` | factory | function |
-| `lib/client.js` | 1386 | `hueOf` | factory | function |
-| `lib/client.js` | 1399 | `groupBySession` | factory | function |
-| `lib/client.js` | 1429 | `groupHistory` | factory | function |
-| `lib/client.js` | 1466 | `renderColumn` | factory | function |
-| `lib/client.js` | 1498 | `useColumnFlip` | factory | function |
-| `lib/client.js` | 1537 | `HistorySegment` | factory | function |
-| `lib/client.js` | 1594 | `renderHistoryColumn` | factory | function |
-| `lib/client.js` | 1613 | `ColumnList` | factory | function |
-| `lib/client.js` | 1625 | `renderColumns` | factory | function |
-| `lib/client.js` | 1629 | `emptyState` | factory | function |
-| `lib/client.js` | 1634 | `SettingsCard` | factory | function |
-| `lib/client.js` | 1998 | `SettingsPanel` | factory | function |
-| `lib/client.js` | 2010 | `ProgressLogCard` | factory | function |
-| `lib/client.js` | 2049 | `SampleLogPanel` | factory | function |
-| `lib/client.js` | 2110 | `SampleLogIcon` | factory | function |
-| `lib/client.js` | 2128 | `apply` | factory | function |
+| `lib/client.js` | 270 | `flowDecls` | factory | function |
+| `lib/client.js` | 302 | `styleRules` | factory | function |
+| `lib/client.js` | 364 | `ensureWaterFilter` | factory | function |
+| `lib/client.js` | 1016 | `cssEscape` | factory | function |
+| `lib/client.js` | 1027 | `shortId` | factory | function |
+| `lib/client.js` | 1033 | `formatTokens` | factory | function |
+| `lib/client.js` | 1041 | `clockOf` | factory | function |
+| `lib/client.js` | 1050 | `useConfig` | factory | function |
+| `lib/client.js` | 1098 | `logNotify` | factory | const fn |
+| `lib/client.js` | 1102 | `logHidden` | factory | const fn |
+| `lib/client.js` | 1109 | `logFetch` | factory | const fn |
+| `lib/client.js` | 1157 | `logSchedule` | factory | const fn |
+| `lib/client.js` | 1170 | `logRefresh` | factory | const fn |
+| `lib/client.js` | 1176 | `logWatchVisibility` | factory | const fn |
+| `lib/client.js` | 1185 | `useLog` | factory | function |
+| `lib/client.js` | 1211 | `metaLine` | factory | function |
+| `lib/client.js` | 1253 | `routeWarning` | factory | function |
+| `lib/client.js` | 1279 | `LogRow` | factory | function |
+| `lib/client.js` | 1351 | `renderEntry` | factory | function |
+| `lib/client.js` | 1362 | `routeLook` | factory | function |
+| `lib/client.js` | 1401 | `hueOf` | factory | function |
+| `lib/client.js` | 1414 | `groupBySession` | factory | function |
+| `lib/client.js` | 1444 | `groupHistory` | factory | function |
+| `lib/client.js` | 1481 | `renderColumn` | factory | function |
+| `lib/client.js` | 1513 | `useColumnFlip` | factory | function |
+| `lib/client.js` | 1552 | `HistorySegment` | factory | function |
+| `lib/client.js` | 1609 | `renderHistoryColumn` | factory | function |
+| `lib/client.js` | 1628 | `ColumnList` | factory | function |
+| `lib/client.js` | 1640 | `renderColumns` | factory | function |
+| `lib/client.js` | 1644 | `emptyState` | factory | function |
+| `lib/client.js` | 1649 | `SettingsCard` | factory | function |
+| `lib/client.js` | 2013 | `SettingsPanel` | factory | function |
+| `lib/client.js` | 2025 | `ProgressLogCard` | factory | function |
+| `lib/client.js` | 2064 | `SampleLogPanel` | factory | function |
+| `lib/client.js` | 2125 | `SampleLogIcon` | factory | function |
+| `lib/client.js` | 2143 | `apply` | factory | function |
 <!-- INDEX:END -->
 
 ## 绝不能做（每条都真炸过一次）
@@ -233,8 +233,10 @@ turn/end ──► closeTurn('completed') ──► p=100 ──► 淡出 ─�
   - 速度由 `--dsp-flow-duration` 决定（慢 10.5s / 标准 5.9s / 快 3s）。表面的 `opacity` 绑 `--dsp-o`，色带淡出时一起淡出。
   - `underline` 样式把表面压成 3px 贴底（`inset-block:auto 3px;height:3px;border-radius:2px`），并把裁剪覆盖成 `clip-path:inset(0 round 2px)`。水膜档（`above`）另用暗一档的 `SWEEP_FILM`（峰值 0.8），全白峰值会把盖在下面的文字洗掉。宿主自己也会用 `::before`/`::after`（拖拽指示线），只在拖拽瞬间生效，平时不冲突。
 - **水波质感（0.11.0，参数照 32px 真实行高调的）**：`#dsp-water` 是 `feTurbulence`（`baseFrequency="0.006 0.022"`、`numOctaves="2"`）→ `feDisplacementMap scale="18"` → `feGaussianBlur 0.45`。第一版 `0.014 0.045 / scale 5` 在 32px 行上几乎看不见，`0.008 0.028 / scale 13` 仍偏弱；改参数就去 `dev/water.html` 看。注入失败（没有 `document.createElementNS`）时返回 `null`、整套滤镜不生效，但**不能抛错** —— 否则 render 停摆、色带整条消失（0.4.2 的形态）。
-- **实验性折射（0.12.0 起，0.13.0 改成盖在文字上方）**：`refract` 档表面 = `filter:url(#dsp-water)`（自己那道光在抖）+ `backdrop-filter:url(#dsp-refract) blur(1px)`（把底下的字和背景一起扭）+ `z-index:1`。`#dsp-refract` 只有 `feTurbulence`（`0.005 0.020` / `numOctaves="3"` / `seed="11"`）→ `feDisplacementMap scale="16"`，**没有色散**。
-  - 试过带色散的版本（`feOffset ∓1.4` 抽红/抽蓝 + `feBlend screen`）：滤镜会把那一层重新合成，**整条色带被 screen 成淡紫**，文字一起发紫；把 `filter` 单独关掉立刻恢复蓝，确认就是它。所以色散不叠在整层上 —— 试验页 `dev/probe-backdrop.html`、`dev/water.html` 都在，改参数先看它们。
+- **实验 · 流光（0.14.0）**：`refract` 档不再扭内容，改成「表面自己在流」。两层背景各走一个方向 —— `CROSS_LIGHT`（亮带，周期 268.073px）向右、`CROSS_SHADE`（暗带，同周期）向左，`@keyframes dsp-cross` 一次把 `background-position` 从 `0 0, 0 0` 推到 `268.073px 0, -268.073px 0`；两个周期都正好等于位移，所以首尾同相、没有接缝。表面再加 `filter: blur(1.5px) saturate(1.06)` 让它软，填充层加 `box-shadow: inset 1px -1px 1px -0.5px rgba(255,255,255,.75)` 之类的**浮雕边**（上沿提亮、下沿压暗），合起来是「液态玻璃」那种质感。
+  - 为什么不做水膜了：0.13.0 那版把整个表面盖到文字上方，用 `backdrop-filter` 把字形一起位移。效果是真的，但字被抹糊，而且整层重新合成很贵。现在这档**永远在文字下面**，靠两层反向平移制造"流动"，不碰任何内容。
+  - 参考来源：用户给的 Gitee 仓库（液态玻璃 / launch start 那几页）—— 它们的共同手法是「大块模糊光斑 + 深色内阴影浮雕 + 父级裁切」，这里取的是前两条，裁切交给已有的 `clip-path`。
+  - 试过但放弃的：锥形光（`conic-gradient` + 动画 `--dsp-spin` 角度）在 32px 扁条上会被拉成一整片亮，读不出「在转」；色散版会把整层 screen 成淡紫。
 - **列里的东西不许缩**：`.dsp-column-body` 在面板里是有明确高度的 flex 容器，子项默认 `flex-shrink: 1` 会把自己压扁而不是溢出——历史列曾因此把 12 轮压成 39px 且永远不出滚动条（0.8.1）。`.dsp-column-body > *` 与 `.dsp-seg-body > *` 都锁 `flex: none`；几何用 `dev/history-scroll.html` 的 `window.__probe()` 量。
 
 ## 轮次与历史（0.6.0 新增）
