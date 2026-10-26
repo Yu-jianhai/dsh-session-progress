@@ -20,6 +20,7 @@ const waterEnd = source.indexOf("].join('')", waterStart) + "].join('')".length
 const water = new Function(`${source.slice(waterStart, waterEnd)}; return WATER_SVG`)()
 
 const cases = [
+  ['refract', '实验 · 折射（盖在文字上方）'],
   ['low', '低 · 扁平高光'],
   ['medium', '中等 · 水面波纹'],
   ['high', '高级 · 水面 + 光学扭曲'],

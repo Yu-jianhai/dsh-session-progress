@@ -154,43 +154,44 @@ turn/end ──► closeTurn('completed') ──► p=100 ──► 淡出 ─�
 | `lib/index.js` | 1410 | `ensureRoute` | apply | const fn |
 | `lib/index.js` | 1429 | `configPayload` | apply | const fn |
 | `lib/index.js` | 1447 | `configHandler` | apply | const fn |
-| `lib/client.js` | 90 | `hexToRgb` | factory | function |
-| `lib/client.js` | 127 | `flowDecls` | factory | function |
-| `lib/client.js` | 141 | `styleRules` | factory | function |
-| `lib/client.js` | 194 | `ensureWaterFilter` | factory | function |
-| `lib/client.js` | 819 | `cssEscape` | factory | function |
-| `lib/client.js` | 830 | `shortId` | factory | function |
-| `lib/client.js` | 836 | `formatTokens` | factory | function |
-| `lib/client.js` | 844 | `clockOf` | factory | function |
-| `lib/client.js` | 853 | `useConfig` | factory | function |
-| `lib/client.js` | 901 | `logNotify` | factory | const fn |
-| `lib/client.js` | 905 | `logHidden` | factory | const fn |
-| `lib/client.js` | 912 | `logFetch` | factory | const fn |
-| `lib/client.js` | 960 | `logSchedule` | factory | const fn |
-| `lib/client.js` | 973 | `logRefresh` | factory | const fn |
-| `lib/client.js` | 979 | `logWatchVisibility` | factory | const fn |
-| `lib/client.js` | 988 | `useLog` | factory | function |
-| `lib/client.js` | 1014 | `metaLine` | factory | function |
-| `lib/client.js` | 1056 | `routeWarning` | factory | function |
-| `lib/client.js` | 1082 | `LogRow` | factory | function |
-| `lib/client.js` | 1154 | `renderEntry` | factory | function |
-| `lib/client.js` | 1165 | `routeLook` | factory | function |
-| `lib/client.js` | 1204 | `hueOf` | factory | function |
-| `lib/client.js` | 1217 | `groupBySession` | factory | function |
-| `lib/client.js` | 1247 | `groupHistory` | factory | function |
-| `lib/client.js` | 1284 | `renderColumn` | factory | function |
-| `lib/client.js` | 1316 | `useColumnFlip` | factory | function |
-| `lib/client.js` | 1355 | `HistorySegment` | factory | function |
-| `lib/client.js` | 1412 | `renderHistoryColumn` | factory | function |
-| `lib/client.js` | 1431 | `ColumnList` | factory | function |
-| `lib/client.js` | 1443 | `renderColumns` | factory | function |
-| `lib/client.js` | 1447 | `emptyState` | factory | function |
-| `lib/client.js` | 1452 | `SettingsCard` | factory | function |
-| `lib/client.js` | 1816 | `SettingsPanel` | factory | function |
-| `lib/client.js` | 1821 | `ProgressLogCard` | factory | function |
-| `lib/client.js` | 1840 | `SampleLogPanel` | factory | function |
-| `lib/client.js` | 1901 | `SampleLogIcon` | factory | function |
-| `lib/client.js` | 1919 | `apply` | factory | function |
+| `lib/client.js` | 33 | `openLogPanel` | factory | function |
+| `lib/client.js` | 113 | `hexToRgb` | factory | function |
+| `lib/client.js` | 248 | `flowDecls` | factory | function |
+| `lib/client.js` | 284 | `styleRules` | factory | function |
+| `lib/client.js` | 343 | `ensureWaterFilter` | factory | function |
+| `lib/client.js` | 978 | `cssEscape` | factory | function |
+| `lib/client.js` | 989 | `shortId` | factory | function |
+| `lib/client.js` | 995 | `formatTokens` | factory | function |
+| `lib/client.js` | 1003 | `clockOf` | factory | function |
+| `lib/client.js` | 1012 | `useConfig` | factory | function |
+| `lib/client.js` | 1060 | `logNotify` | factory | const fn |
+| `lib/client.js` | 1064 | `logHidden` | factory | const fn |
+| `lib/client.js` | 1071 | `logFetch` | factory | const fn |
+| `lib/client.js` | 1119 | `logSchedule` | factory | const fn |
+| `lib/client.js` | 1132 | `logRefresh` | factory | const fn |
+| `lib/client.js` | 1138 | `logWatchVisibility` | factory | const fn |
+| `lib/client.js` | 1147 | `useLog` | factory | function |
+| `lib/client.js` | 1173 | `metaLine` | factory | function |
+| `lib/client.js` | 1215 | `routeWarning` | factory | function |
+| `lib/client.js` | 1241 | `LogRow` | factory | function |
+| `lib/client.js` | 1313 | `renderEntry` | factory | function |
+| `lib/client.js` | 1324 | `routeLook` | factory | function |
+| `lib/client.js` | 1363 | `hueOf` | factory | function |
+| `lib/client.js` | 1376 | `groupBySession` | factory | function |
+| `lib/client.js` | 1406 | `groupHistory` | factory | function |
+| `lib/client.js` | 1443 | `renderColumn` | factory | function |
+| `lib/client.js` | 1475 | `useColumnFlip` | factory | function |
+| `lib/client.js` | 1514 | `HistorySegment` | factory | function |
+| `lib/client.js` | 1571 | `renderHistoryColumn` | factory | function |
+| `lib/client.js` | 1590 | `ColumnList` | factory | function |
+| `lib/client.js` | 1602 | `renderColumns` | factory | function |
+| `lib/client.js` | 1606 | `emptyState` | factory | function |
+| `lib/client.js` | 1611 | `SettingsCard` | factory | function |
+| `lib/client.js` | 1975 | `SettingsPanel` | factory | function |
+| `lib/client.js` | 1987 | `ProgressLogCard` | factory | function |
+| `lib/client.js` | 2026 | `SampleLogPanel` | factory | function |
+| `lib/client.js` | 2087 | `SampleLogIcon` | factory | function |
+| `lib/client.js` | 2105 | `apply` | factory | function |
 <!-- INDEX:END -->
 
 ## 绝不能做（每条都真炸过一次）
@@ -204,9 +205,10 @@ turn/end ──► closeTurn('completed') ──► p=100 ──► 淡出 ─�
 7. **`ensureRoute` 失败时不要死循环重试** —— `warnedNoCatalog` 只警告一次，然后等下一个 `intervalMs`。
 8. **`push()` 写完一帧必须更新 `lastFrameText`** —— 它是新订阅者的首帧，若不认作「当前帧」，下一个 tick 会把同一内容当变化再发一遍（0.7.0 的 `perf-contract` 就是靠这条抓住的）。
 9. **不要把方向判断搬回宿主** —— 曾经用 `max(上次, 新值)` 兜抖动，结果模型永远无法承认「上次估高了」；提示里给了上一次的数字，就该让它自己定。
-10. **缺失滤镜时不要输出 `filter: url(#…)`** —— 浏览器会整条不画。必须先 `filtersReady` 判断（0.12.0 的兜底）。
-11. **高光的宽度不要用 `clip-path` 跟随** —— 与填充的 `width` 过渡不同步，会表现成「瞬移」（0.12.0 改成两层同用 `width`）。
+10. **缺失滤镜时不要输出 `filter: url(#…)`** —— 浏览器会整条不画。`SURFACES` 表之外还要看 `filtersReady`（0.12.0 的兜底，0.13.0 抽进表里）。
+11. **表面的宽度不要用 `clip-path` 跟随** —— 与填充的 `width` 过渡不同步就是「瞬移」；两层必须同用一个 `width` 与同一条缓动（0.13.0 的 `SURFACES` 表）。
 12. **`titleOf` 的缓存必须有 `seq`** —— 没有序号就分不清「旧标题」和「新标题」，测试里的假会话 id 相同、无 `seq`，缓存一开就串味。
+13. **`above: true` 的档位必须给 `tint`** —— 水层盖到文字上方却不铺一层淡底色，字会被 `backdrop-filter` 糊成看不清；tint 是"能扭到"与"还能读"之间的那条线。
 
 ## 样式系统（改外观只看这块）
 
@@ -214,18 +216,25 @@ turn/end ──► closeTurn('completed') ──► p=100 ──► 淡出 ─�
 - 结构规则只写 `::after` 的定位与 `transition`；颜色、厚度、裁切都在 `styleRules(look)` 返回的规则里。
 - 深色判定按权威信号：`body[data-ds-dark-theme]` → `html[data-ds-theme-source]` → `computedStyle.colorScheme` → class/data-* → 背景亮度 → `matchMedia`。
 - `routeLook(state, incoming, source)` 是纯函数：`server` 帧不能盖掉用户正在预览的样式（0.4.1 的 bug）。
-- **色带的两个伪元素分工**：`::after` 是填充本体（宽度 `--dsp-p`，颜色/形状来自 look 表，`z-index: -2`）；`::before` 是流动高光（`z-index: -1`，压在上面），**自己也用 `width: var(--dsp-p, 0%)` + `border-radius: inherit`**，不再用 `clip-path` 去裁（0.12.0）。
-  为什么改：填充用 `width` 过渡、高光用 `clip-path: inset()` 过渡，两个属性的插值采样不同步，进度落地那一瞬间高光会错位成「瞬移/突变」（用户三次反馈的那个）。同一个 `width` + 同一条缓动，两层的进退在物理上就不可能脱节；圆角交给 `border-radius` 自己裁，0.11.1 的方角问题也不会回来。`segments` 样式保留自己的 `clip-path`，那是填充形状，不是高光。
-  高光是一条 **200px 周期的平铺斜纹**，用 `@keyframes dsp-flow` 平移 `background-position`（0.9.3 从 transform 改过来的：transform 方案里元素只有 100% 宽，走一趟就空半天，看起来像「只在进度变化时闪一下」）。一周期正好等于跨行位移，所以接缝对齐、**任何宽度、任何时刻都有至少一道在带内**。代价是每帧重画这条小渐变。
-  速度由 `--dsp-flow-duration` 决定（慢 10.5s / 标准 5.9s / 快 3s），写在 look 表里。
-  `underline` 样式把自己的高光改回 3px 贴底（`height:3px;border-radius:2px`），否则一条全高光带会悬在细线上方；它的 `opacity` 绑 `--dsp-o`，色带淡出时高光一起淡出。宿主自己也会用 `::before`/`::after`（拖拽放置指示线），但只在拖拽瞬间生效，平时不冲突。
-- **水波质感（0.11.0）**：`::before` 的 `filter: url(#dsp-water)` 指向插件自己注入 `<body>` 的 `<svg id="dsp-water-defs">`，里面是 `feTurbulence`（`baseFrequency="0.006 0.022"`、`numOctaves="2"`）→ `feDisplacementMap`（`scale="18"`，取 R/G 通道）→ `feGaussianBlur`（`stdDeviation="0.45"`）。`high` 另外加 `backdrop-filter: blur(1.6px) saturate(1.45) brightness(1.06)`。
-  - **参数不能想当然**：第一版 `baseFrequency 0.014 0.045 / scale 5` 在 32px 高的行上几乎看不见；`0.008 0.028 / scale 13` 仍偏弱；`0.006 0.022 / scale 18` 才在 2.6 倍放大对照图里清楚看出边缘摆动。改参数就去 `dev/water.html` 看。
-  - 生成水波规则的是纯函数 `flowDecls(look)`；`styleRules` 现在同时输出 `::after` 与 `::before` 两组规则，`underline` 的 3px 特例仍写在后者里。
-  - 注入失败（没有 `document.createElementNS`）时返回 `null`、整套滤镜不生效，但**不能抛错** —— 否则整个 render 停摆，色带会整条消失（就是 0.4.2 那个 bug 的形态）。
-- **实验性折射（0.12.0）**：`flowQuality: 'refract'` 时 `::before` 改用 `filter: url(#dsp-refract)`，那个滤镜在同一张 `<svg>` 里：`feTurbulence`（`baseFrequency="0.005 0.020"`、`numOctaves="3"`、`seed="11"`）→ `feDisplacementMap scale="24"` → 一份 `feOffset dx=-1.3` 抽红、一份 `dx=+1.3` 抽蓝（`feColorMatrix` 只留单通道）→ 两次 `feBlend mode="screen"` → `feGaussianBlur 0.22`。色散彩边就是这么来的：位移量大的地方，红蓝两份对不齐。比 `high` 更贵，所以标注「实验」，卡就往 `medium` 退。
-  - **引用了不存在的滤镜会让元素整个不绘制**（不是"没效果"，是"没有"）。`apply()` 里 `ensureWaterFilter()` 失败时置 `filtersReady = false`，`flowDecls` 随即只输出时长、不输出 `filter`，色带退回纯色高光。
-- **一条采样只用一行**（0.10.0）：`.dsp-row > button.dsp-row-line` 是五列网格（时间 56 / 进度 34 / 涨跌 26 / 阶段名 flex / 耗时），点开才渲染 `.dsp-row-detail`（模型、档位、token 拆分、`raw`）。之前的 `.dsp-item` 每行是带边框的卡片 + 八字段 wrap + `<pre>` 原文，是「看起来杂乱」的主因。列表密度靠 `.dsp-row + .dsp-row` 的发丝线分隔，不靠间隙。
+- **两层分工（0.13.0 重构后）**：`::after` 是**填充**（宽度 `--dsp-p`，颜色/形状来自 `LOOK_STYLES`）；`::before` 是**表面**（会移动、会扭曲的那一层）。行为不写在 CSS 里，写在 `SURFACES` 表里：
+  ```js
+  SURFACES = {
+    off:     { motion:false, water:false, glass:false, above:false, tint:0 },
+    low:     { motion:true,  water:false, glass:false, above:false, tint:0 },
+    medium:  { motion:true,  water:true,  glass:false, above:false, tint:0 },
+    high:    { motion:true,  water:true,  glass:true,  above:false, tint:0 },
+    refract: { motion:true,  water:true,  glass:true,  above:true,  tint:0, strong:true },
+  }
+  ```
+  `FLOW_QUALITIES` 由这张表派生，**加一档只改这里**。纯函数 `flowDecls(look)` 只读表产声明：`motion` 决定 animation；`water` 给表面加 `filter:url(#dsp-water)`；`glass` 决定 `backdrop-filter`（`above` 时用 `url(#dsp-refract)`）；`above` 让表面 `z-index:1` 盖到文字上方。
+  - `above` 是这一版的关键：伪元素默认 `z-index:-1` 在文字下面，`backdrop-filter` 只能扭曲**它下面**的东西（行背景），扭不到文字。要让「整条色带把它下面的内容也扭一下」，水层必须盖到文字上方。tint 现在是 0：试过给水膜铺一层淡底色，结果被下面的色散滤镜 screen 成淡紫色。
+  - **不再用 `clip-path` 跟随**：填充走 `width` 过渡、表面走 `clip-path: inset()` 过渡，两个属性的插值采样不同步，进度落地那一瞬间就错位成「瞬移/突变」（用户三次反馈）。现在两层同用 `width: var(--dsp-p)` + 同一条缓动，物理上不可能脱节；圆角交给 `border-radius: inherit`。`segments` 保留自己的 `clip-path`，那是填充形状、不是表面。
+  - **无缝靠整数倍**：薄纹周期 132px、宽纹 264px（沿 100deg 轴），一次平移 `SWEEP_TRAVEL = 264 / sin(100°) ≈ 268.073px`，同是两个周期的整数倍 → 首尾同相，任何宽度都没接缝；`@keyframes dsp-flow` 一次移动两层（`background-position` 两个逗号段）。
+  - 速度由 `--dsp-flow-duration` 决定（慢 10.5s / 标准 5.9s / 快 3s）。表面的 `opacity` 绑 `--dsp-o`，色带淡出时一起淡出。
+  - `underline` 样式把表面压成 3px 贴底（`inset-block:auto 3px;height:3px;border-radius:2px`）。宿主自己也会用 `::before`/`::after`（拖拽指示线），只在拖拽瞬间生效，平时不冲突。
+- **水波质感（0.11.0，参数照 32px 真实行高调的）**：`#dsp-water` 是 `feTurbulence`（`baseFrequency="0.006 0.022"`、`numOctaves="2"`）→ `feDisplacementMap scale="18"` → `feGaussianBlur 0.45`。第一版 `0.014 0.045 / scale 5` 在 32px 行上几乎看不见，`0.008 0.028 / scale 13` 仍偏弱；改参数就去 `dev/water.html` 看。注入失败（没有 `document.createElementNS`）时返回 `null`、整套滤镜不生效，但**不能抛错** —— 否则 render 停摆、色带整条消失（0.4.2 的形态）。
+- **实验性折射（0.12.0 起，0.13.0 改成盖在文字上方）**：`refract` 档表面 = `filter:url(#dsp-water)`（自己那道光在抖）+ `backdrop-filter:url(#dsp-refract) blur(1px)`（把底下的字和背景一起扭）+ `z-index:1`。`#dsp-refract` 只有 `feTurbulence`（`0.005 0.020` / `numOctaves="3"` / `seed="11"`）→ `feDisplacementMap scale="16"`，**没有色散**。
+  - 试过带色散的版本（`feOffset ∓1.4` 抽红/抽蓝 + `feBlend screen`）：滤镜会把那一层重新合成，**整条色带被 screen 成淡紫**，文字一起发紫；把 `filter` 单独关掉立刻恢复蓝，确认就是它。所以色散不叠在整层上 —— 试验页 `dev/probe-backdrop.html`、`dev/water.html` 都在，改参数先看它们。
 - **列里的东西不许缩**：`.dsp-column-body` 在面板里是有明确高度的 flex 容器，子项默认 `flex-shrink: 1` 会把自己压扁而不是溢出——历史列曾因此把 12 轮压成 39px 且永远不出滚动条（0.8.1）。`.dsp-column-body > *` 与 `.dsp-seg-body > *` 都锁 `flex: none`；几何用 `dev/history-scroll.html` 的 `window.__probe()` 量。
 
 ## 轮次与历史（0.6.0 新增）

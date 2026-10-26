@@ -43,23 +43,38 @@ assert.ok(styleRules({ style: 'underline' }).includes('height:3px'))
 assert.ok(styleRules({ style: 'stripe' }).includes('repeating-linear-gradient(45deg'))
 assert.ok(styleRules({ style: 'glow' }).includes('box-shadow'))
 assert.ok(styleRules({ style: 'segments' }).includes('clip-path'))
-// 3b. The experimental refraction option must reach the stylesheet, and the
-// plainer qualities must not be dragged along with it.
+// 3b. Surfaces. Each quality is a row in one table, and the two layers have
+// to agree: the fill carries the glass when the surface sits *under* the text,
+// the surface carries it when it sits *over* the text (the experimental film).
+const refract = styleRules({ flowQuality: 'refract' })
+const high = styleRules({ flowQuality: 'high' })
+const low = styleRules({ flowQuality: 'low' })
+
+assert.match(refract, /::before\{[^}]*z-index:1;/, 'the film paints above the row text')
+assert.match(refract, /::before\{[^}]*filter:url\(#dsp-water\)/, 'the sweep wobbles like water too')
 assert.match(
-  styleRules({ flowQuality: 'refract' }),
-  /::before\{--dsp-flow-duration:[^}]*filter:url\(#dsp-refract\)/,
-  'refract points the sweep at its own filter',
+  refract,
+  /::before\{[^}]*backdrop-filter:url\(#dsp-refract\)/,
+  'and it bends what is under it, with the dispersive filter',
 )
 assert.equal(
-  styleRules({ flowQuality: 'refract' }).includes('#dsp-water'),
+  /::before\{[^}]*background-color/.test(refract),
   false,
-  'refract does not also pull in the plain water filter',
+  'no tint on the film: the chroma filter would screen-blend it into a lavender wash',
 )
 assert.equal(
-  styleRules({ flowQuality: 'low' }).includes('filter:url('),
+  /::after\{[^}]*backdrop-filter/.test(refract),
   false,
-  'low stays flat',
+  'a film above the text must not also blur from the fill layer',
 )
+
+assert.match(high, /::after\{[^}]*backdrop-filter:blur/, 'high softens the backdrop from the fill')
+assert.match(high, /::before\{[^}]*filter:url\(#dsp-water\)/, 'high wobbles the surface itself too')
+assert.equal(/::before\{[^}]*z-index:1/.test(high), false, 'high stays under the text')
+
+assert.equal(low.includes('filter:url('), false, 'low stays flat')
+assert.equal(low.includes('backdrop-filter'), false, 'low has no glass at all')
+assert.match(low, /::before\{[^}]*background-image:repeating-linear-gradient/, 'low still moves')
 
 assert.ok(
   styleRules({ style: 'segments' }).includes('width:100%'),

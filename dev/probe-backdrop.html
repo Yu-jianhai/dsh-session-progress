@@ -1,0 +1,53 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>backdrop-filter url() probe</title>
+<style>
+  body { margin: 0; background: #17181c; color: #e6e8eb; font: 14px/1.4 system-ui, sans-serif; }
+  .wrap { padding: 24px; }
+  .row { position: relative; isolation: isolate; height: 32px; width: 520px; display: flex; align-items: center;
+         gap: 0; padding-inline-start: 8px; border-radius: 8px; margin: 10px 0; }
+  .row .title { flex: 1; font-size: 14px; margin: 0 6px 0 4px; }
+  .row .time { font-size: 10px; color: #8b8f96; flex: none; }
+  .row::after { content: ""; position: absolute; z-index: -1; inset-block: 0; inset-inline-start: 0;
+                width: 62%; border-radius: inherit; background: rgba(144, 175, 255, 0.35); }
+  /* A: plain tint (what we ship today for refract-ish) */
+  .a::after { background: rgba(144,175,255,.35); }
+  /* B: backdrop blur */
+  .b::after { backdrop-filter: blur(2.5px) saturate(1.6) brightness(1.08); }
+  /* C: backdrop svg filter */
+  .c::after { backdrop-filter: url(#dsp-water); }
+  /* D: backdrop blur + svg */
+  .d::after { backdrop-filter: blur(1.5px) url(#dsp-water); }
+  h4 { margin: 18px 0 4px; font-size: 12px; color: #9aa0a8; font-weight: 600; letter-spacing: .04em; }
+  #probe { margin-top: 18px; font: 12px/1.6 ui-monospace, monospace; color: #9aa0a8; white-space: pre; }
+</style>
+<svg width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true">
+  <filter id="dsp-water" x="-15%" y="-30%" width="130%" height="160%" color-interpolation-filters="sRGB">
+    <feTurbulence type="fractalNoise" baseFrequency="0.006 0.022" numOctaves="2" seed="7" result="warp"/>
+    <feDisplacementMap in="SourceGraphic" in2="warp" scale="18" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</svg>
+<div class="wrap">
+  <h4>A · 现在的做法（只染色，不扭曲）</h4>
+  <div class="row a"><span class="title">读一遍 EAMS 课表</span><span class="time">3 分钟前</span></div>
+  <h4>B · backdrop-filter: blur + saturate</h4>
+  <div class="row b"><span class="title">读一遍 EAMS 课表</span><span class="time">3 分钟前</span></div>
+  <h4>C · backdrop-filter: url(#dsp-water)</h4>
+  <div class="row c"><span class="title">读一遍 EAMS 课表</span><span class="time">3 分钟前</span></div>
+  <h4>D · backdrop-filter: blur + url()</h4>
+  <div class="row d"><span class="title">读一遍 EAMS 课表</span><span class="time">3 分钟前</span></div>
+  <div id="probe"></div>
+</div>
+<script>
+  window.__probe = () => {
+    const out = [];
+    for (const key of ['a', 'b', 'c', 'd']) {
+      const row = document.querySelector('.' + key);
+      const css = getComputedStyle(row, '::after');
+      out.push(key + ': backdrop=' + css.backdropFilter + ' | filter=' + css.filter);
+    }
+    // does Chromium accept url() here at all? computed style tells us.
+    return out.join('\n');
+  };
+  document.getElementById('probe').textContent = window.__probe();
+</script>

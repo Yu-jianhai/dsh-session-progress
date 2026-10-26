@@ -113,7 +113,8 @@ globalThis.document = {
     hasAttribute: () => false,
   },
   createElement: (tag) => Object.assign(styleNode(), { tagName: tag }),
-  createElementNS: (ns, tag) => Object.assign(styleNode(), { tagName: tag, children: [] }),
+  createElementNS: (ns, tag) =>
+    Object.assign(styleNode(), { tagName: tag, children: [], style: {}, attrs: {} }),
   getElementById: () => null,
   addEventListener() {},
   querySelector: () => null,
@@ -230,6 +231,20 @@ for (const { component } of registrations) {
 for (const name of ['dsp-panel-sub', 'dsp-columns', 'dsp-row-line', 'dsp-history', 'dsp-seg']) {
   assert.equal(classes.has(name), true, `${name} is rendered once data arrives`)
 }
+
+// 3) The settings card is a signpost, not a second copy of the log. If rows
+// ever come back here the two lists drift apart again, so it is asserted.
+assert.equal(classes.has('dsp-loglink'), true, 'the settings card offers a link to the log')
+const settingsOnly = new Set()
+const settingsRegistration = registrations.find((item) => item.spec.name === 'plugins.bundle.config')
+for (const node of render(settingsRegistration.component)) {
+  for (const name of String(node.props.className || '').split(/\s+/)) {
+    if (name) settingsOnly.add(name)
+  }
+}
+assert.equal(settingsOnly.has('dsp-loglink'), true, 'the settings slot renders the link card')
+assert.equal(settingsOnly.has('dsp-row-line'), false, 'the settings slot no longer renders log rows')
+assert.equal(settingsOnly.has('dsp-columns'), false, 'nor the two-column log layout')
 
 assert.equal(sheets.length >= 3, true, 'the base, look and dynamic stylesheets are injected')
 

@@ -51,21 +51,11 @@
   border-radius: inherit;
   z-index: -1;
   pointer-events: none;
-  /* A dark tail followed by a bright edge: the tail is what makes the sweep
-     readable on a light fill like #90AFFF (white alone washes out), the edge is
-     what makes it readable on a dark one. Period 200px along the 100deg axis,
-     i.e. 203.1px across the row -- the keyframes move by exactly that much.
-     Only ~20px of each 200px is visible, so the gap between two passes is long
-     enough to read as "occasional" rather than "strobing". */
-  background-image: repeating-linear-gradient(
-    100deg,
-    rgba(0, 0, 0, 0) 0px,
-    rgba(0, 0, 0, 0.2) 56px,
-    rgba(255, 255, 255, 0.95) 66px,
-    rgba(255, 255, 255, 0) 76px,
-    rgba(0, 0, 0, 0) 200px
-  );
+  /* The pattern itself lives in the look sheet's flowDecls(), because which
+     pattern it is -- flat, water, or the experimental film -- is a property of
+     the selected surface, not of the layout. Only the plumbing stays here. */
   background-repeat: repeat;
+  background-size: auto;
   /* duration comes from the look sheet so the speed setting can change it */
   animation: dsp-flow var(--dsp-flow-duration, 3.6s) linear infinite;
   /* the highlight fades in and out with the band, never on its own */
@@ -74,12 +64,15 @@
     width 900ms cubic-bezier(0.22, 0.61, 0.36, 1),
     opacity 280ms ease;
 }
+/* One travel == one period of every layer in the pattern, so the loop is
+   seamless. 268.073px = 264px along the 100deg axis / sin(100deg); both the
+   132px and the 264px gradients come back to phase at that distance. */
 @keyframes dsp-flow {
   from {
-    background-position: 0 0;
+    background-position: 0 0, 0 0;
   }
   to {
-    background-position: 203.09px 0;
+    background-position: 268.073px 0, 268.073px 0;
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -91,6 +84,23 @@
     transition: none;
     opacity: 0;
   }
+}
+.dsp-loglink { gap: 6px; }
+.dsp-loglink-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--dsw-alias-label-primary, inherit);
+}
+.dsp-loglink-body {
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--dsw-alias-label-secondary, #9aa0a8);
+}
+.dsp-loglink-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 .dsp-card {
   display: flex;
@@ -612,13 +622,21 @@
   .row { width: 280px; }
   .row .title { position: relative; z-index: 1; font-size: 13px; }
   .row .time { position: relative; z-index: 1; margin-left: auto; font-size: 10px; color: #9aa3b2; }
-  [data-row-key="session:low"]::after{inset-block:0;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:inherit;background:linear-gradient(90deg,#90AFFF 0%,#90AFFF calc(100% - 10px),rgba(144,175,255,0.35) 100%);}[data-row-key="session:low"]::before{--dsp-flow-duration:5.9s;}
-[data-row-key="session:medium"]::after{inset-block:0;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:inherit;background:linear-gradient(90deg,#90AFFF 0%,#90AFFF calc(100% - 10px),rgba(144,175,255,0.35) 100%);}[data-row-key="session:medium"]::before{--dsp-flow-duration:5.9s;filter:url(#dsp-water);}
-[data-row-key="session:high"]::after{inset-block:0;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:inherit;background:linear-gradient(90deg,#90AFFF 0%,#90AFFF calc(100% - 10px),rgba(144,175,255,0.35) 100%);}[data-row-key="session:high"]::before{--dsp-flow-duration:5.9s;filter:url(#dsp-water);backdrop-filter:blur(1.6px) saturate(1.45) brightness(1.06);}
+  [data-row-key="session:refract"]::after{inset-block:0;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:inherit;background:linear-gradient(90deg,#90AFFF 0%,#90AFFF calc(100% - 10px),rgba(144,175,255,0.35) 100%);}[data-row-key="session:refract"]::before{--dsp-flow-duration:5.9s;background-image:repeating-linear-gradient(100deg,rgba(0,0,0,0) 0px,rgba(0,0,0,0.22) 44px,rgba(255,255,255,1) 56px,rgba(255,255,255,0) 66px,rgba(0,0,0,0) 132px);filter:url(#dsp-water);backdrop-filter:url(#dsp-refract) blur(1px);z-index:1;}
+[data-row-key="session:low"]::after{inset-block:0;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:inherit;background:linear-gradient(90deg,#90AFFF 0%,#90AFFF calc(100% - 10px),rgba(144,175,255,0.35) 100%);}[data-row-key="session:low"]::before{--dsp-flow-duration:5.9s;background-image:repeating-linear-gradient(100deg,rgba(0,0,0,0) 0px,rgba(0,0,0,0.16) 46px,rgba(255,255,255,0.92) 56px,rgba(255,255,255,0) 64px,rgba(0,0,0,0) 132px),repeating-linear-gradient(100deg,rgba(255,255,255,0) 0px,rgba(255,255,255,0.10) 96px,rgba(132,170,255,0.12) 168px,rgba(255,255,255,0) 264px);}
+[data-row-key="session:medium"]::after{inset-block:0;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:inherit;background:linear-gradient(90deg,#90AFFF 0%,#90AFFF calc(100% - 10px),rgba(144,175,255,0.35) 100%);}[data-row-key="session:medium"]::before{--dsp-flow-duration:5.9s;background-image:repeating-linear-gradient(100deg,rgba(0,0,0,0) 0px,rgba(0,0,0,0.16) 46px,rgba(255,255,255,0.92) 56px,rgba(255,255,255,0) 64px,rgba(0,0,0,0) 132px),repeating-linear-gradient(100deg,rgba(255,255,255,0) 0px,rgba(255,255,255,0.10) 96px,rgba(132,170,255,0.12) 168px,rgba(255,255,255,0) 264px);filter:url(#dsp-water);}
+[data-row-key="session:high"]::after{inset-block:0;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:inherit;background:linear-gradient(90deg,#90AFFF 0%,#90AFFF calc(100% - 10px),rgba(144,175,255,0.35) 100%);backdrop-filter:blur(1.6px) saturate(1.45) brightness(1.06);}[data-row-key="session:high"]::before{--dsp-flow-duration:5.9s;background-image:repeating-linear-gradient(100deg,rgba(0,0,0,0) 0px,rgba(0,0,0,0.16) 46px,rgba(255,255,255,0.92) 56px,rgba(255,255,255,0) 64px,rgba(0,0,0,0) 132px),repeating-linear-gradient(100deg,rgba(255,255,255,0) 0px,rgba(255,255,255,0.10) 96px,rgba(132,170,255,0.12) 168px,rgba(255,255,255,0) 264px);filter:url(#dsp-water);backdrop-filter:blur(1.6px) saturate(1.45) brightness(1.06);}
 [data-row-key="session:off"]::after{inset-block:0;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:inherit;background:linear-gradient(90deg,#90AFFF 0%,#90AFFF calc(100% - 10px),rgba(144,175,255,0.35) 100%);}[data-row-key="session:off"]::before{animation:none;opacity:0;}
 </style>
-<svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden"><defs><filter id="dsp-water" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency="0.006 0.022" numOctaves="2" seed="7" result="warp"/><feDisplacementMap in="SourceGraphic" in2="warp" scale="18" xChannelSelector="R" yChannelSelector="G"/><feGaussianBlur stdDeviation="0.45"/></filter><filter id="dsp-refract" x="-15%" y="-30%" width="130%" height="160%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency="0.005 0.020" numOctaves="3" seed="11" result="warp"/><feDisplacementMap in="SourceGraphic" in2="warp" scale="24" xChannelSelector="R" yChannelSelector="G" result="bent"/><feOffset in="bent" dx="-1.7" dy="0" result="left"/><feColorMatrix in="left" type="matrix" values="1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0" result="red"/><feOffset in="bent" dx="1.7" dy="0" result="right"/><feColorMatrix in="right" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0" result="blue"/><feBlend in="bent" in2="red" mode="screen" result="mix"/><feBlend in="mix" in2="blue" mode="screen"/></filter></defs></svg>
+<svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden"><defs><filter id="dsp-water" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency="0.006 0.022" numOctaves="2" seed="7" result="warp"/><feDisplacementMap in="SourceGraphic" in2="warp" scale="18" xChannelSelector="R" yChannelSelector="G"/><feGaussianBlur stdDeviation="0.45"/></filter><filter id="dsp-refract" x="-15%" y="-30%" width="130%" height="160%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency="0.005 0.020" numOctaves="3" seed="11" result="warp"/><feDisplacementMap in="SourceGraphic" in2="warp" scale="16" xChannelSelector="R" yChannelSelector="G"/></filter></filter></defs></svg>
 
+  <div class="case">
+    <div class="cap">实验 · 折射（盖在文字上方）</div>
+    <div class="row" data-row-key="session:refract" style="--dsp-p:78%;--dsp-o:0.7">
+      <span class="title">实验 · 折射（盖在文字上方）</span>
+      <span class="time">3 分钟前</span>
+    </div>
+  </div>
   <div class="case">
     <div class="cap">低 · 扁平高光</div>
     <div class="row" data-row-key="session:low" style="--dsp-p:78%;--dsp-o:0.7">
@@ -648,6 +666,13 @@
     </div>
   </div>
 
+  <div class="case" style="zoom:2.6">
+    <div class="cap">实验 · 折射（盖在文字上方）</div>
+    <div class="row" data-row-key="session:refract" style="--dsp-p:78%;--dsp-o:0.7">
+      <span class="title">实验 · 折射（盖在文字上方）</span>
+      <span class="time">3 分钟前</span>
+    </div>
+  </div>
   <div class="case" style="zoom:2.6">
     <div class="cap">低 · 扁平高光</div>
     <div class="row" data-row-key="session:low" style="--dsp-p:78%;--dsp-o:0.7">
