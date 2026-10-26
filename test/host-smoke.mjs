@@ -266,6 +266,16 @@ assert.equal(
   'only the post-interjection sample is marked',
 )
 
+// ---- 同屏数量：帧里带 limit，最多就那么几条 --------------------------------
+const capConfig = JSON.parse((await postConfig({ maxSessions: 2 })).body)
+assert.equal(capConfig.config.maxSessions, 2, 'the visible-band cap is configurable')
+const capped = JSON.parse((await call('/plugins/dsh-session-progress/snapshot')).body)
+assert.equal(capped.limit, 2, 'the frame announces the cap so the client can honour it')
+assert.ok(
+  !Array.isArray(capped.sessions) || capped.sessions.length <= 2,
+  'the frame never carries more bands than the cap',
+)
+
 // A message on an idle session is a new turn, not an interjection.
 handlers['session/event']({ id: 'session-1' }, { type: 'turn/end', data: { turn: 2, reason: { kind: 'completed' } } })
 await sleep(50)

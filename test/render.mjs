@@ -280,6 +280,18 @@ assert.match(
   'and the glassy edge comes with it',
 )
 
+// 5) The visible-band cap is a real control, not a hard-coded three.
+const capSelect = settingsNodes.find(
+  (node) =>
+    node.type === 'select' &&
+    flatten(node.children).some((child) => child && child.props && child.props.value === '10'),
+)
+assert.ok(capSelect, 'the settings card offers a "how many bands at once" select')
+assert.ok(
+  flatten(capSelect.children).some((child) => child && child.props && child.props.value === '1'),
+  'and it goes all the way down to a single band',
+)
+
 console.log('render assertions passed')
 // The store schedules its next poll, which would keep the runner alive forever.
 process.exit(0)
