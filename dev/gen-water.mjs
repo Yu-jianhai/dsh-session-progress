@@ -13,7 +13,7 @@ const lookEnd = source.indexOf('// #endregion look')
 const lookBody = source.slice(lookStart, lookEnd)
   .replace(/\/\/ [^\n]*\n/g, '\n')
 
-const factory = new Function(`${lookBody}; return { styleRules, FLOW_QUALITIES, FLOW_SPEEDS }`)
+const factory = new Function(`${lookBody}; return { styleRules, sheetCss, MOTION_CSS, FLOW_QUALITIES, FLOW_SPEEDS }`)
 const look = factory()
 const waterStart = source.indexOf('const WATER_SVG = [')
 const waterEnd = source.indexOf("].join('')", waterStart) + "].join('')".length
@@ -22,7 +22,10 @@ const water = new Function(`${source.slice(waterStart, waterEnd)}; return WATER_
 // Labels come from the same table the settings dropdown uses, so a preview can
 // never drift from what people actually see in the menu.
 const cases = look.FLOW_QUALITIES.map((item) => [item.id, item.label])
+cases.push(['rainbow', '实验 · 彩虹走马灯（叠在「低」档表面上）'])
 
+// One extra row shows the experimental rainbow, since it is a paint switch
+// rather than a surface tier and would otherwise have no preview at all.
 const rows = cases
   .map(
     ([quality, label]) => `
@@ -50,16 +53,26 @@ const zoomed = cases
   )
   .join('')
 
+const QUALITY_OF = (key) => (key === 'rainbow' ? 'low' : key)
 const rules = cases
-  .map(([quality]) => look.styleRules({ color: '#90AFFF', opacity: 0.7, style: 'band', flow: true, flowSpeed: 'normal', flowQuality: quality })
-    .replaceAll('[data-row-key^="session:"]', `[data-row-key="session:${quality}"]`))
+  .map(([key]) => look.styleRules({
+    color: '#90AFFF',
+    opacity: 0.7,
+    style: 'band',
+    flow: true,
+    flowSpeed: 'normal',
+    flowQuality: QUALITY_OF(key),
+    rainbow: key === 'rainbow',
+  }).replaceAll('[data-row-key^="session:"]', `[data-row-key="session:${key}"]`))
   .join('\n')
+
 
 const html = `<!doctype html>
 <meta charset="utf-8">
 <title>flow quality</title>
 <style>
   ${base}
+  ${look.MOTION_CSS}
   body { margin: 0; padding: 20px; background: #17181c; color: #e6e8eb; font: 13px/1.5 system-ui, "Segoe UI", sans-serif; }
   .case { margin-bottom: 18px; display: inline-block; margin-right: 26px; vertical-align: top; }
   .cap { font-size: 12px; color: #9aa3b2; margin-bottom: 6px; }

@@ -215,6 +215,18 @@ assert.equal(
   true,
 )
 
+// ---- 实验 · 彩虹走马灯：只换填充的漆，不改形状 ----------------------------
+const rainbow = styleRules({ color: '#90AFFF', style: 'band', flowQuality: 'low', rainbow: true, flow: true, flowSpeed: 'normal' })
+const plain = styleRules({ color: '#90AFFF', style: 'band', flowQuality: 'low', flow: true })
+assert.match(rainbow, /::after\{[^}]*repeating-linear-gradient\(100deg,#ff5f6d/, 'the fill becomes a rainbow')
+assert.match(rainbow, /::after\{[^}]*animation:dsp-rainbow 4\.4s linear infinite/, 'and it walks at the chosen speed')
+assert.match(rainbow, /::after\{[^}]*width:var\(--dsp-p,0%\)/, 'the shape is still driven by progress')
+assert.match(rainbow, /::after\{[^}]*box-shadow:inset 0 0 0 100px rgba\(0,0,0,0\.12\)/, 'a scrim keeps the text readable over the bright stops')
+assert.doesNotMatch(plain, /ff5f6d/, 'off by default')
+const still = styleRules({ color: '#90AFFF', style: 'band', flowQuality: 'low', rainbow: true, flow: false })
+assert.doesNotMatch(still, /animation:dsp-rainbow/, 'turning motion off leaves a still rainbow')
+assert.match(sheetCss({ color: '#90AFFF', style: 'band', flowQuality: 'low', rainbow: true }), /@keyframes dsp-rainbow\{from\{background-position:0 0\}to\{background-position:170\.592px 0\}\}/, 'the marquee keyframes are generated with the travel')
+
 console.log('look assertions passed')
 
 // The base sheet lives outside the look region, so it is read straight from the

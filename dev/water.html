@@ -70,15 +70,27 @@
   /* Name and duration come from the look sheet: which motion a surface uses is
      a property of that surface, and the speed setting only changes the clock. */
   animation: none;
+  /* Rows announce themselves through IntersectionObserver: only what can be
+     seen keeps animating. A sidebar keeps dozens of rows mounted; animating
+     all of them to show one is pure waste. */
+  animation-play-state: paused;
   /* the highlight fades in and out with the band, never on its own */
   opacity: var(--dsp-o, 0);
   transition:
     width var(--dsp-progress-ms) var(--dsp-progress-ease),
     opacity var(--dsp-fade-ms) ease;
 }
+[data-row-key^="session:"].dsp-live::before {
+  animation-play-state: running;
+}
+/* Nothing on screen, nothing to animate. */
+html[data-dsp-hidden] [data-row-key^="session:"]::before {
+  animation-play-state: paused;
+}
 @media (prefers-reduced-motion: reduce) {
   [data-row-key^="session:"]::after {
     transition: none;
+    animation: none;
   }
   [data-row-key^="session:"]::before {
     animation: none;
@@ -575,6 +587,13 @@
 .dsp-inline-wrap {
   flex-wrap: wrap;
 }
+.dsp-check {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: var(--dsw-alias-accent, #90afff);
+  cursor: pointer;
+}
 .dsp-color {
   width: 44px;
   padding: 2px;
@@ -616,6 +635,7 @@
   color: var(--dsw-alias-label-tertiary, #888);
 }
 
+  @keyframes dsp-drift{from{background-position:0 0,0 0}to{background-position:268.073px 0,268.073px 0}}@keyframes dsp-cross{from{background-position:0 0,0 0}to{background-position:268.073px 0,-268.073px 0}}@keyframes dsp-rainbow{from{background-position:0 0}to{background-position:170.592px 0}}
   body { margin: 0; padding: 20px; background: #17181c; color: #e6e8eb; font: 13px/1.5 system-ui, "Segoe UI", sans-serif; }
   .case { margin-bottom: 18px; display: inline-block; margin-right: 26px; vertical-align: top; }
   .cap { font-size: 12px; color: #9aa3b2; margin-bottom: 6px; }
@@ -628,6 +648,7 @@
 [data-row-key="session:medium"]::after{inset-block:0;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:inherit;background:linear-gradient(90deg,#90AFFF 0%,#90AFFF calc(100% - 10px),rgba(144,175,255,0.35) 100%);}[data-row-key="session:medium"]::before{--dsp-flow-duration:5.9s;background-image:repeating-linear-gradient(100deg,rgba(0,0,0,0) 0px,rgba(0,0,0,0.16) 46px,rgba(255,255,255,0.92) 56px,rgba(255,255,255,0) 64px,rgba(0,0,0,0) 132px),repeating-linear-gradient(100deg,rgba(255,255,255,0) 0px,rgba(255,255,255,0.10) 96px,rgba(132,170,255,0.12) 168px,rgba(255,255,255,0) 264px);animation:dsp-drift var(--dsp-flow-duration, 10.5s) linear infinite;filter:url(#dsp-water);}
 [data-row-key="session:low"]::after{inset-block:0;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:inherit;background:linear-gradient(90deg,#90AFFF 0%,#90AFFF calc(100% - 10px),rgba(144,175,255,0.35) 100%);}[data-row-key="session:low"]::before{--dsp-flow-duration:5.9s;background-image:repeating-linear-gradient(100deg,rgba(0,0,0,0) 0px,rgba(0,0,0,0.16) 46px,rgba(255,255,255,0.92) 56px,rgba(255,255,255,0) 64px,rgba(0,0,0,0) 132px),repeating-linear-gradient(100deg,rgba(255,255,255,0) 0px,rgba(255,255,255,0.10) 96px,rgba(132,170,255,0.12) 168px,rgba(255,255,255,0) 264px);animation:dsp-drift var(--dsp-flow-duration, 10.5s) linear infinite;}
 [data-row-key="session:off"]::after{inset-block:0;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:inherit;background:linear-gradient(90deg,#90AFFF 0%,#90AFFF calc(100% - 10px),rgba(144,175,255,0.35) 100%);}[data-row-key="session:off"]::before{animation:none;opacity:0;}
+[data-row-key="session:rainbow"]::after{inset-block:0;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:inherit;background:linear-gradient(90deg,#90AFFF 0%,#90AFFF calc(100% - 10px),rgba(144,175,255,0.35) 100%);background:repeating-linear-gradient(100deg,#ff5f6d 0 24px,#ffb457 24px 48px,#7ee8a2 48px 72px,#5fc8ff 72px 96px,#a78bff 96px 120px,#ff8ad4 120px 144px,#ff5f6d 144px 168px);box-shadow:inset 0 0 0 100px rgba(0,0,0,0.12);animation:dsp-rainbow 4.4s linear infinite;}[data-row-key="session:rainbow"]::before{--dsp-flow-duration:5.9s;background-image:repeating-linear-gradient(100deg,rgba(0,0,0,0) 0px,rgba(0,0,0,0.16) 46px,rgba(255,255,255,0.92) 56px,rgba(255,255,255,0) 64px,rgba(0,0,0,0) 132px),repeating-linear-gradient(100deg,rgba(255,255,255,0) 0px,rgba(255,255,255,0.10) 96px,rgba(132,170,255,0.12) 168px,rgba(255,255,255,0) 264px);animation:dsp-drift var(--dsp-flow-duration, 10.5s) linear infinite;}
 </style>
 <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden"><defs><filter id="dsp-water" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency="0.006 0.022" numOctaves="2" seed="7" result="warp"/><feDisplacementMap in="SourceGraphic" in2="warp" scale="18" xChannelSelector="R" yChannelSelector="G"/><feGaussianBlur stdDeviation="0.45"/></filter></defs></svg>
 
@@ -666,6 +687,13 @@
       <span class="time">3 分钟前</span>
     </div>
   </div>
+  <div class="case">
+    <div class="cap">实验 · 彩虹走马灯（叠在「低」档表面上）</div>
+    <div class="row" data-row-key="session:rainbow" style="--dsp-p:78%;--dsp-o:0.7">
+      <span class="title">实验 · 彩虹走马灯（叠在「低」档表面上）</span>
+      <span class="time">3 分钟前</span>
+    </div>
+  </div>
 
   <div class="case" style="zoom:2.6">
     <div class="cap">实验 · 流光</div>
@@ -699,6 +727,13 @@
     <div class="cap">关</div>
     <div class="row" data-row-key="session:off" style="--dsp-p:78%;--dsp-o:0.7">
       <span class="title">关</span>
+      <span class="time">3 分钟前</span>
+    </div>
+  </div>
+  <div class="case" style="zoom:2.6">
+    <div class="cap">实验 · 彩虹走马灯（叠在「低」档表面上）</div>
+    <div class="row" data-row-key="session:rainbow" style="--dsp-p:78%;--dsp-o:0.7">
+      <span class="title">实验 · 彩虹走马灯（叠在「低」档表面上）</span>
       <span class="time">3 分钟前</span>
     </div>
   </div>

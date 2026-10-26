@@ -85,120 +85,120 @@ turn/end ──► closeTurn('completed') ──► p=100 ──► 淡出 ─�
 | 文件 | 行 | 符号 | 位置 | 类型 |
 |---|---|---|---|---|
 | `lib/index.js` | 53 | `LOG_FILE` | module | const fn |
-| `lib/index.js` | 112 | `nextProgress` | module | const fn |
-| `lib/index.js` | 115 | `keep` | apply | const fn |
-| `lib/index.js` | 122 | `name` | module | const |
-| `lib/index.js` | 123 | `inject` | module | const |
-| `lib/index.js` | 136 | `clampNumber` | module | function |
-| `lib/index.js` | 143 | `sanitizeConfig` | module | function |
-| `lib/index.js` | 172 | `readConfigFile` | module | function |
-| `lib/index.js` | 180 | `writeConfigFile` | module | function |
-| `lib/index.js` | 196 | `readLogFile` | module | function |
-| `lib/index.js` | 207 | `slimEntry` | module | function |
-| `lib/index.js` | 212 | `writeLogFile` | module | function |
-| `lib/index.js` | 229 | `resumeSeed` | module | function |
-| `lib/index.js` | 241 | `readJsonBody` | module | function |
-| `lib/index.js` | 271 | `effortIds` | module | function |
-| `lib/index.js` | 277 | `idOf` | module | function |
-| `lib/index.js` | 286 | `isLocalRequest` | module | function |
-| `lib/index.js` | 306 | `jsonResponse` | module | function |
-| `lib/index.js` | 317 | `textOf` | module | function |
-| `lib/index.js` | 332 | `clip` | module | function |
-| `lib/index.js` | 342 | `buildContext` | module | function |
-| `lib/index.js` | 370 | `parseProgress` | module | function |
-| `lib/index.js` | 397 | `closestEffort` | module | function |
-| `lib/index.js` | 417 | `normalizeUsage` | module | function |
-| `lib/index.js` | 419 | `count` | apply | const fn |
-| `lib/index.js` | 430 | `sumTokens` | module | function |
-| `lib/index.js` | 451 | `titleOf` | module | function |
-| `lib/index.js` | 488 | `labelOf` | module | function |
-| `lib/index.js` | 523 | `cheapRank` | module | function |
-| `lib/index.js` | 533 | `pickRoute` | module | function |
-| `lib/index.js` | 547 | `apply` | module | function |
-| `lib/index.js` | 601 | `frame` | apply | const fn |
-| `lib/index.js` | 621 | `frameText` | apply | const fn |
-| `lib/index.js` | 626 | `writeFrame` | apply | const fn |
-| `lib/index.js` | 637 | `push` | apply | const fn |
-| `lib/index.js` | 650 | `broadcast` | apply | const fn |
-| `lib/index.js` | 682 | `bumpLog` | apply | const fn |
-| `lib/index.js` | 687 | `prune` | apply | const fn |
-| `lib/index.js` | 702 | `persist` | apply | const fn |
-| `lib/index.js` | 711 | `record` | apply | const fn |
-| `lib/index.js` | 724 | `closeTurn` | apply | const fn |
-| `lib/index.js` | 750 | `markRunning` | apply | const fn |
-| `lib/index.js` | 762 | `clearTimer` | apply | const fn |
-| `lib/index.js` | 775 | `onTurnStart` | apply | const fn |
-| `lib/index.js` | 803 | `onTurnEnd` | apply | const fn |
-| `lib/index.js` | 819 | `scheduleFadeOut` | apply | const fn |
-| `lib/index.js` | 845 | `interject` | apply | const fn |
-| `lib/index.js` | 900 | `trackCount` | apply | const fn |
-| `lib/index.js` | 911 | `trimToLimit` | apply | const fn |
-| `lib/index.js` | 933 | `schedule` | apply | const fn |
-| `lib/index.js` | 953 | `declaredEfforts` | apply | const fn |
-| `lib/index.js` | 969 | `probeEffort` | apply | const fn |
-| `lib/index.js` | 994 | `findSession` | apply | const fn |
-| `lib/index.js` | 1016 | `sample` | apply | const fn |
-| `lib/index.js` | 1045 | `sampleOnce` | apply | const fn |
-| `lib/index.js` | 1197 | `reapAbandonedTurns` | apply | const fn |
-| `lib/index.js` | 1210 | `tick` | apply | const fn |
-| `lib/index.js` | 1244 | `snapshotHandler` | apply | const fn |
-| `lib/index.js` | 1249 | `debugHandler` | apply | const fn |
-| `lib/index.js` | 1288 | `noteClient` | apply | const fn |
-| `lib/index.js` | 1297 | `logHandler` | apply | const fn |
-| `lib/index.js` | 1300 | `query` | factory | const fn |
-| `lib/index.js` | 1307 | `limit` | factory | const fn |
-| `lib/index.js` | 1360 | `eventsHandler` | apply | const fn |
-| `lib/index.js` | 1375 | `getLlm` | apply | const fn |
-| `lib/index.js` | 1378 | `rescheduleAll` | apply | const fn |
-| `lib/index.js` | 1391 | `applyConfig` | apply | const fn |
-| `lib/index.js` | 1419 | `describeModels` | apply | const fn |
-| `lib/index.js` | 1475 | `ensureRoute` | apply | const fn |
-| `lib/index.js` | 1494 | `configPayload` | apply | const fn |
-| `lib/index.js` | 1512 | `configHandler` | apply | const fn |
+| `lib/index.js` | 114 | `nextProgress` | module | const fn |
+| `lib/index.js` | 117 | `keep` | apply | const fn |
+| `lib/index.js` | 124 | `name` | module | const |
+| `lib/index.js` | 125 | `inject` | module | const |
+| `lib/index.js` | 138 | `clampNumber` | module | function |
+| `lib/index.js` | 145 | `sanitizeConfig` | module | function |
+| `lib/index.js` | 175 | `readConfigFile` | module | function |
+| `lib/index.js` | 183 | `writeConfigFile` | module | function |
+| `lib/index.js` | 199 | `readLogFile` | module | function |
+| `lib/index.js` | 210 | `slimEntry` | module | function |
+| `lib/index.js` | 215 | `writeLogFile` | module | function |
+| `lib/index.js` | 232 | `resumeSeed` | module | function |
+| `lib/index.js` | 244 | `readJsonBody` | module | function |
+| `lib/index.js` | 274 | `effortIds` | module | function |
+| `lib/index.js` | 280 | `idOf` | module | function |
+| `lib/index.js` | 289 | `isLocalRequest` | module | function |
+| `lib/index.js` | 309 | `jsonResponse` | module | function |
+| `lib/index.js` | 320 | `textOf` | module | function |
+| `lib/index.js` | 335 | `clip` | module | function |
+| `lib/index.js` | 345 | `buildContext` | module | function |
+| `lib/index.js` | 373 | `parseProgress` | module | function |
+| `lib/index.js` | 400 | `closestEffort` | module | function |
+| `lib/index.js` | 420 | `normalizeUsage` | module | function |
+| `lib/index.js` | 422 | `count` | apply | const fn |
+| `lib/index.js` | 433 | `sumTokens` | module | function |
+| `lib/index.js` | 454 | `titleOf` | module | function |
+| `lib/index.js` | 491 | `labelOf` | module | function |
+| `lib/index.js` | 526 | `cheapRank` | module | function |
+| `lib/index.js` | 536 | `pickRoute` | module | function |
+| `lib/index.js` | 550 | `apply` | module | function |
+| `lib/index.js` | 604 | `frame` | apply | const fn |
+| `lib/index.js` | 625 | `frameText` | apply | const fn |
+| `lib/index.js` | 630 | `writeFrame` | apply | const fn |
+| `lib/index.js` | 641 | `push` | apply | const fn |
+| `lib/index.js` | 654 | `broadcast` | apply | const fn |
+| `lib/index.js` | 686 | `bumpLog` | apply | const fn |
+| `lib/index.js` | 691 | `prune` | apply | const fn |
+| `lib/index.js` | 706 | `persist` | apply | const fn |
+| `lib/index.js` | 715 | `record` | apply | const fn |
+| `lib/index.js` | 728 | `closeTurn` | apply | const fn |
+| `lib/index.js` | 754 | `markRunning` | apply | const fn |
+| `lib/index.js` | 766 | `clearTimer` | apply | const fn |
+| `lib/index.js` | 779 | `onTurnStart` | apply | const fn |
+| `lib/index.js` | 807 | `onTurnEnd` | apply | const fn |
+| `lib/index.js` | 823 | `scheduleFadeOut` | apply | const fn |
+| `lib/index.js` | 849 | `interject` | apply | const fn |
+| `lib/index.js` | 904 | `trackCount` | apply | const fn |
+| `lib/index.js` | 915 | `trimToLimit` | apply | const fn |
+| `lib/index.js` | 937 | `schedule` | apply | const fn |
+| `lib/index.js` | 957 | `declaredEfforts` | apply | const fn |
+| `lib/index.js` | 973 | `probeEffort` | apply | const fn |
+| `lib/index.js` | 998 | `findSession` | apply | const fn |
+| `lib/index.js` | 1020 | `sample` | apply | const fn |
+| `lib/index.js` | 1049 | `sampleOnce` | apply | const fn |
+| `lib/index.js` | 1201 | `reapAbandonedTurns` | apply | const fn |
+| `lib/index.js` | 1214 | `tick` | apply | const fn |
+| `lib/index.js` | 1248 | `snapshotHandler` | apply | const fn |
+| `lib/index.js` | 1253 | `debugHandler` | apply | const fn |
+| `lib/index.js` | 1292 | `noteClient` | apply | const fn |
+| `lib/index.js` | 1301 | `logHandler` | apply | const fn |
+| `lib/index.js` | 1304 | `query` | factory | const fn |
+| `lib/index.js` | 1311 | `limit` | factory | const fn |
+| `lib/index.js` | 1364 | `eventsHandler` | apply | const fn |
+| `lib/index.js` | 1379 | `getLlm` | apply | const fn |
+| `lib/index.js` | 1382 | `rescheduleAll` | apply | const fn |
+| `lib/index.js` | 1395 | `applyConfig` | apply | const fn |
+| `lib/index.js` | 1423 | `describeModels` | apply | const fn |
+| `lib/index.js` | 1479 | `ensureRoute` | apply | const fn |
+| `lib/index.js` | 1498 | `configPayload` | apply | const fn |
+| `lib/index.js` | 1516 | `configHandler` | apply | const fn |
 | `lib/client.js` | 33 | `openLogPanel` | factory | function |
 | `lib/client.js` | 113 | `styleCss` | factory | function |
 | `lib/client.js` | 139 | `hexToRgb` | factory | function |
 | `lib/client.js` | 236 | `gradient` | factory | const fn |
-| `lib/client.js` | 307 | `flowDecls` | factory | function |
-| `lib/client.js` | 341 | `sheetCss` | factory | function |
-| `lib/client.js` | 346 | `styleRules` | factory | function |
-| `lib/client.js` | 411 | `ensureWaterFilter` | factory | function |
-| `lib/client.js` | 1058 | `cssEscape` | factory | function |
-| `lib/client.js` | 1069 | `shortId` | factory | function |
-| `lib/client.js` | 1075 | `formatTokens` | factory | function |
-| `lib/client.js` | 1083 | `clockOf` | factory | function |
-| `lib/client.js` | 1092 | `useConfig` | factory | function |
-| `lib/client.js` | 1144 | `logNotify` | factory | const fn |
-| `lib/client.js` | 1148 | `logHidden` | factory | const fn |
-| `lib/client.js` | 1155 | `logFetch` | factory | const fn |
-| `lib/client.js` | 1205 | `logWantHistory` | factory | const fn |
-| `lib/client.js` | 1213 | `logMoreRows` | factory | const fn |
-| `lib/client.js` | 1218 | `logSchedule` | factory | const fn |
-| `lib/client.js` | 1231 | `logRefresh` | factory | const fn |
-| `lib/client.js` | 1237 | `logWatchVisibility` | factory | const fn |
-| `lib/client.js` | 1246 | `useLog` | factory | function |
-| `lib/client.js` | 1272 | `metaLine` | factory | function |
-| `lib/client.js` | 1314 | `routeWarning` | factory | function |
-| `lib/client.js` | 1340 | `LogRow` | factory | function |
-| `lib/client.js` | 1412 | `renderEntry` | factory | function |
-| `lib/client.js` | 1423 | `routeLook` | factory | function |
-| `lib/client.js` | 1462 | `hueOf` | factory | function |
-| `lib/client.js` | 1475 | `groupBySession` | factory | function |
-| `lib/client.js` | 1505 | `groupHistory` | factory | function |
-| `lib/client.js` | 1542 | `renderColumn` | factory | function |
-| `lib/client.js` | 1588 | `useColumnFlip` | factory | function |
-| `lib/client.js` | 1627 | `HistorySegment` | factory | function |
-| `lib/client.js` | 1684 | `renderHistoryColumn` | factory | function |
-| `lib/client.js` | 1703 | `ColumnList` | factory | function |
-| `lib/client.js` | 1718 | `renderHistoryPlaceholder` | factory | function |
-| `lib/client.js` | 1747 | `renderColumns` | factory | function |
-| `lib/client.js` | 1751 | `emptyState` | factory | function |
-| `lib/client.js` | 1756 | `SettingsCard` | factory | function |
-| `lib/client.js` | 2178 | `SettingsPanel` | factory | function |
-| `lib/client.js` | 2190 | `ProgressLogCard` | factory | function |
-| `lib/client.js` | 2229 | `SampleLogPanel` | factory | function |
-| `lib/client.js` | 2290 | `SampleLogIcon` | factory | function |
-| `lib/client.js` | 2308 | `apply` | factory | function |
+| `lib/client.js` | 320 | `flowDecls` | factory | function |
+| `lib/client.js` | 354 | `sheetCss` | factory | function |
+| `lib/client.js` | 359 | `styleRules` | factory | function |
+| `lib/client.js` | 438 | `ensureWaterFilter` | factory | function |
+| `lib/client.js` | 1093 | `cssEscape` | factory | function |
+| `lib/client.js` | 1104 | `shortId` | factory | function |
+| `lib/client.js` | 1110 | `formatTokens` | factory | function |
+| `lib/client.js` | 1118 | `clockOf` | factory | function |
+| `lib/client.js` | 1127 | `useConfig` | factory | function |
+| `lib/client.js` | 1179 | `logNotify` | factory | const fn |
+| `lib/client.js` | 1183 | `logHidden` | factory | const fn |
+| `lib/client.js` | 1190 | `logFetch` | factory | const fn |
+| `lib/client.js` | 1240 | `logWantHistory` | factory | const fn |
+| `lib/client.js` | 1248 | `logMoreRows` | factory | const fn |
+| `lib/client.js` | 1253 | `logSchedule` | factory | const fn |
+| `lib/client.js` | 1266 | `logRefresh` | factory | const fn |
+| `lib/client.js` | 1272 | `logWatchVisibility` | factory | const fn |
+| `lib/client.js` | 1281 | `useLog` | factory | function |
+| `lib/client.js` | 1307 | `metaLine` | factory | function |
+| `lib/client.js` | 1349 | `routeWarning` | factory | function |
+| `lib/client.js` | 1375 | `LogRow` | factory | function |
+| `lib/client.js` | 1447 | `renderEntry` | factory | function |
+| `lib/client.js` | 1458 | `routeLook` | factory | function |
+| `lib/client.js` | 1497 | `hueOf` | factory | function |
+| `lib/client.js` | 1510 | `groupBySession` | factory | function |
+| `lib/client.js` | 1540 | `groupHistory` | factory | function |
+| `lib/client.js` | 1577 | `renderColumn` | factory | function |
+| `lib/client.js` | 1623 | `useColumnFlip` | factory | function |
+| `lib/client.js` | 1662 | `HistorySegment` | factory | function |
+| `lib/client.js` | 1719 | `renderHistoryColumn` | factory | function |
+| `lib/client.js` | 1738 | `ColumnList` | factory | function |
+| `lib/client.js` | 1753 | `renderHistoryPlaceholder` | factory | function |
+| `lib/client.js` | 1782 | `renderColumns` | factory | function |
+| `lib/client.js` | 1786 | `emptyState` | factory | function |
+| `lib/client.js` | 1791 | `SettingsCard` | factory | function |
+| `lib/client.js` | 2236 | `SettingsPanel` | factory | function |
+| `lib/client.js` | 2248 | `ProgressLogCard` | factory | function |
+| `lib/client.js` | 2287 | `SampleLogPanel` | factory | function |
+| `lib/client.js` | 2348 | `SampleLogIcon` | factory | function |
+| `lib/client.js` | 2366 | `apply` | factory | function |
 <!-- INDEX:END -->
 
 ## 绝不能做（每条都真炸过一次）
@@ -234,6 +234,7 @@ turn/end ──► closeTurn('completed') ──► p=100 ──► 淡出 ─�
   }
   ```
   `FLOW_QUALITIES` 由这张表派生，**加一档只改这里**。`flowDecls(look)` 只做三件事：按 `pattern` 取渐变、按 `motion` 取动画名、按 `water`/`glass` 追加滤镜。
+- **实验 · 彩虹走马灯（0.17.0）**：`rainbow: true` 时 `styleRules` 在**填充层**追加 `background:${RAINBOW}` 与 `animation:dsp-rainbow <beat> linear infinite`（`RAINBOW_PERIOD = 168`、`RAINBOW_TRAVEL = 168 / sin(100°) = 170.592px`，和表面用的是同一套数学），并压一层 `box-shadow:inset 0 0 0 100px rgba(0,0,0,0.12)` 保证文字可读。`flow: false` 时只上静态彩虹、不加动画。`@keyframes dsp-rainbow` 由 `MOTION_CSS` 一并生成，所以永远和图上的周期一致。
 - **可见才动（0.16.0）**：`BASE_CSS` 的 `::before` 是 `animation-play-state: paused`，`[data-row-key^="session:"].dsp-live::before` 才 `running`。`apply()` 里的 `startRowGating()` 用 `IntersectionObserver`（`rootMargin: 120px`）给行加 `dsp-live`，另用 `MutationObserver`（rAF 合并）重扫新增行——侧栏有虚拟化，行会被替换掉。`html[data-dsp-hidden] ::before{animation-play-state:paused}` 在 `visibilitychange` 时切换。**这两处都是"减载"，不改变任何视觉效果**。
 - **为什么位移没用 transform**：伪元素只有 `::before`/`::after` 两个，表面层同时要承担 `width: var(--dsp-p)` 与裁切。把位移改成 `transform` 就必须把裁切交给第三个元素（不存在），或在宿主行上加 mask（等于改宿主 DOM，AGENTS.md 禁止）。所以保留 `background-position`，靠"动画范围本来就限制在 `width` 内 + `clip-path` 裁外溢"来兜住成本。
 - **日志按需（0.16.0）**：`/log` 带 `since` 短路、`history=0` 不带历史；客户端一列只画 `logStore.rowLimit = 40` 条，多出「还有 N 条」；历史为空时渲染 `renderHistoryPlaceholder()`（「加载历史」按钮 → `logWantHistory()`）。

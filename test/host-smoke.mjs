@@ -310,6 +310,14 @@ assert.equal(restored.config.color, '#90AFFF', 'reset puts the colour back')
 assert.equal(restored.config.style, 'band', 'and the style')
 assert.equal(restored.config.intervalMs, 30000, 'and the interval')
 assert.equal(restored.config.maxSessions, 3, 'and the visible-band count')
+assert.equal(restored.config.rainbow, false, 'and the experimental rainbow is off again')
+const rainbowOn = JSON.parse((await postConfig({ rainbow: true })).body)
+assert.equal(rainbowOn.config.rainbow, true, 'the rainbow switch saves')
+assert.equal(
+  JSON.parse((await call('/plugins/dsh-session-progress/snapshot')).body).look.rainbow,
+  true,
+  'and travels with every frame so the band repaints at once',
+)
 
 for (const cleanup of cleanups) { try { cleanup() } catch {} }
 if (ownStateFile) { try { fs.unlinkSync(process.env.DSP_STATE_FILE) } catch {} }
