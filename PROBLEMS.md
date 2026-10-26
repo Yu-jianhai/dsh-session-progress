@@ -85,7 +85,7 @@
 
 - **现象**：高光每轮跳一下（约 3px），像"卡帧"。
 - **原因**：图案沿 `100deg` 轴排布，周期 200px 沿轴量；沿**行方向**的长度是 `200 / sin(100°) = 203.09px`。写成 `200×sin(100°)=197` 会每次差 6px。
-- **修法**：`@keyframes dsp-flow { to { background-position: 203.09px 0 } }`，位移必须等于一个图案周期。
+- **修法**：`@keyframes dsp-drift { to { background-position: <一个周期> 0 } }`（0.15.0 起由 `TRAVEL` 常量生成），位移必须等于一个图案周期。
 - **守卫**：`dev/seam.html` 截图像素自相关（最佳周期 203、均差 0.3）。
 
 ## P-13 高光跟随填充宽度用 `clip-path`，与 `width` 过渡不同步

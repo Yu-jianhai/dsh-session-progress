@@ -12,6 +12,11 @@
 [data-row-key^="session:"] {
   position: relative;
   isolation: isolate;
+  /* One clock for the whole band: the fill and the film animate the same
+     property with the same easing, so they can never slide out of step. */
+  --dsp-progress-ms: 900ms;
+  --dsp-progress-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --dsp-fade-ms: 280ms;
 }
 [data-row-key^="session:"]::after {
   content: "";
@@ -25,8 +30,8 @@
   width: var(--dsp-p, 0%);
   opacity: var(--dsp-o, 0);
   transition:
-    --dsp-p 900ms cubic-bezier(0.22, 0.61, 0.36, 1),
-    opacity 280ms ease;
+    width var(--dsp-progress-ms) var(--dsp-progress-ease),
+    opacity var(--dsp-fade-ms) ease;
 }
 /* A highlight that keeps travelling inside the filled part, so a band that has
    not moved for half a minute still looks alive. It rides on ::before rather
@@ -62,35 +67,14 @@
      the selected surface, not of the layout. Only the plumbing stays here. */
   background-repeat: repeat;
   background-size: auto;
-  /* duration comes from the look sheet so the speed setting can change it */
-  animation: dsp-flow var(--dsp-flow-duration, 3.6s) linear infinite;
+  /* Name and duration come from the look sheet: which motion a surface uses is
+     a property of that surface, and the speed setting only changes the clock. */
+  animation: none;
   /* the highlight fades in and out with the band, never on its own */
   opacity: var(--dsp-o, 0);
   transition:
-    width 900ms cubic-bezier(0.22, 0.61, 0.36, 1),
-    opacity 280ms ease;
-}
-/* One travel == one period of every layer in the pattern, so the loop is
-   seamless. 268.073px = 264px along the 100deg axis / sin(100deg); both the
-   132px and the 264px gradients come back to phase at that distance. */
-@keyframes dsp-flow {
-  from {
-    background-position: 0 0, 0 0;
-  }
-  to {
-    background-position: 268.073px 0, 268.073px 0;
-  }
-}
-/* The experimental tier slides two layers past each other inside one loop:
-   the light travels forward, the shade travels back. Both travel exactly one
-   period, so the pair is in phase again at the end and the loop has no seam. */
-@keyframes dsp-cross {
-  from {
-    background-position: 0 0, 0 0;
-  }
-  to {
-    background-position: 268.073px 0, -268.073px 0;
-  }
+    width var(--dsp-progress-ms) var(--dsp-progress-ease),
+    opacity var(--dsp-fade-ms) ease;
 }
 @media (prefers-reduced-motion: reduce) {
   [data-row-key^="session:"]::after {
@@ -639,10 +623,10 @@
   .row { width: 280px; }
   .row .title { position: relative; z-index: 1; font-size: 13px; }
   .row .time { position: relative; z-index: 1; margin-left: auto; font-size: 10px; color: #9aa3b2; }
-  [data-row-key="session:refract"]::after{inset-block:0;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:inherit;background:linear-gradient(90deg,#90AFFF 0%,#90AFFF calc(100% - 10px),rgba(144,175,255,0.35) 100%);box-shadow:inset 1px -1px 1px -0.5px rgba(255,255,255,0.75),inset -1px 1px 1px -0.5px rgba(0,0,0,0.35),inset 0 0 10px rgba(255,255,255,0.14);}[data-row-key="session:refract"]::before{--dsp-flow-duration:5.9s;background-image:repeating-linear-gradient(100deg,rgba(255,255,255,0) 0px,rgba(255,255,255,0.55) 34px,rgba(255,255,255,0) 92px,rgba(255,255,255,0) 268.073px),repeating-linear-gradient(100deg,rgba(0,0,0,0) 0px,rgba(0,0,0,0.3) 44px,rgba(0,0,0,0) 104px,rgba(0,0,0,0) 268.073px);animation:dsp-cross var(--dsp-flow-duration, 10.5s) linear infinite;filter:blur(1.5px) saturate(1.06);}
-[data-row-key="session:high"]::after{inset-block:0;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:inherit;background:linear-gradient(90deg,#90AFFF 0%,#90AFFF calc(100% - 10px),rgba(144,175,255,0.35) 100%);backdrop-filter:blur(1.6px) saturate(1.45) brightness(1.06);}[data-row-key="session:high"]::before{--dsp-flow-duration:5.9s;background-image:repeating-linear-gradient(100deg,rgba(0,0,0,0) 0px,rgba(0,0,0,0.16) 46px,rgba(255,255,255,0.92) 56px,rgba(255,255,255,0) 64px,rgba(0,0,0,0) 132px),repeating-linear-gradient(100deg,rgba(255,255,255,0) 0px,rgba(255,255,255,0.10) 96px,rgba(132,170,255,0.12) 168px,rgba(255,255,255,0) 264px);filter:url(#dsp-water);backdrop-filter:blur(1.6px) saturate(1.45) brightness(1.06);}
-[data-row-key="session:medium"]::after{inset-block:0;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:inherit;background:linear-gradient(90deg,#90AFFF 0%,#90AFFF calc(100% - 10px),rgba(144,175,255,0.35) 100%);}[data-row-key="session:medium"]::before{--dsp-flow-duration:5.9s;background-image:repeating-linear-gradient(100deg,rgba(0,0,0,0) 0px,rgba(0,0,0,0.16) 46px,rgba(255,255,255,0.92) 56px,rgba(255,255,255,0) 64px,rgba(0,0,0,0) 132px),repeating-linear-gradient(100deg,rgba(255,255,255,0) 0px,rgba(255,255,255,0.10) 96px,rgba(132,170,255,0.12) 168px,rgba(255,255,255,0) 264px);filter:url(#dsp-water);}
-[data-row-key="session:low"]::after{inset-block:0;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:inherit;background:linear-gradient(90deg,#90AFFF 0%,#90AFFF calc(100% - 10px),rgba(144,175,255,0.35) 100%);}[data-row-key="session:low"]::before{--dsp-flow-duration:5.9s;background-image:repeating-linear-gradient(100deg,rgba(0,0,0,0) 0px,rgba(0,0,0,0.16) 46px,rgba(255,255,255,0.92) 56px,rgba(255,255,255,0) 64px,rgba(0,0,0,0) 132px),repeating-linear-gradient(100deg,rgba(255,255,255,0) 0px,rgba(255,255,255,0.10) 96px,rgba(132,170,255,0.12) 168px,rgba(255,255,255,0) 264px);}
+  [data-row-key="session:refract"]::after{inset-block:0;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:inherit;background:linear-gradient(90deg,#90AFFF 0%,#90AFFF calc(100% - 10px),rgba(144,175,255,0.35) 100%);box-shadow:inset 1px -1px 1px -0.5px rgba(255,255,255,0.75),inset -1px 1px 1px -0.5px rgba(0,0,0,0.35),inset 0 0 10px rgba(255,255,255,0.14);}[data-row-key="session:refract"]::before{--dsp-flow-duration:5.9s;background-image:repeating-linear-gradient(100deg,rgba(255,255,255,0) 0px,rgba(255,255,255,0.55) 34px,rgba(255,255,255,0) 92px,rgba(255,255,255,0) 264px),repeating-linear-gradient(100deg,rgba(0,0,0,0) 0px,rgba(0,0,0,0.3) 44px,rgba(0,0,0,0) 104px,rgba(0,0,0,0) 264px);animation:dsp-cross var(--dsp-flow-duration, 10.5s) linear infinite;filter:blur(1.5px) saturate(1.06);}
+[data-row-key="session:high"]::after{inset-block:0;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:inherit;background:linear-gradient(90deg,#90AFFF 0%,#90AFFF calc(100% - 10px),rgba(144,175,255,0.35) 100%);backdrop-filter:blur(1.6px) saturate(1.45) brightness(1.06);}[data-row-key="session:high"]::before{--dsp-flow-duration:5.9s;background-image:repeating-linear-gradient(100deg,rgba(0,0,0,0) 0px,rgba(0,0,0,0.16) 46px,rgba(255,255,255,0.92) 56px,rgba(255,255,255,0) 64px,rgba(0,0,0,0) 132px),repeating-linear-gradient(100deg,rgba(255,255,255,0) 0px,rgba(255,255,255,0.10) 96px,rgba(132,170,255,0.12) 168px,rgba(255,255,255,0) 264px);animation:dsp-drift var(--dsp-flow-duration, 10.5s) linear infinite;filter:url(#dsp-water);backdrop-filter:blur(1.6px) saturate(1.45) brightness(1.06);}
+[data-row-key="session:medium"]::after{inset-block:0;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:inherit;background:linear-gradient(90deg,#90AFFF 0%,#90AFFF calc(100% - 10px),rgba(144,175,255,0.35) 100%);}[data-row-key="session:medium"]::before{--dsp-flow-duration:5.9s;background-image:repeating-linear-gradient(100deg,rgba(0,0,0,0) 0px,rgba(0,0,0,0.16) 46px,rgba(255,255,255,0.92) 56px,rgba(255,255,255,0) 64px,rgba(0,0,0,0) 132px),repeating-linear-gradient(100deg,rgba(255,255,255,0) 0px,rgba(255,255,255,0.10) 96px,rgba(132,170,255,0.12) 168px,rgba(255,255,255,0) 264px);animation:dsp-drift var(--dsp-flow-duration, 10.5s) linear infinite;filter:url(#dsp-water);}
+[data-row-key="session:low"]::after{inset-block:0;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:inherit;background:linear-gradient(90deg,#90AFFF 0%,#90AFFF calc(100% - 10px),rgba(144,175,255,0.35) 100%);}[data-row-key="session:low"]::before{--dsp-flow-duration:5.9s;background-image:repeating-linear-gradient(100deg,rgba(0,0,0,0) 0px,rgba(0,0,0,0.16) 46px,rgba(255,255,255,0.92) 56px,rgba(255,255,255,0) 64px,rgba(0,0,0,0) 132px),repeating-linear-gradient(100deg,rgba(255,255,255,0) 0px,rgba(255,255,255,0.10) 96px,rgba(132,170,255,0.12) 168px,rgba(255,255,255,0) 264px);animation:dsp-drift var(--dsp-flow-duration, 10.5s) linear infinite;}
 [data-row-key="session:off"]::after{inset-block:0;inset-inline-start:0;width:var(--dsp-p,0%);border-radius:inherit;background:linear-gradient(90deg,#90AFFF 0%,#90AFFF calc(100% - 10px),rgba(144,175,255,0.35) 100%);}[data-row-key="session:off"]::before{animation:none;opacity:0;}
 </style>
 <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden"><defs><filter id="dsp-water" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency="0.006 0.022" numOctaves="2" seed="7" result="warp"/><feDisplacementMap in="SourceGraphic" in2="warp" scale="18" xChannelSelector="R" yChannelSelector="G"/><feGaussianBlur stdDeviation="0.45"/></filter></defs></svg>

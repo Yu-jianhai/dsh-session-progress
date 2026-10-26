@@ -202,8 +202,8 @@ assert.match(base.textContent, /\.dsp-row-note\s*\{[\s\S]*?text-overflow: ellips
 // The flowing highlight lives on ::before and must not outlive the band: it is
 // clipped to the filled width and its opacity rides --dsp-o, so a row that is
 // not running shows nothing at all.
-assert.match(base.textContent, /@keyframes dsp-flow/)
-assert.match(base.textContent, /::before\s*\{[\s\S]*?animation: dsp-flow/)
+assert.doesNotMatch(base.textContent, /@keyframes/, 'keyframes belong to the look sheet, not the base sheet')
+assert.match(base.textContent, /::before\s*\{[\s\S]*?animation: none;/)
 assert.match(base.textContent, /width: var\(--dsp-p, 0%\)/, 'the sweep is bounded by its own width, not a clip')
 assert.match(base.textContent, /::before\s*\{[\s\S]*?opacity: var\(--dsp-o/)
 assert.match(base.textContent, /flex: none/)

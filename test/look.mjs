@@ -11,8 +11,8 @@ const source = fs.readFileSync(path.join(here, '..', 'lib', 'client.js'), 'utf8'
 
 const match = /\/\/ #region look([\s\S]*?)\/\/ #endregion look/.exec(source)
 assert.ok(match, 'the #region look markers are missing from lib/client.js')
-const { LOOK_STYLES, LOOK_IDS, styleRules, hexToRgb, flowDecls } = new Function(
-  `${match[1]}; return { LOOK_STYLES, LOOK_IDS, styleRules, hexToRgb, flowDecls }`,
+const { LOOK_STYLES, LOOK_IDS, styleRules, sheetCss, hexToRgb, flowDecls } = new Function(
+  `${match[1]}; return { LOOK_STYLES, LOOK_IDS, styleRules, sheetCss, hexToRgb, flowDecls }`,
 )()
 
 // 1. Every style is complete and unique.
@@ -99,10 +99,26 @@ assert.match(
   /::before\{[^}]*clip-path:inset\(0 round 2px\)/,
   'the 3px underline clips to its own shorter shape',
 )
+// The keyframes are generated from the same period constant as the gradients,
+// so they cannot drift apart: one period along the 100deg axis is 268.073px
+// across the row, and both directions use that one number.
+const crossSheet = sheetCss({ flowQuality: 'refract' })
 assert.match(
-  baseCss,
-  /@keyframes dsp-cross[\s\S]{0,220}?268\.073px 0, -268\.073px 0/,
+  crossSheet,
+  /@keyframes dsp-cross\{from\{background-position:0 0,0 0\}to\{background-position:268\.073px 0,-268\.073px 0\}\}/,
   'the two bands travel one whole period in opposite directions',
+)
+assert.match(
+  sheetCss({ flowQuality: 'low' }),
+  /@keyframes dsp-drift\{from\{background-position:0 0,0 0\}to\{background-position:268\.073px 0,268\.073px 0\}\}/,
+  'the plain sweep moves both layers forward by the same period',
+)
+// Two motions, two endpoints each: the distance is written once per keyframe
+// pair and nowhere else -- the gradients use the 264px period, not the travel.
+assert.equal(
+  (crossSheet.match(/268\.073px/g) || []).length,
+  4,
+  'the travel distance lives in the two generated keyframe pairs only',
 )
 
 assert.match(high, /::after\{[^}]*backdrop-filter:blur/, 'high softens the backdrop from the fill')
