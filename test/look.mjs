@@ -241,6 +241,16 @@ const painted = { painted: baseLook, serverLook: baseLook, previewing: false }
 const rainbowFrame = routeLook(painted, { ...baseLook, rainbow: true }, 'server')
 assert.equal(rainbowFrame.paint, true, 'a frame that only flips the rainbow still repaints')
 
+// Same for the panel skin: it does not touch the band, but the two states must
+// still be distinguishable, or the "unsaved preview vs saved value" comparison
+// treats a skin change as no change at all.
+const skinFrame = routeLook(
+  { painted: { ...baseLook, panelStyle: 'apple' }, serverLook: { ...baseLook, panelStyle: 'apple' }, previewing: false },
+  { ...baseLook, panelStyle: 'classic' },
+  'server',
+)
+assert.equal(skinFrame.paint, true, 'a frame that only changes the panel skin still repaints')
+
 // The colour input can hand back more than `#rrggbb` (the eyedropper in the OS
 // picker returns `rgb(...)`), and the old handler sent it through untouched --
 // the host rejected it and the band kept the previous colour.

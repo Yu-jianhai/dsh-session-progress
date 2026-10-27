@@ -70,18 +70,25 @@ function spark(entries, hue) {
   return `<svg class="dsp-spark" width="${w}" height="${hgt}" viewBox="0 0 ${w} ${hgt}"><polyline points="${path}" fill="none" stroke="hsl(${hue} 72% 62%)" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/></svg>`
 }
 
+const hueOf = (text) => {
+  let hash = 7
+  for (let i = 0; i < String(text).length; i += 1) hash = (hash * 31 + String(text).charCodeAt(i)) % 360
+  return hash
+}
+
 const column = (group, index) => {
   const latest = group.entries[0] || {}
-  return `<section class="dsp-column">
+  const hue = hueOf(group.id)
+  return `<section class="dsp-column" style="--dsp-tint: hsla(${hue}, 58%, 56%, 0.15)">
     <div class="dsp-column-head">
       <div class="dsp-column-head-top">
-        <span class="dsp-dot" style="background:hsl(${(index * 67 + 20) % 360} 72% 62%)"></span>
+        <span class="dsp-dot" style="background:hsl(${hue} 72% 62%)"></span>
         <span class="dsp-column-title">${esc(group.title || group.id)}</span>
       </div>
       <div class="dsp-column-head-sub">
         <span class="dsp-column-stat">${latest.p == null ? '—' : latest.p + '%'} · ${group.entries.length} 次</span>
         <span class="dsp-column-time">${esc(clock(latest.at))}</span>
-        ${spark(group.entries, (index * 67 + 20) % 360)}
+        ${spark(group.entries, hue)}
       </div>
     </div>
     <div class="dsp-column-body">${group.entries.slice(0, 9).map((entry, i) => row(entry, index === 0 && i === 1)).join('')}</div>
@@ -94,9 +101,29 @@ const html = `<!doctype html>
 <style>
   ${base}
   body { margin: 0; padding: 18px; background: #17181c; color: #e6e8eb; font: 13px/1.5 system-ui, "Segoe UI", sans-serif; }
-  .dsp-panel { height: 620px; width: 1180px; border: 1px solid rgba(128,128,128,.22); border-radius: 12px; padding: 14px; box-sizing: border-box; }
+  .dsp-panel { height: 560px; width: 1180px; border: 1px solid rgba(128,128,128,.22); border-radius: 12px; padding: 14px; box-sizing: border-box; }
+  .cap { margin: 10px 0 6px; font: 600 12px/1.4 ui-monospace, monospace; color: #8b93a1; }
+  .dsp-skin-apple { padding: 0; }
 </style>
-<div class="dsp-panel">
+<h2 class="cap">新 · 分组卡片（apple）</h2>
+<div class="dsp-panel dsp-skin-apple" data-skin="apple">
+  <div class="dsp-panel-head">
+    <div class="dsp-panel-title">进度日志</div>
+    <div class="dsp-panel-sub">
+      <span class="dsp-sub-group">deepseek-account/deepseek-flash · 强度 off · 每 30 秒</span>
+      <span class="dsp-sub-group">本轮 2 次 · 历史 583（中断 2）</span>
+      <span class="dsp-sub-group dsp-tokens">1.1M tok</span>
+    </div>
+  </div>
+  <div class="dsp-panel-body">
+    <div class="dsp-columns">
+      ${columns.map(column).join('')}
+    </div>
+  </div>
+</div>
+
+<h2 class="cap">旧 · 紧凑列表（classic）</h2>
+<div class="dsp-panel dsp-skin-classic" data-skin="classic">
   <div class="dsp-panel-head">
     <div class="dsp-panel-title">进度日志</div>
     <div class="dsp-panel-sub">
@@ -113,6 +140,7 @@ const html = `<!doctype html>
 </div>
 <script>
 window.__probe = () => ({
+  skins: [...document.querySelectorAll('[data-skin]')].map((n) => [n.dataset.skin, getComputedStyle(n).backgroundColor, n.querySelector('.dsp-column') ? getComputedStyle(n.querySelector('.dsp-column')).borderRadius : null]),
   rows: document.querySelectorAll('.dsp-row').length,
   rowHeights: [...document.querySelectorAll('.dsp-row')].slice(0, 4).map((n) => Math.round(n.getBoundingClientRect().height)),
   noteLines: [...document.querySelectorAll('.dsp-row-note')].slice(0, 4).map((n) => n.scrollWidth > n.clientWidth + 1),

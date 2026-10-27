@@ -248,6 +248,24 @@ assert.equal(settingsOnly.has('dsp-columns'), false, 'nor the two-column log lay
 
 assert.equal(sheets.length >= 3, true, 'the base, look and dynamic stylesheets are injected')
 
+// 4) The panel skin comes from the host config and defaults to the grouped
+//    layout. If the class stops following `panelStyle`, the switch in settings
+//    becomes a no-op that still claims to work.
+assert.equal(classes.has('dsp-skin-apple'), true, 'a config without panelStyle draws the apple skin')
+assert.equal(classes.has('dsp-skin-classic'), false, 'and not the classic one')
+
+served = { ...fixture, config: { ...(fixture.config || {}), panelStyle: 'classic' } }
+const panelRegistration = registrations.find((item) => item.spec.name === 'main')
+await sleep(60)
+const classicClasses = new Set()
+for (const node of render(panelRegistration.component)) {
+  for (const name of String(node.props.className || '').split(/\s+/)) {
+    if (name) classicClasses.add(name)
+  }
+}
+assert.equal(classicClasses.has('dsp-skin-classic'), true, 'panelStyle: classic switches the skin')
+assert.equal(classicClasses.has('dsp-skin-apple'), false, 'and the apple class goes away')
+
 // 4) The preview must repaint on the flow controls too. `paintLook` once keyed
 // only on colour/opacity/style, so switching the tier (or its speed, or the
 // on/off switch) changed nothing until the next SSE frame — the preview looked

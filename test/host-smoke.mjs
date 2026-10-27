@@ -178,6 +178,7 @@ const saved = JSON.parse(
       color: '#FF8800',
       opacity: 0.35,
       style: 'glow',
+      panelStyle: 'classic',
     })
   ).body,
 )
@@ -200,6 +201,8 @@ assert.equal(cfg0.config.style, 'band')
 assert.equal(cfg0.config.flow, true, 'the flow is on by default')
 assert.equal(cfg0.config.flowSpeed, 'slow', 'default speed is the slow one')
 assert.equal(cfg0.config.flowQuality, 'medium', 'default quality is the water texture')
+assert.equal(saved.config.panelStyle, 'classic', 'a known panel skin is accepted')
+assert.equal(cfg0.config.panelStyle, 'apple', 'the grouped skin is the default')
 
 // ---- look settings are validated, never trusted --------------------------
 const dirty = JSON.parse(
@@ -208,12 +211,14 @@ const dirty = JSON.parse(
       color: 'javascript:alert(1)',
       opacity: 9,
       style: 'not-a-style',
+      panelStyle: 'neon',
     })
   ).body,
 )
 assert.equal(dirty.config.color, '#FF8800', 'a non-hex colour keeps the previous one')
 assert.equal(dirty.config.opacity, 1, 'opacity is clamped into [0.05, 1]')
 assert.equal(dirty.config.style, 'glow', 'an unknown style keeps the previous one')
+assert.equal(dirty.config.panelStyle, 'classic', 'an unknown skin keeps the previous one')
 
 // ---- flow settings are validated too -------------------------------------
 const flowOn = JSON.parse(
