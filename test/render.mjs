@@ -417,6 +417,14 @@ assert.ok(
   'only a paging response decides whether older turns remain',
 )
 
+// 14) The load-more pill owns its height. Inheriting .dsp-btn-xs's 20px with
+// 6px padding left an 8px content box, and the glyphs hung past the bottom edge.
+assert.ok(
+  clientSource.includes('height: auto;') &&
+    clientSource.includes('min-height: 28px;'),
+  'the pill sizes itself to its label instead of inheriting a fixed 20px height',
+)
+
 console.log('render assertions passed')
 // The store schedules its next poll, which would keep the runner alive forever.
 process.exit(0)

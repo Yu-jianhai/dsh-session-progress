@@ -888,6 +888,10 @@ html[data-dsp-hidden] [data-row-key^="session:"]::before {
   color: rgba(235, 235, 245, 0.5);
 }
 .dsp-skin-apple .dsp-column-body {
+  /* The scrollbar only eats from the right, so anything centred in the content
+     box sits ~4px left of the card's middle. Reserving both edges keeps the
+     rows and the load-more pill on the card's own centreline. */
+  scrollbar-gutter: stable both-edges;
   padding: 4px 6px 6px;
   gap: 0;
 }
@@ -967,7 +971,15 @@ html[data-dsp-hidden] [data-row-key^="session:"]::before {
 }
 .dsp-history-more,
 .dsp-seg-more {
-  /* The classic skin inherits .dsp-btn-xs (11px) — too small to read here. */
+  /* .dsp-btn-xs pins height: 20px. With 6px padding that leaves an 8px content
+     box, so the glyphs were drawn right past the bottom edge. Let the box size
+     itself to the text instead of inheriting that height. */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: auto;
+  min-height: 28px;
+  line-height: 1.2;
   font-size: 12.5px;
   color: var(--dsw-alias-label-primary, inherit);
   padding: 5px 14px;
