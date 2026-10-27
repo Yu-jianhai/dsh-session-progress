@@ -203,10 +203,10 @@ html[data-dsp-hidden] [data-row-key^="session:"]::before {
 .dsp-row-line {
   display: flex;
   align-items: baseline;
-  gap: 8px;
+  gap: 10px;
   width: 100%;
   margin: 0;
-  padding: 4px 5px;
+  padding: 5px 6px;
   border: none;
   border-radius: 5px;
   background: none;
@@ -221,19 +221,19 @@ html[data-dsp-hidden] [data-row-key^="session:"]::before {
 }
 .dsp-row-time {
   flex: none;
-  width: 56px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 10px;
+  width: 58px;
+  font-size: 11px;
+  letter-spacing: 0.1px;
   color: var(--dsw-alias-label-tertiary, #888);
   font-variant-numeric: tabular-nums;
 }
 .dsp-row-p {
   flex: none;
-  width: 34px;
+  width: 38px;
   text-align: right;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 11px;
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
   color: var(--dsw-alias-label-primary, #fff);
   font-variant-numeric: tabular-nums;
 }
@@ -260,7 +260,8 @@ html[data-dsp-hidden] [data-row-key^="session:"]::before {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 12px;
+  font-size: 13px;
+  line-height: 1.45;
   color: var(--dsw-alias-label-primary, inherit);
 }
 .dsp-row.failed .dsp-row-note {
@@ -268,8 +269,9 @@ html[data-dsp-hidden] [data-row-key^="session:"]::before {
 }
 .dsp-row-ms {
   flex: none;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 10px;
+  width: 30px;
+  text-align: right;
+  font-size: 11px;
   color: var(--dsw-alias-label-tertiary, #888);
   font-variant-numeric: tabular-nums;
 }
@@ -318,9 +320,8 @@ html[data-dsp-hidden] [data-row-key^="session:"]::before {
 .dsp-detail-meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 10px;
+  gap: 12px;
+  font-size: 11px;
   color: var(--dsw-alias-label-tertiary, #888);
 }
 /* One column per session, left to right: the head names the session, the body
@@ -338,7 +339,7 @@ html[data-dsp-hidden] [data-row-key^="session:"]::before {
 .dsp-column {
   flex: 1 1 320px;
   min-width: 264px;
-  max-width: 560px;
+  max-width: 720px;
   min-height: 0;
   display: flex;
   flex-direction: column;
@@ -536,7 +537,8 @@ html[data-dsp-hidden] [data-row-key^="session:"]::before {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 12px;
+  font-size: 13px;
+  font-weight: 500;
 }
 .dsp-seg-turn {
   flex: none;
@@ -570,15 +572,29 @@ html[data-dsp-hidden] [data-row-key^="session:"]::before {
 }
 .dsp-seg-more {
   align-self: flex-start;
-  padding: 2px 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 0;
   border: none;
   background: none;
   color: var(--dsw-alias-label-secondary, #b8bec8);
-  font-size: 11px;
+  font-size: 12px;
   cursor: pointer;
+  transition: color 150ms ease;
 }
 .dsp-seg-more:hover {
-  text-decoration: underline;
+  color: var(--dsw-alias-label-primary, #e6e8eb);
+}
+.dsp-seg-caret {
+  display: inline-block;
+  font-size: 11px;
+  line-height: 1;
+  transform: rotate(0deg);
+  transition: transform 180ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.dsp-seg-caret.open {
+  transform: rotate(90deg);
 }
 .dsp-meta {
   display: flex;
@@ -632,9 +648,9 @@ html[data-dsp-hidden] [data-row-key^="session:"]::before {
   white-space: pre-wrap;
   word-break: break-word;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 11px;
-  line-height: 1.5;
-  padding: 6px 8px;
+  font-size: 11.5px;
+  line-height: 1.55;
+  padding: 8px 10px;
   border-radius: 6px;
   background: rgba(128, 128, 128, 0.1);
 }
@@ -844,7 +860,7 @@ html[data-dsp-hidden] [data-row-key^="session:"]::before {
   box-shadow: 0 14px 30px -26px rgba(0, 0, 0, 0.95);
 }
 .dsp-skin-apple .dsp-column-head {
-  padding: 14px 16px 12px;
+  padding: 12px 16px 11px;
   gap: 6px;
   border-bottom: none;
   background: var(--dsp-tint, rgba(255, 255, 255, 0.05));
@@ -872,14 +888,16 @@ html[data-dsp-hidden] [data-row-key^="session:"]::before {
   color: rgba(235, 235, 245, 0.5);
 }
 .dsp-skin-apple .dsp-column-body {
-  padding: 6px;
+  padding: 4px 6px 6px;
   gap: 0;
 }
 .dsp-skin-apple .dsp-row + .dsp-row {
   border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 .dsp-skin-apple .dsp-row-line {
-  padding: 11px 10px;
+  /* 11px of padding was Apple's "comfortable" row for touch; a log list is
+     scanned, not tapped, so it drops to 7px and fits three more rows. */
+  padding: 7px 10px;
   gap: 10px;
   border-radius: 10px;
 }

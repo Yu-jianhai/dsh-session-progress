@@ -387,6 +387,14 @@ assert.equal(
   'the separators say how they work',
 )
 
+// 11) The history segment's "expand all" is a toggle, not a one-way door: the
+// first version called setOpen(true) and the button then had nothing left to do.
+assert.ok(
+  clientSource.includes('onClick: () => setOpen((value) => !value)'),
+  'expanding a whole turn can be undone from the same button',
+)
+assert.ok(clientSource.includes("'收起'"), 'the button says what it will do next')
+
 console.log('render assertions passed')
 // The store schedules its next poll, which would keep the runner alive forever.
 process.exit(0)
