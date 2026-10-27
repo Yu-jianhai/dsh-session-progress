@@ -148,3 +148,11 @@
 - **原因**：`input[type=color]` 名义上只回 `#rrggbb`，但系统取色器（以及部分 WebView 构建）会回 `rgb(18, 171, 52)` 这种写法。旧的处理函数把它原样塞进 draft 发出去，宿主的 `/^#[0-9a-fA-F]{6}$/` 校验不认，**静默丢弃、保留旧值**——表现就是"取了色却没效果"。
 - **修法**：客户端加 `normalizeHex()`，接受 `#abc`、`#rrggbb`、`rgb()` / `rgba()`（含百分比通道），一律规范成大写 `#RRGGBB`；解析不出来就 `return`，保留原色而不是回落到默认蓝。
 - **守卫**：`test/look.mjs` 的 `normalizeHex` 八条断言（含空串、颜色名、截断 hex 一律回 `null`）；`test/render.mjs` 第 8 段用 `rgb(18, 171, 52)` 走一遍颜色输入，断言样式表里出现 `#12AB34`。
+
+## P-21 历史详情里耗时全是 `0s`、展开是空的
+
+- **现象**：历史轮次列里每条右端写 `0s`；点开之后详情区什么都没有。
+- **原因**：0.20.1 为了"历史跟着首屏加载"，在宿主把 `closed` 行裁成八个字段（`at/sessionId/sessionTitle/turn/p/note/outcome/phase`）。可详情面板画的是 `ms`、`model`、`effort`、`tokens`、`raw`——全被裁掉了。`renderEntry` 里 `Number(entry.ms) || 0` 把 `undefined` 变成 0，于是每行都是 `0s`；详情块那几行读不到值，整块空。
+- **修法**：不裁行，改**分页**。`/log` 的 `history` 默认只发 `HISTORY_PAGE = 40` 条，回 `historyMore` 与 `historyCursor`；客户端「再看 40 轮」把 `historyBefore=<最早那行 at>` 带回去，宿主按 `at` 过滤再取 40。40 行完整数据约 18 KB，比"223 KB 全量"和"裁到面板画不出东西"都划算。
+- **教训**：**裁剪的字段表必须从"渲染代码读了什么"倒推**，不能从"我觉得这列要画什么"正推。裁之前 `grep -o 'entry\.[a-z]*' lib/client.js | sort -u` 一遍。
+- **谁守着**：`test/perf-contract.mjs` 第 5 段（历史行必须带 `ms`/`model`/`effort`、`historyLimit` 生效、`historyCursor` 是字符串、`history=0` 仍可退出）。

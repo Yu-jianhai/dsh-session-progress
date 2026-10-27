@@ -245,9 +245,9 @@ try {
   assert.equal(reporter.applied, 1)
 }
 
-// 5) History rides along with the first paint, but only its drawn fields: the
-//    panel never shows the model output of a closed turn, and shipping it would
-//    put a few hundred KB on a poll that runs every three seconds.
+// 5) History ships whole rows, one page at a time. 0.20.1 trimmed them down to
+//    the fields the column draws and the detail panel broke: `ms` showed "0s"
+//    and the expanded body was empty. The fix is a cursor, not a thinner row.
 {
   const { ctx, handlers, routes } = makeCtx()
   apply(ctx, { firstDelayMs: 10, intervalMs: 60000, seedP: 0 })
@@ -259,11 +259,18 @@ try {
   const payload = await log(routes, 'limit=20')
   assert.ok(payload.history.length >= 1, 'closed turns come back with the first paint')
   const row = payload.history[0]
-  assert.equal(row.raw, undefined, 'history rows drop the model output')
-  assert.equal(row.tokens, undefined, 'and the token breakdown')
-  for (const key of ['at', 'sessionId', 'turn', 'p', 'note', 'outcome']) {
+  // The five fields the detail panel actually renders.
+  for (const key of ['at', 'sessionId', 'turn', 'p', 'note', 'outcome', 'ms', 'model', 'effort']) {
     assert.ok(key in row, `history rows keep ${key}`)
   }
+  assert.equal(typeof row.ms, 'number', 'the duration is a number, not undefined')
+  assert.ok(row.raw === undefined || typeof row.raw === 'string', 'raw survives when present')
+  assert.equal(payload.historyMore, false, 'one turn does not need a second page')
+
+  const paged = await log(routes, 'limit=20&historyLimit=1')
+  assert.equal(paged.history.length, 1, 'historyLimit caps the page')
+  assert.equal(typeof paged.historyCursor, 'string', 'and hands back a cursor to continue from')
+  assert.equal(paged.historyMore, false, 'a single row is the whole page')
 
   const off = await log(routes, 'limit=20&history=0')
   assert.equal(off.history.length, 0, 'history=0 still opts out')
