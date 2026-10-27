@@ -88,6 +88,18 @@ html[data-dsp-hidden] [data-row-key^="session:"]::before {
   animation-play-state: paused;
 }
 @media (prefers-reduced-motion: reduce) {
+  .dsp-panel,
+  .dsp-row-detail,
+  .dsp-spark polyline {
+    animation: none;
+  }
+  .dsp-row-line,
+  .dsp-row-caret,
+  .dsp-btn,
+  .dsp-gutter,
+  .dsp-column-head {
+    transition: none;
+  }
   [data-row-key^="session:"]::after {
     transition: none;
     animation: none;
@@ -108,6 +120,47 @@ html[data-dsp-hidden] [data-row-key^="session:"]::before {
   font-size: 12px;
   line-height: 1.6;
   color: var(--dsw-alias-label-secondary, #9aa0a8);
+}
+.dsp-loglink-inline {
+  margin-top: 10px;
+  border-top: 1px solid rgba(128, 128, 128, 0.18);
+  padding-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.dsp-loglink-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 3px 0;
+  font-size: 12px;
+  min-width: 0;
+}
+.dsp-loglink-time {
+  color: var(--dsw-alias-label-tertiary, #888);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  flex: none;
+}
+.dsp-loglink-p {
+  color: var(--dsw-alias-label-primary, inherit);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  flex: none;
+  width: 34px;
+  text-align: right;
+}
+.dsp-loglink-note {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--dsw-alias-label-secondary, #aaa);
+}
+.dsp-loglink-error {
+  margin-top: 8px;
+  color: rgb(255, 138, 138);
 }
 .dsp-loglink-actions {
   display: flex;
@@ -161,6 +214,7 @@ html[data-dsp-hidden] [data-row-key^="session:"]::before {
   font: inherit;
   text-align: left;
   cursor: pointer;
+  transition: background 160ms cubic-bezier(0.22, 0.61, 0.36, 1), transform 140ms ease;
 }
 .dsp-row-line:hover {
   background: rgba(128, 128, 128, 0.1);
@@ -219,12 +273,44 @@ html[data-dsp-hidden] [data-row-key^="session:"]::before {
   color: var(--dsw-alias-label-tertiary, #888);
   font-variant-numeric: tabular-nums;
 }
+/* Motion: short, eased, and always interruptible — the panel repaints every
+   3 seconds, so nothing may animate on a timer the reader did not start. */
+@keyframes dsp-unfold {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes dsp-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes dsp-draw {
+  from {
+    stroke-dashoffset: 240;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
 .dsp-row-detail {
   display: flex;
   flex-direction: column;
   gap: 6px;
   margin: 0 5px 6px;
   padding: 6px 8px;
+  animation: dsp-unfold 240ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  transform-origin: top center;
   border-left: 2px solid rgba(144, 175, 255, 0.45);
   border-radius: 0 6px 6px 0;
   background: rgba(128, 128, 128, 0.08);
@@ -243,7 +329,7 @@ html[data-dsp-hidden] [data-row-key^="session:"]::before {
   display: flex;
   flex-direction: row;
   align-items: flex-start;
-  gap: 12px;
+  gap: 4px;
   min-height: 0;
   overflow-x: auto;
   overflow-y: hidden;
@@ -334,6 +420,9 @@ html[data-dsp-hidden] [data-row-key^="session:"]::before {
   font-size: 11px;
 }
 
+.dsp-spark polyline {
+  animation: dsp-draw 620ms ease-out both;
+}
 .dsp-spark {
   flex: none;
   opacity: 0.85;
@@ -391,10 +480,42 @@ html[data-dsp-hidden] [data-row-key^="session:"]::before {
   border-radius: 50%;
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset;
 }
+/* Small physical cues: buttons and cards respond to the pointer, then settle. */
+.dsp-btn {
+  transition: background 150ms cubic-bezier(0.22, 0.61, 0.36, 1), transform 120ms ease, border-color 150ms ease;
+}
+.dsp-btn:active {
+  transform: scale(0.97);
+}
+.dsp-column-head {
+  transition: background 220ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.dsp-seg {
+  transition: box-shadow 180ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.dsp-seg-body > * {
+  animation: dsp-unfold 200ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
 /* ---- history column: closed and interrupted turns ---------------------- */
+/* The history column holds the same rows as a session column — including the
+   expanded detail — so it grows like one instead of being pinned to a rail. */
+/* Drag handle between columns: a thin strip that lights up on hover. */
+.dsp-gutter {
+  flex: 0 0 8px;
+  align-self: stretch;
+  border-radius: 3px;
+  cursor: col-resize;
+  background: transparent;
+  transition: background 140ms ease;
+}
+.dsp-gutter:hover,
+.dsp-gutter:active {
+  background: rgba(144, 175, 255, 0.45);
+}
 .dsp-history {
-  flex: 0 0 300px;
-  max-width: 340px;
+  flex: 1 1 360px;
+  min-width: 300px;
+  max-width: 640px;
   background: rgba(128, 128, 128, 0.06);
 }
 .dsp-seg {
@@ -518,6 +639,7 @@ html[data-dsp-hidden] [data-row-key^="session:"]::before {
   background: rgba(128, 128, 128, 0.1);
 }
 .dsp-panel {
+  animation: dsp-panel-in 280ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
   display: flex;
   flex-direction: column;
   height: 100%;

@@ -373,6 +373,20 @@ assert.ok(clientSource.includes('这个外壳没有提供切换面板的接口')
 assert.ok(clientSource.includes('打不开：'), 'the card shows the failure instead of going quiet')
 assert.ok(clientSource.includes('.dsp-loglink-inline'), 'and it falls back to a few rows right there')
 
+// 10) Every column carries a drag handle, so the history column can be widened
+// without touching the session columns next to it.
+const panelNodes = render(registrations.find((entry) => entry.spec.name === 'main').component)
+const gutters = panelNodes.filter((node) => node.props && node.props.className === 'dsp-gutter')
+const columns = panelNodes.filter(
+  (node) => node.props && typeof node.props.className === 'string' && /dsp-column/.test(node.props.className),
+)
+assert.ok(gutters.length >= columns.length, 'each column has a separator to its right')
+assert.equal(
+  gutters.filter((node) => node.props.title && node.props.title.includes('拖动')).length,
+  gutters.length,
+  'the separators say how they work',
+)
+
 console.log('render assertions passed')
 // The store schedules its next poll, which would keep the runner alive forever.
 process.exit(0)
