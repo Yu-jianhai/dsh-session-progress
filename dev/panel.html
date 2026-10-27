@@ -953,11 +953,24 @@ html[data-dsp-hidden] [data-row-key^="session:"]::before {
 }
 .dsp-skin-apple .dsp-seg-more,
 .dsp-skin-apple .dsp-history-more {
-  margin: 4px auto 8px;
-  padding: 5px 14px;
+  /* A column body is a flex column: align-self centres this. Margin auto on a
+     stretched item left the label hugging the left edge instead. */
+  align-self: center;
+  margin: 6px 0 10px;
+  padding: 6px 16px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.06);
-  font-size: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(235, 235, 245, 0.92);
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: 0.1px;
+}
+.dsp-history-more,
+.dsp-seg-more {
+  /* The classic skin inherits .dsp-btn-xs (11px) — too small to read here. */
+  font-size: 12.5px;
+  color: var(--dsw-alias-label-primary, inherit);
+  padding: 5px 14px;
 }
 .dsp-skin-apple .dsp-seg-more:hover,
 .dsp-skin-apple .dsp-history-more:hover {
@@ -1096,7 +1109,7 @@ html[data-dsp-hidden] [data-row-key^="session:"]::before {
     
     <span class="dsp-row-ms">0.8s</span>
     <span class="dsp-row-caret">›</span>
-  </button></div></div>
+  </button></div><button class="dsp-btn dsp-btn-xs dsp-history-more" type="button">再看 40 轮</button></div>
   </section><section class="dsp-column" style="--dsp-tint: hsla(135, 58%, 56%, 0.15)">
     <div class="dsp-column-head">
       <div class="dsp-column-head-top">
@@ -1181,7 +1194,7 @@ html[data-dsp-hidden] [data-row-key^="session:"]::before {
     
     <span class="dsp-row-ms">0.7s</span>
     <span class="dsp-row-caret">›</span>
-  </button></div></div>
+  </button></div><button class="dsp-btn dsp-btn-xs dsp-history-more" type="button">再看 40 轮</button></div>
   </section>
     </div>
   </div>
@@ -1288,7 +1301,7 @@ html[data-dsp-hidden] [data-row-key^="session:"]::before {
     
     <span class="dsp-row-ms">0.8s</span>
     <span class="dsp-row-caret">›</span>
-  </button></div></div>
+  </button></div><button class="dsp-btn dsp-btn-xs dsp-history-more" type="button">再看 40 轮</button></div>
   </section><section class="dsp-column" style="--dsp-tint: hsla(135, 58%, 56%, 0.15)">
     <div class="dsp-column-head">
       <div class="dsp-column-head-top">
@@ -1373,7 +1386,7 @@ html[data-dsp-hidden] [data-row-key^="session:"]::before {
     
     <span class="dsp-row-ms">0.7s</span>
     <span class="dsp-row-caret">›</span>
-  </button></div></div>
+  </button></div><button class="dsp-btn dsp-btn-xs dsp-history-more" type="button">再看 40 轮</button></div>
   </section>
     </div>
   </div>

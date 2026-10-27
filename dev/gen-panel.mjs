@@ -91,7 +91,7 @@ const column = (group, index) => {
         ${spark(group.entries, hue)}
       </div>
     </div>
-    <div class="dsp-column-body">${group.entries.slice(0, 9).map((entry, i) => row(entry, index === 0 && i === 1)).join('')}</div>
+    <div class="dsp-column-body">${group.entries.slice(0, 9).map((entry, i) => row(entry, index === 0 && i === 1)).join('')}<button class="dsp-btn dsp-btn-xs dsp-history-more" type="button">再看 40 轮</button></div>
   </section>`
 }
 

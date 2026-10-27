@@ -395,6 +395,22 @@ assert.ok(
 )
 assert.ok(clientSource.includes("'收起'"), 'the button says what it will do next')
 
+// 12) History paging is additive. A plain poll only carries the newest page, so
+// replacing the column with it made the rows fetched by "load 40 more" vanish
+// a few seconds later.
+assert.ok(
+  clientSource.includes('logStore.historyRows = rows.slice(0, HISTORY_KEEP)'),
+  'older pages are merged into the rows already on screen',
+)
+assert.ok(
+  clientSource.includes("loadingOlder ? '加载中…' : '再看 40 轮'"),
+  'the button says it is working while the page is in flight',
+)
+assert.ok(
+  clientSource.includes('align-self: center;'),
+  'the load-more label is centred, not stretched against the left edge',
+)
+
 console.log('render assertions passed')
 // The store schedules its next poll, which would keep the runner alive forever.
 process.exit(0)
