@@ -411,6 +411,12 @@ assert.ok(
   'the load-more label is centred, not stretched against the left edge',
 )
 
+// 13) A plain poll must not re-arm the paging button after the end is reached.
+assert.ok(
+  clientSource.includes('if (loadedOlder || !hadRows) logStore.historyMore'),
+  'only a paging response decides whether older turns remain',
+)
+
 console.log('render assertions passed')
 // The store schedules its next poll, which would keep the runner alive forever.
 process.exit(0)
