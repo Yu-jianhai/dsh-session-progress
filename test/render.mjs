@@ -361,6 +361,18 @@ assert.match(lookSheet().textContent, /#12AB34|#12ab34/i, 'a picked colour repai
 colourBox.props.onChange({ target: { value: 'rgb(18, 171, 52)' } })
 assert.match(lookSheet().textContent, /#12AB34/i, 'an rgb() result from the picker is normalised to hex')
 
+// 9) The settings card is a door to the rail panel. The host faces differ
+// between shells, so the opener has to try `layout.selectPanel`, then
+// `panels.selectPanel`, then `layout.select` — and report the reason instead of
+// swallowing the click.
+for (const path_ of ['layout.selectPanel', 'panels.selectPanel', 'layout.select', "ctx.get('layout')" === '' ? '' : "face('layout')"]) {
+  if (!path_) continue
+  assert.ok(clientSource.includes(path_), `the opener still tries ${path_}`)
+}
+assert.ok(clientSource.includes('这个外壳没有提供切换面板的接口'), 'a shell without a layout face is named')
+assert.ok(clientSource.includes('打不开：'), 'the card shows the failure instead of going quiet')
+assert.ok(clientSource.includes('.dsp-loglink-inline'), 'and it falls back to a few rows right there')
+
 console.log('render assertions passed')
 // The store schedules its next poll, which would keep the runner alive forever.
 process.exit(0)

@@ -156,3 +156,18 @@
 - **修法**：不裁行，改**分页**。`/log` 的 `history` 默认只发 `HISTORY_PAGE = 40` 条，回 `historyMore` 与 `historyCursor`；客户端「再看 40 轮」把 `historyBefore=<最早那行 at>` 带回去，宿主按 `at` 过滤再取 40。40 行完整数据约 18 KB，比"223 KB 全量"和"裁到面板画不出东西"都划算。
 - **教训**：**裁剪的字段表必须从"渲染代码读了什么"倒推**，不能从"我觉得这列要画什么"正推。裁之前 `grep -o 'entry\.[a-z]*' lib/client.js | sort -u` 一遍。
 - **谁守着**：`test/perf-contract.mjs` 第 5 段（历史行必须带 `ms`/`model`/`effort`、`historyLimit` 生效、`historyCursor` 是字符串、`history=0` 仍可退出）。
+
+## P-22 · 设置卡里的「打开进度日志」点了没反应
+
+**现象**：设置里那张卡片只有一颗按钮，点下去什么都不发生，也不知道为什么。
+
+**原因**：按钮调的是 `ctx.layout.selectPanel(PANEL_ID)`，整段包在 `try { … } catch {}` 里，而 `layout` 这个面在不同外壳里不一定存在（或者 `main` 里没有我们的 key 时会直接抛 `layout.selectPanel: main panel "…" is not registered`）。异常被吞进控制台，界面上没有第二个线索。
+
+**修法**：
+
+1. 依次试 `layout.selectPanel` → `panels.selectPanel` → `layout.select`，每个都单独 try 并把错误信息收集起来；
+2. 用 `ctx.get('layout')` 取可选服务，**不要**把 `layout` 写进 `inject`（外壳没有这个面时会把整个 `apply` 卡住）；
+3. `hasMainPanel(id)` 为假时先补注册 `main` 再选一次；
+4. 真失败就把原因渲染在卡片里（`打不开：…`），并**顺手拉 8 条日志就地展开**——门打不开，至少给个窗。
+
+**谁守着它**：`test/render.mjs` 第 9 段（断言三条路径与兜底文案都在源码里）；`.dsp-loglink-inline` 的存在性。
