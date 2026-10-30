@@ -425,6 +425,29 @@ assert.ok(
   'the pill sizes itself to its label instead of inheriting a fixed 20px height',
 )
 
+// 15) A stalled turn is called out: once the host marks a row, the badge and
+// the column chip must show up without opening anything.
+const stalled = {
+  ...fixture,
+  entries: [
+    { ...fixture.entries[0], stall: { level: 'warn', count: 4, since: Date.now(), note: '', failure: true } },
+    ...fixture.entries.slice(1),
+  ],
+}
+served = stalled
+for (const { component } of registrations) render(component)
+await sleep(60)
+const stallClasses = new Set()
+for (const node of render(panelRegistration.component)) {
+  for (const name of String(node.props.className || '').split(/\s+/)) {
+    if (name) stallClasses.add(name)
+  }
+}
+assert.equal(stallClasses.has('dsp-stall'), true, 'a stalled row carries a warning badge')
+assert.equal(stallClasses.has('dsp-stall-chip'), true, 'and the column header says it too')
+assert.equal(stallClasses.has('warn'), true, 'and the badge states its severity')
+served = fixture
+
 console.log('render assertions passed')
 // The store schedules its next poll, which would keep the runner alive forever.
 process.exit(0)

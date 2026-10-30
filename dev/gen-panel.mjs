@@ -10,6 +10,16 @@ const cssStart = source.indexOf('const BASE_CSS = `') + 'const BASE_CSS = `'.len
 const base = source.slice(cssStart, source.indexOf('`', cssStart))
 
 const data = JSON.parse(fs.readFileSync(path.join(here, 'panel-data.json'), 'utf8'))
+// The fixture has no warning in it; stamp one so the preview shows the badge
+// the host would produce after four flat samples.
+const withWarning = (payload) => {
+  const live = (payload && payload.entries) || []
+  if (live.length > 1) {
+    live[1].stall = { level: 'warn', count: 4, since: Date.now(), note: live[1].note || '', failure: true }
+  }
+  return payload
+}
+withWarning(data)
 const esc = (value) =>
   String(value == null ? '' : value).replace(/[&<>"]/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]))
 const clock = (iso) => {
@@ -28,6 +38,12 @@ for (const entry of data.entries.concat(data.history)) {
 }
 const columns = [...groups.values()].slice(0, 2)
 
+// One row carries a loop warning so the preview shows the badge too.
+function rowLabel(entry) {
+  if (!entry.stall) return ''
+  return entry.stall.level === 'stuck' ? '卡住' : '停滞'
+}
+
 function row(entry, open) {
   const before = Number(entry.prev)
   const now = Number(entry.p)
@@ -40,6 +56,7 @@ function row(entry, open) {
     <span class="dsp-row-delta ${delta > 0 ? 'up' : 'down'}">${has ? (delta > 0 ? '+' + delta : delta) : ''}</span>
     <span class="dsp-row-note">${esc(entry.note || '（没写阶段名）')}</span>
     ${entry.revised ? '<span class="dsp-revised">重估</span>' : ''}
+    ${entry.stall ? `<span class="dsp-stall ${entry.stall.level === 'stuck' ? 'stuck' : 'warn'}">${rowLabel(entry)}</span>` : ''}
     <span class="dsp-row-ms">${ms}s</span>
     <span class="dsp-row-caret${open ? ' open' : ''}">›</span>
   </button>${
@@ -84,6 +101,17 @@ const column = (group, index) => {
       <div class="dsp-column-head-top">
         <span class="dsp-dot" style="background:hsl(${hue} 72% 62%)"></span>
         <span class="dsp-column-title">${esc(group.title || group.id)}</span>
+        ${group.entries.slice(0, 3).some((item) => item && item.stall)
+          ? `<span class="dsp-stall dsp-stall-chip ${
+              group.entries.slice(0, 3).some((item) => item && item.stall && item.stall.level === 'stuck')
+                ? 'stuck'
+                : 'warn'
+            }">${
+              group.entries.slice(0, 3).some((item) => item && item.stall && item.stall.level === 'stuck')
+                ? '卡住'
+                : '停滞'
+            }</span>`
+          : ''}
       </div>
       <div class="dsp-column-head-sub">
         <span class="dsp-column-stat">${latest.p == null ? '—' : latest.p + '%'} · ${group.entries.length} 次</span>
