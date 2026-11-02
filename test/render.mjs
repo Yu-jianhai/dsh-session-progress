@@ -448,6 +448,21 @@ assert.equal(stallClasses.has('dsp-stall-chip'), true, 'and the column header sa
 assert.equal(stallClasses.has('warn'), true, 'and the badge states its severity')
 served = fixture
 
+// 16) History cards breathe on all four sides: the vertical gap between two
+// cards has to equal the column's own padding, otherwise the stack looks like a
+// table with rules again.
+const historyBodyRule = /\.dsp-history-body\s*\{[^}]*gap:\s*8px;[^}]*padding:\s*8px;/
+assert.equal(
+  historyBodyRule.test(clientSource),
+  true,
+  'history cards use the same inset on every side',
+)
+assert.equal(
+  clientSource.includes("className: 'dsp-column-body dsp-history-body'"),
+  true,
+  'and the history column is the one that gets it',
+)
+
 console.log('render assertions passed')
 // The store schedules its next poll, which would keep the runner alive forever.
 process.exit(0)

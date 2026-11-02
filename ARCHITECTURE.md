@@ -175,49 +175,49 @@ turn/end ──► closeTurn('completed') ──► p=100 ──► 淡出 ─�
 | `lib/client.js` | 404 | `sheetCss` | factory | function |
 | `lib/client.js` | 409 | `styleRules` | factory | function |
 | `lib/client.js` | 506 | `ensureWaterFilter` | factory | function |
-| `lib/client.js` | 1556 | `cssEscape` | factory | function |
-| `lib/client.js` | 1567 | `shortId` | factory | function |
-| `lib/client.js` | 1573 | `formatTokens` | factory | function |
-| `lib/client.js` | 1581 | `clockOf` | factory | function |
-| `lib/client.js` | 1590 | `useConfig` | factory | function |
-| `lib/client.js` | 1652 | `logNotify` | factory | const fn |
-| `lib/client.js` | 1656 | `logHidden` | factory | const fn |
-| `lib/client.js` | 1663 | `logFetch` | factory | const fn |
-| `lib/client.js` | 1734 | `logWantHistory` | factory | const fn |
-| `lib/client.js` | 1742 | `logMoreHistory` | factory | const fn |
-| `lib/client.js` | 1754 | `logMoreRows` | factory | const fn |
-| `lib/client.js` | 1759 | `logSchedule` | factory | const fn |
-| `lib/client.js` | 1772 | `logRefresh` | factory | const fn |
-| `lib/client.js` | 1778 | `logWatchVisibility` | factory | const fn |
-| `lib/client.js` | 1787 | `useLog` | factory | function |
-| `lib/client.js` | 1813 | `metaLine` | factory | function |
-| `lib/client.js` | 1855 | `routeWarning` | factory | function |
-| `lib/client.js` | 1881 | `LogRow` | factory | function |
-| `lib/client.js` | 1965 | `stallLabel` | factory | const fn |
-| `lib/client.js` | 1971 | `stallTitle` | factory | const fn |
-| `lib/client.js` | 1980 | `stallClass` | factory | const fn |
-| `lib/client.js` | 1986 | `renderEntry` | factory | function |
-| `lib/client.js` | 1997 | `routeLook` | factory | function |
-| `lib/client.js` | 2040 | `hueOf` | factory | function |
-| `lib/client.js` | 2053 | `groupBySession` | factory | function |
-| `lib/client.js` | 2083 | `groupHistory` | factory | function |
-| `lib/client.js` | 2125 | `renderSpark` | factory | function |
-| `lib/client.js` | 2158 | `renderColumn` | factory | function |
-| `lib/client.js` | 2234 | `useColumnFlip` | factory | function |
-| `lib/client.js` | 2273 | `HistorySegment` | factory | function |
-| `lib/client.js` | 2334 | `renderHistoryColumn` | factory | function |
-| `lib/client.js` | 2381 | `readColumnWidths` | factory | function |
-| `lib/client.js` | 2391 | `writeColumnWidths` | factory | function |
-| `lib/client.js` | 2399 | `ColumnList` | factory | function |
-| `lib/client.js` | 2475 | `renderHistoryPlaceholder` | factory | function |
-| `lib/client.js` | 2508 | `renderColumns` | factory | function |
-| `lib/client.js` | 2512 | `emptyState` | factory | function |
-| `lib/client.js` | 2517 | `SettingsCard` | factory | function |
-| `lib/client.js` | 2994 | `SettingsPanel` | factory | function |
-| `lib/client.js` | 3006 | `ProgressLogCard` | factory | function |
-| `lib/client.js` | 3091 | `SampleLogPanel` | factory | function |
-| `lib/client.js` | 3153 | `SampleLogIcon` | factory | function |
-| `lib/client.js` | 3171 | `apply` | factory | function |
+| `lib/client.js` | 1568 | `cssEscape` | factory | function |
+| `lib/client.js` | 1579 | `shortId` | factory | function |
+| `lib/client.js` | 1585 | `formatTokens` | factory | function |
+| `lib/client.js` | 1593 | `clockOf` | factory | function |
+| `lib/client.js` | 1602 | `useConfig` | factory | function |
+| `lib/client.js` | 1664 | `logNotify` | factory | const fn |
+| `lib/client.js` | 1668 | `logHidden` | factory | const fn |
+| `lib/client.js` | 1675 | `logFetch` | factory | const fn |
+| `lib/client.js` | 1746 | `logWantHistory` | factory | const fn |
+| `lib/client.js` | 1754 | `logMoreHistory` | factory | const fn |
+| `lib/client.js` | 1766 | `logMoreRows` | factory | const fn |
+| `lib/client.js` | 1771 | `logSchedule` | factory | const fn |
+| `lib/client.js` | 1784 | `logRefresh` | factory | const fn |
+| `lib/client.js` | 1790 | `logWatchVisibility` | factory | const fn |
+| `lib/client.js` | 1799 | `useLog` | factory | function |
+| `lib/client.js` | 1825 | `metaLine` | factory | function |
+| `lib/client.js` | 1867 | `routeWarning` | factory | function |
+| `lib/client.js` | 1893 | `LogRow` | factory | function |
+| `lib/client.js` | 1977 | `stallLabel` | factory | const fn |
+| `lib/client.js` | 1983 | `stallTitle` | factory | const fn |
+| `lib/client.js` | 1992 | `stallClass` | factory | const fn |
+| `lib/client.js` | 1998 | `renderEntry` | factory | function |
+| `lib/client.js` | 2009 | `routeLook` | factory | function |
+| `lib/client.js` | 2052 | `hueOf` | factory | function |
+| `lib/client.js` | 2065 | `groupBySession` | factory | function |
+| `lib/client.js` | 2095 | `groupHistory` | factory | function |
+| `lib/client.js` | 2137 | `renderSpark` | factory | function |
+| `lib/client.js` | 2170 | `renderColumn` | factory | function |
+| `lib/client.js` | 2246 | `useColumnFlip` | factory | function |
+| `lib/client.js` | 2285 | `HistorySegment` | factory | function |
+| `lib/client.js` | 2346 | `renderHistoryColumn` | factory | function |
+| `lib/client.js` | 2393 | `readColumnWidths` | factory | function |
+| `lib/client.js` | 2403 | `writeColumnWidths` | factory | function |
+| `lib/client.js` | 2411 | `ColumnList` | factory | function |
+| `lib/client.js` | 2487 | `renderHistoryPlaceholder` | factory | function |
+| `lib/client.js` | 2520 | `renderColumns` | factory | function |
+| `lib/client.js` | 2524 | `emptyState` | factory | function |
+| `lib/client.js` | 2529 | `SettingsCard` | factory | function |
+| `lib/client.js` | 3006 | `SettingsPanel` | factory | function |
+| `lib/client.js` | 3018 | `ProgressLogCard` | factory | function |
+| `lib/client.js` | 3103 | `SampleLogPanel` | factory | function |
+| `lib/client.js` | 3165 | `SampleLogIcon` | factory | function |
+| `lib/client.js` | 3183 | `apply` | factory | function |
 <!-- INDEX:END -->
 
 ## 绝不能做（每条都真炸过一次）
