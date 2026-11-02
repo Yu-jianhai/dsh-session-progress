@@ -55,9 +55,23 @@ const fakeLlm = {
   },
 }
 
+// Flipped to undefined later to prove the panel hides WB instead of breaking.
+let wbService = {
+  list(query) {
+    if (query && query.state === 'running') {
+      return { dir: 'C:/fake/wb-logs', total: 3, runs: [{ id: 'wb-run', title: '改 PPT', phase: 'running', state: 'running', rounds: 2, seconds: 9.5 }] }
+    }
+    return {
+      dir: 'C:/fake/wb-logs',
+      total: 3,
+      runs: [{ id: 'wb-done', title: '渲染验收', phase: 'history', state: 'ok', inTok: 120, outTok: 8, seconds: 61, rounds: 4 }],
+    }
+  },
+}
+
 const ctx = {
   on(name, fn) { handlers[name] = fn },
-  get(name) { return name === 'llm' ? fakeLlm : undefined },
+  get(name) { return name === 'llm' ? fakeLlm : name === 'workbuddy' ? wbService : undefined },
   sessions: { get: (id) => (id === 'session-1' ? fakeSession : null), list: () => [fakeSession] },
   inject(names, factory) {
     factory({ effect(fn) { cleanups.push(fn()) }, webServer: { register(route) { routes.set(route.path, route.handler); return () => routes.delete(route.path) } } })

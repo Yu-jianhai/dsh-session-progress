@@ -30,6 +30,31 @@ const clock = (iso) => {
   }
 }
 
+const wbColumn = () => `
+      <section class="dsp-column dsp-wb" style="--dsp-tint: hsla(268, 58%, 60%, 0.16)">
+        <div class="dsp-column-head">
+          <div class="dsp-column-head-top">
+            <span class="dsp-dot" style="background:hsl(268 62% 66%)"></span>
+            <span class="dsp-column-title">WB 运行</span>
+            <span class="dsp-wb-tag">wb</span>
+          </div>
+          <div class="dsp-column-head-sub">
+            <span class="dsp-column-stat">1 条在跑</span>
+            <span class="dsp-column-time">128 tok</span>
+          </div>
+        </div>
+        <div class="dsp-column-body">
+          <div class="dsp-wb-run running live">
+            <div class="dsp-wb-top"><span class="dsp-wb-state running">运行中</span><span class="dsp-wb-title">改上海师范大学的课表</span></div>
+            <div class="dsp-wb-meta">auto · 第 2 轮 · 9s</div>
+          </div>
+          <div class="dsp-wb-run ok">
+            <div class="dsp-wb-top"><span class="dsp-wb-state ok">完成</span><span class="dsp-wb-title">渲染验收</span></div>
+            <div class="dsp-wb-meta">auto · 第 4 轮 · 1m 1s · 128 tok</div>
+          </div>
+        </div>
+      </section>`
+
 const groups = new Map()
 for (const entry of data.entries.concat(data.history)) {
   const key = `${entry.sessionId}`
@@ -145,7 +170,7 @@ const html = `<!doctype html>
   </div>
   <div class="dsp-panel-body">
     <div class="dsp-columns">
-      ${columns.map(column).join('')}
+      ${wbColumn()}${columns.map(column).join('')}
     </div>
   </div>
 </div>
@@ -162,7 +187,7 @@ const html = `<!doctype html>
   </div>
   <div class="dsp-panel-body">
     <div class="dsp-columns">
-      ${columns.map(column).join('')}
+      ${wbColumn()}${columns.map(column).join('')}
     </div>
   </div>
 </div>

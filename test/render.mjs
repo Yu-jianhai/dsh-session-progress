@@ -135,7 +135,16 @@ globalThis.EventSource = class {
 }
 
 let served = null
-globalThis.fetch = async () => ({ ok: true, json: async () => served })
+// The panel polls two endpoints now: the sample log and the WB board. A single
+// canned answer for both would make the WB column look permanently absent.
+let wbServed = { available: false, running: [], history: [], tokens: 0 }
+globalThis.fetch = async (url) => {
+  return ({
+
+  ok: true,
+  json: async () => (String(url).includes('/wb') ? wbServed : served),
+  })
+}
 
 // --- the React slice the module needs ----------------------------------------
 const React = {
@@ -462,6 +471,54 @@ assert.equal(
   true,
   'and the history column is the one that gets it',
 )
+
+// 17) WorkBuddy runs live in their own column, with a state instead of a
+// percentage. When the host says the service is missing, the column is gone —
+// not an empty shell that looks like a bug.
+const findRefresh = (node) => {
+  if (!node || typeof node !== 'object') return null
+  if (typeof node.type === 'function') return findRefresh(node.type(node.props || {}))
+  const name = String((node.props && node.props.className) || '')
+  if (node.type === 'button' && name.includes('dsp-btn-xs')) return node
+  for (const child of node.children || []) {
+    const hit = findRefresh(child)
+    if (hit) return hit
+  }
+  return null
+}
+const refreshBoth = async () => {
+  const button = findRefresh(React.createElement(panelRegistration.component, {}))
+  assert.ok(button, 'the panel still offers a refresh button')
+  button.props.onClick()
+  await sleep(80)
+}
+const classesOf = () => {
+  const seen = new Set()
+  for (const node of render(panelRegistration.component)) {
+    for (const name of String(node.props.className || '').split(/\s+/)) {
+      if (name) seen.add(name)
+    }
+  }
+  return seen
+}
+
+wbServed = {
+  available: true,
+  running: [{ id: 'wb-1', title: '改 PPT', phase: 'running', state: 'running', model: 'auto', rounds: 2, seconds: 9 }],
+  history: [{ id: 'wb-2', title: '渲染验收', phase: 'history', state: 'ok', seconds: 61, rounds: 4, inTok: 120, outTok: 8 }],
+  tokens: 128,
+}
+await refreshBoth()
+const wbClasses = classesOf()
+assert.equal(wbClasses.has('dsp-wb'), true, 'the WB column appears when the service answers')
+assert.equal(wbClasses.has('dsp-wb-run'), true, 'with one card per run')
+assert.equal(wbClasses.has('dsp-wb-state'), true, 'and a state chip, not a percentage')
+assert.equal(wbClasses.has('running'), true, 'the live run is marked as such')
+assert.equal(wbClasses.has('dsp-wb-tag'), true, 'the column is labelled as WB, not a session')
+
+wbServed = { available: false, reason: 'not installed', running: [], history: [], tokens: 0 }
+await refreshBoth()
+assert.equal(classesOf().has('dsp-wb'), false, 'no WB column when the service is absent')
 
 console.log('render assertions passed')
 // The store schedules its next poll, which would keep the runner alive forever.

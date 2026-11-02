@@ -539,6 +539,100 @@ html[data-dsp-hidden] [data-row-key^="session:"]::before {
   border-radius: 8px;
   overflow: hidden;
 }
+/* History cards are cards, not table rows: the gap between two of them equals
+   the column's own side padding, so the stack has the same inset on all four
+   sides instead of only left and right. */
+.dsp-history-body {
+  gap: 8px;
+  padding: 8px;
+}
+/* ---- WB runs: a second source, and deliberately not a percentage ------- */
+/* Violet marks the whole column so a WB card can never be mistaken for a DSH
+   session row. The chip is a state, not a progress number. */
+.dsp-wb .dsp-column-head {
+  background: hsla(268, 58%, 60%, 0.1);
+}
+.dsp-wb-tag {
+  margin-left: auto;
+  padding: 0 6px;
+  border-radius: 999px;
+  border: 1px solid rgba(167, 139, 255, 0.45);
+  color: rgb(186, 166, 255);
+  font-size: 10px;
+  line-height: 16px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.dsp-wb-run {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(128, 128, 128, 0.16);
+  background: rgba(255, 255, 255, 0.03);
+}
+.dsp-wb-run + .dsp-wb-run {
+  margin-top: 6px;
+}
+.dsp-wb-run.live {
+  border-color: rgba(167, 139, 255, 0.4);
+  background: rgba(167, 139, 255, 0.08);
+}
+.dsp-wb-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.dsp-wb-state {
+  flex: none;
+  padding: 0 6px;
+  border-radius: 999px;
+  font-size: 10px;
+  line-height: 16px;
+  border: 1px solid rgba(128, 128, 128, 0.3);
+  color: var(--dsw-alias-label-secondary, #b9bcc4);
+}
+.dsp-wb-state.running {
+  border-color: rgba(167, 139, 255, 0.55);
+  color: rgb(186, 166, 255);
+}
+.dsp-wb-state.ok {
+  border-color: rgba(126, 202, 158, 0.5);
+  color: rgb(126, 202, 158);
+}
+.dsp-wb-state.fail {
+  border-color: rgba(255, 129, 120, 0.5);
+  color: rgb(255, 129, 120);
+}
+.dsp-wb-state.killed {
+  border-color: rgba(255, 196, 92, 0.5);
+  color: rgb(255, 196, 92);
+}
+.dsp-wb-state.stale {
+  border-color: rgba(128, 128, 128, 0.35);
+  color: rgba(235, 235, 245, 0.45);
+}
+.dsp-wb-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12.5px;
+  color: var(--dsw-alias-label-primary, inherit);
+}
+.dsp-wb-meta {
+  font-size: 11px;
+  color: rgba(235, 235, 245, 0.42);
+  font-variant-numeric: tabular-nums;
+}
+.dsp-wb-hint {
+  margin-top: 8px;
+  font-size: 10.5px;
+  color: rgba(235, 235, 245, 0.34);
+}
 .dsp-seg-head {
   display: flex;
   align-items: center;
@@ -910,6 +1004,11 @@ html[data-dsp-hidden] [data-row-key^="session:"]::before {
   padding: 4px 6px 6px;
   gap: 0;
 }
+/* Same rule, applied to the cards: 6px on every side, including between. */
+.dsp-skin-apple .dsp-history-body {
+  padding: 8px;
+  gap: 8px;
+}
 .dsp-skin-apple .dsp-row + .dsp-row {
   border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
@@ -1047,7 +1146,30 @@ html[data-dsp-hidden] [data-row-key^="session:"]::before {
   </div>
   <div class="dsp-panel-body">
     <div class="dsp-columns">
-      <section class="dsp-column" style="--dsp-tint: hsla(187, 58%, 56%, 0.15)">
+      
+      <section class="dsp-column dsp-wb" style="--dsp-tint: hsla(268, 58%, 60%, 0.16)">
+        <div class="dsp-column-head">
+          <div class="dsp-column-head-top">
+            <span class="dsp-dot" style="background:hsl(268 62% 66%)"></span>
+            <span class="dsp-column-title">WB 运行</span>
+            <span class="dsp-wb-tag">wb</span>
+          </div>
+          <div class="dsp-column-head-sub">
+            <span class="dsp-column-stat">1 条在跑</span>
+            <span class="dsp-column-time">128 tok</span>
+          </div>
+        </div>
+        <div class="dsp-column-body">
+          <div class="dsp-wb-run running live">
+            <div class="dsp-wb-top"><span class="dsp-wb-state running">运行中</span><span class="dsp-wb-title">改上海师范大学的课表</span></div>
+            <div class="dsp-wb-meta">auto · 第 2 轮 · 9s</div>
+          </div>
+          <div class="dsp-wb-run ok">
+            <div class="dsp-wb-top"><span class="dsp-wb-state ok">完成</span><span class="dsp-wb-title">渲染验收</span></div>
+            <div class="dsp-wb-meta">auto · 第 4 轮 · 1m 1s · 128 tok</div>
+          </div>
+        </div>
+      </section><section class="dsp-column" style="--dsp-tint: hsla(187, 58%, 56%, 0.15)">
     <div class="dsp-column-head">
       <div class="dsp-column-head-top">
         <span class="dsp-dot" style="background:hsl(187 72% 62%)"></span>
@@ -1259,7 +1381,30 @@ html[data-dsp-hidden] [data-row-key^="session:"]::before {
   </div>
   <div class="dsp-panel-body">
     <div class="dsp-columns">
-      <section class="dsp-column" style="--dsp-tint: hsla(187, 58%, 56%, 0.15)">
+      
+      <section class="dsp-column dsp-wb" style="--dsp-tint: hsla(268, 58%, 60%, 0.16)">
+        <div class="dsp-column-head">
+          <div class="dsp-column-head-top">
+            <span class="dsp-dot" style="background:hsl(268 62% 66%)"></span>
+            <span class="dsp-column-title">WB 运行</span>
+            <span class="dsp-wb-tag">wb</span>
+          </div>
+          <div class="dsp-column-head-sub">
+            <span class="dsp-column-stat">1 条在跑</span>
+            <span class="dsp-column-time">128 tok</span>
+          </div>
+        </div>
+        <div class="dsp-column-body">
+          <div class="dsp-wb-run running live">
+            <div class="dsp-wb-top"><span class="dsp-wb-state running">运行中</span><span class="dsp-wb-title">改上海师范大学的课表</span></div>
+            <div class="dsp-wb-meta">auto · 第 2 轮 · 9s</div>
+          </div>
+          <div class="dsp-wb-run ok">
+            <div class="dsp-wb-top"><span class="dsp-wb-state ok">完成</span><span class="dsp-wb-title">渲染验收</span></div>
+            <div class="dsp-wb-meta">auto · 第 4 轮 · 1m 1s · 128 tok</div>
+          </div>
+        </div>
+      </section><section class="dsp-column" style="--dsp-tint: hsla(187, 58%, 56%, 0.15)">
     <div class="dsp-column-head">
       <div class="dsp-column-head-top">
         <span class="dsp-dot" style="background:hsl(187 72% 62%)"></span>
