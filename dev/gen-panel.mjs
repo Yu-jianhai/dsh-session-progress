@@ -39,19 +39,20 @@ const wbColumn = () => `
             <span class="dsp-wb-tag">wb</span>
           </div>
           <div class="dsp-column-head-sub">
-            <span class="dsp-column-stat">1 条在跑</span>
+            <span class="dsp-column-stat">1 条在跑 · 共 29 次</span>
             <span class="dsp-column-time">128 tok</span>
           </div>
         </div>
         <div class="dsp-column-body">
           <div class="dsp-wb-run running live">
             <div class="dsp-wb-top"><span class="dsp-wb-state running">运行中</span><span class="dsp-wb-title">改上海师范大学的课表</span></div>
-            <div class="dsp-wb-meta">auto · 第 2 轮 · 9s</div>
+            <div class="dsp-wb-meta">auto · 第 2 轮 · 1m 12s</div>
           </div>
           <div class="dsp-wb-run ok">
             <div class="dsp-wb-top"><span class="dsp-wb-state ok">完成</span><span class="dsp-wb-title">渲染验收</span></div>
             <div class="dsp-wb-meta">auto · 第 4 轮 · 1m 1s · 128 tok</div>
           </div>
+          <button type="button" class="dsp-seg-more dsp-wb-more">再看 40 轮</button>
         </div>
       </section>`
 

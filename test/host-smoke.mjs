@@ -88,7 +88,8 @@ const call = (path) => new Promise((resolve) => {
     end(body) { if (body) chunks.push(body); resolve({ status: this.status, body: chunks.join('') }) },
     write() {},
   }
-  routes.get(path)({ socket: { remoteAddress: '127.0.0.1' }, headers: { host: '127.0.0.1:8080' }, url: path, on() {} }, res)
+  // The route table is keyed by path only; a query string is the handler's job.
+  routes.get(path.split('?')[0])({ socket: { remoteAddress: '127.0.0.1' }, headers: { host: '127.0.0.1:8080' }, url: path, on() {} }, res)
 })
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
@@ -338,8 +339,40 @@ assert.equal(
   'and travels with every frame so the band repaints at once',
 )
 
+// WB paging: the panel asks for a small page, then walks backwards with a
+// cursor. A running run must also report how long it has been going, because
+// its seconds only land when it finishes.
+wbService = {
+  list(query) {
+    const all = [
+      { id: 'wb-a', title: 'A', phase: 'history', state: 'ok', startedAt: '20261102-100000', seconds: 12 },
+      { id: 'wb-b', title: 'B', phase: 'history', state: 'fail', startedAt: '20261102-090000', seconds: 8 },
+      { id: 'wb-c', title: 'C', phase: 'history', state: 'ok', startedAt: '20261102-080000', seconds: 4 },
+    ]
+    if (query && query.state === 'running') {
+      return { dir: 'C:/fake/wb-logs', total: all.length, runs: [{ id: 'wb-live', title: 'live', phase: 'running', rounds: 3, startedAt: '20261102-115959' }] }
+    }
+    return { dir: 'C:/fake/wb-logs', total: all.length, runs: all }
+  },
+}
+await sleep(2100)
+console.log('[dbg] routes:', [...routes.keys()].join(' '))
+const pageOne = JSON.parse((await call('/plugins/dsh-session-progress/wb?limit=2')).body)
+assert.equal(pageOne.history.length, 2, 'the first page honours limit')
+assert.equal(pageOne.historyMore, true, 'and says there is more')
+assert.equal(pageOne.historyTotal, 3, 'while reporting the real total')
+assert.equal(typeof pageOne.historyCursor, 'string', 'and hands back a cursor')
+const pageTwo = JSON.parse(
+  (await call('/plugins/dsh-session-progress/wb?limit=2&before=' + encodeURIComponent(pageOne.historyCursor))).body,
+)
+assert.equal(pageTwo.history.length, 1, 'the next page holds the remainder')
+assert.equal(pageTwo.historyMore, false, 'and stops offering more')
+assert.equal(pageOne.running[0].state, 'running', 'a live run still reads as running')
+assert.equal(Number.isFinite(pageOne.running[0].elapsedMs), true, 'a live run reports elapsed time')
+
 for (const cleanup of cleanups) { try { cleanup() } catch {} }
 if (ownStateFile) { try { fs.unlinkSync(process.env.DSP_STATE_FILE) } catch {} }
+
 
 console.log('\nall assertions passed')
 

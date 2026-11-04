@@ -520,6 +520,30 @@ wbServed = { available: false, reason: 'not installed', running: [], history: []
 await refreshBoth()
 assert.equal(classesOf().has('dsp-wb'), false, 'no WB column when the service is absent')
 
+// 18) WB history pages the same way the session history does: a "load more"
+// button appears only while the host says there are older runs, and a running
+// card carries the live clock the host sends.
+wbServed = {
+  available: true,
+  running: [{ id: 'wb-live', title: '在跑', phase: 'running', state: 'running', rounds: 3, elapsedMs: 62000 }],
+  history: [
+    { id: 'wb-1', title: '一', phase: 'history', state: 'ok', seconds: 4, rounds: 3, inTok: 10, outTok: 1 },
+    { id: 'wb-2', title: '二', phase: 'history', state: 'ok', seconds: 5, rounds: 4, inTok: 20, outTok: 2 },
+  ],
+  tokens: 33,
+  historyTotal: 40,
+  historyMore: true,
+}
+await refreshBoth()
+const paged = classesOf()
+assert.equal(paged.has('dsp-wb-run'), true, 'WB rows are drawn')
+assert.equal(paged.has('live'), true, 'a running run keeps its live class')
+assert.equal(paged.has('dsp-wb-more'), true, 'and a paging button appears while older runs exist')
+
+wbServed = { ...wbServed, historyMore: false }
+await refreshBoth()
+assert.equal(classesOf().has('dsp-wb-more'), false, 'the paging button disappears at the end of the list')
+
 console.log('render assertions passed')
 // The store schedules its next poll, which would keep the runner alive forever.
 process.exit(0)
