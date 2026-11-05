@@ -138,7 +138,9 @@ let served = null
 // The panel polls two endpoints now: the sample log and the WB board. A single
 // canned answer for both would make the WB column look permanently absent.
 let wbServed = { available: false, running: [], history: [], tokens: 0 }
+const wbUrls = []
 globalThis.fetch = async (url) => {
+  if (String(url).includes('/wb')) wbUrls.push(String(url))
   return ({
 
   ok: true,
@@ -533,12 +535,32 @@ wbServed = {
   tokens: 33,
   historyTotal: 40,
   historyMore: true,
+  historyCursor: '20261104-000000',
 }
 await refreshBoth()
 const paged = classesOf()
 assert.equal(paged.has('dsp-wb-run'), true, 'WB rows are drawn')
 assert.equal(paged.has('live'), true, 'a running run keeps its live class')
 assert.equal(paged.has('dsp-wb-more'), true, 'and a paging button appears while older runs exist')
+
+// 18b) A plain poll asks for the newest page only. Sending the paging cursor on
+// every tick walks the column backwards one page at a time, which looked like
+// the "再看 40 轮" button clicking itself in a loop.
+assert.equal(
+  wbUrls.every((url) => !url.includes('&before=')),
+  true,
+  'a poll never carries a paging cursor',
+)
+const moreButton = render(panelRegistration.component).find(
+  (node) => node && node.type === 'button' && String(node.props.className || '').includes('dsp-wb-more'),
+)
+assert.ok(moreButton, 'the WB paging button is a real button')
+const cursorUrlsBefore = wbUrls.filter((url) => url.includes('&before=')).length
+moreButton.props.onClick()
+await sleep(120)
+const cursorUrls = wbUrls.filter((url) => url.includes('&before='))
+assert.equal(cursorUrls.length, cursorUrlsBefore + 1, 'one click asks for exactly one older page')
+assert.ok(cursorUrls[cursorUrls.length - 1].includes('limit=40'), 'the older page is 40 rows, not the grown newest page')
 
 wbServed = { ...wbServed, historyMore: false }
 await refreshBoth()

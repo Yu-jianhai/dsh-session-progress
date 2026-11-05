@@ -65,6 +65,7 @@ turn/end ──► closeTurn('completed') ──► p=100 ──► 淡出 ─�
 - **"实时进度"= 轮次 + 已跑时间**。`seconds` 只有跑完才写，所以宿主每次轮询用日志名里的开始时间（`wbStamp()` 把 `20261105-004405` 解析成 epoch）算 `elapsedMs`；客户端再用 `wbElapsed(run, fetchedAt)` 叠加"距上次取数的时间"，并靠 `SampleLogPanel` 里 1 秒一次的 ticker 重绘。**任何一格都不是估算出来的进度**。
 - **分页**：`/wb?limit=&before=`，`before` 是已显示最旧一条的 `startedAt`；宿主先取 400 条宽片再自己按 `startedAt` 过滤（WB 的 `list` 按 mtime 排，把游标交给它会漂）；响应带 `historyTotal/historyMore/historyCursor`。客户端按 id 去重合并到 `wbStore.historyRows`（上限 400），列底「再看 40 轮」调 `wbMoreHistory()`（`limit + 40` 后强制刷新）。
 - **缓存 key 必须含 `limit|before`**，否则分页会把首屏那份缓存喂回去。
+- **游标只能由分页请求携带**（0.25.1）。`wbFetch(force, before, size)` 的 `before` 只有「再看 40 轮」会传；普通轮询永远问最新一页。游标也分成两个：`pageCursor`（最新页的尾巴）与 `historyCursor`（往回翻到哪儿），普通轮询只更新前者。混用的后果是列表每 5 秒自己往回翻一页，看起来像按钮在自己点自己。
 
 ## 空转成本（0.7.0 定的三条线）
 
@@ -215,45 +216,45 @@ turn/end ──► closeTurn('completed') ──► p=100 ──► 淡出 ─�
 | `lib/client.js` | 1879 | `logRefresh` | factory | const fn |
 | `lib/client.js` | 1885 | `logWatchVisibility` | factory | const fn |
 | `lib/client.js` | 1894 | `useLog` | factory | function |
-| `lib/client.js` | 1941 | `wbNotify` | factory | const fn |
-| `lib/client.js` | 1945 | `wbFetch` | factory | const fn |
-| `lib/client.js` | 1996 | `wbMoreHistory` | factory | const fn |
-| `lib/client.js` | 2004 | `wbRefresh` | factory | const fn |
-| `lib/client.js` | 2010 | `wbSchedule` | factory | const fn |
-| `lib/client.js` | 2020 | `useWb` | factory | function |
-| `lib/client.js` | 2051 | `metaLine` | factory | function |
-| `lib/client.js` | 2093 | `routeWarning` | factory | function |
-| `lib/client.js` | 2119 | `LogRow` | factory | function |
-| `lib/client.js` | 2203 | `stallLabel` | factory | const fn |
-| `lib/client.js` | 2209 | `stallTitle` | factory | const fn |
-| `lib/client.js` | 2218 | `stallClass` | factory | const fn |
-| `lib/client.js` | 2224 | `renderEntry` | factory | function |
-| `lib/client.js` | 2235 | `routeLook` | factory | function |
-| `lib/client.js` | 2278 | `hueOf` | factory | function |
-| `lib/client.js` | 2291 | `groupBySession` | factory | function |
-| `lib/client.js` | 2321 | `groupHistory` | factory | function |
-| `lib/client.js` | 2363 | `renderSpark` | factory | function |
-| `lib/client.js` | 2396 | `renderColumn` | factory | function |
-| `lib/client.js` | 2472 | `useColumnFlip` | factory | function |
-| `lib/client.js` | 2511 | `HistorySegment` | factory | function |
-| `lib/client.js` | 2572 | `renderHistoryColumn` | factory | function |
-| `lib/client.js` | 2619 | `readColumnWidths` | factory | function |
-| `lib/client.js` | 2629 | `writeColumnWidths` | factory | function |
-| `lib/client.js` | 2637 | `ColumnList` | factory | function |
-| `lib/client.js` | 2724 | `renderHistoryPlaceholder` | factory | function |
-| `lib/client.js` | 2757 | `renderColumns` | factory | function |
-| `lib/client.js` | 2785 | `clockShort` | factory | const fn |
-| `lib/client.js` | 2792 | `secondsOf` | factory | const fn |
-| `lib/client.js` | 2806 | `wbElapsed` | factory | const fn |
-| `lib/client.js` | 2814 | `wbRow` | factory | const fn |
-| `lib/client.js` | 2842 | `renderWbColumn` | factory | function |
-| `lib/client.js` | 2913 | `emptyState` | factory | function |
-| `lib/client.js` | 2918 | `SettingsCard` | factory | function |
-| `lib/client.js` | 3395 | `SettingsPanel` | factory | function |
-| `lib/client.js` | 3407 | `ProgressLogCard` | factory | function |
-| `lib/client.js` | 3492 | `SampleLogPanel` | factory | function |
-| `lib/client.js` | 3571 | `SampleLogIcon` | factory | function |
-| `lib/client.js` | 3589 | `apply` | factory | function |
+| `lib/client.js` | 1946 | `wbNotify` | factory | const fn |
+| `lib/client.js` | 1950 | `wbFetch` | factory | const fn |
+| `lib/client.js` | 2009 | `wbMoreHistory` | factory | const fn |
+| `lib/client.js` | 2023 | `wbRefresh` | factory | const fn |
+| `lib/client.js` | 2029 | `wbSchedule` | factory | const fn |
+| `lib/client.js` | 2039 | `useWb` | factory | function |
+| `lib/client.js` | 2070 | `metaLine` | factory | function |
+| `lib/client.js` | 2112 | `routeWarning` | factory | function |
+| `lib/client.js` | 2138 | `LogRow` | factory | function |
+| `lib/client.js` | 2222 | `stallLabel` | factory | const fn |
+| `lib/client.js` | 2228 | `stallTitle` | factory | const fn |
+| `lib/client.js` | 2237 | `stallClass` | factory | const fn |
+| `lib/client.js` | 2243 | `renderEntry` | factory | function |
+| `lib/client.js` | 2254 | `routeLook` | factory | function |
+| `lib/client.js` | 2297 | `hueOf` | factory | function |
+| `lib/client.js` | 2310 | `groupBySession` | factory | function |
+| `lib/client.js` | 2340 | `groupHistory` | factory | function |
+| `lib/client.js` | 2382 | `renderSpark` | factory | function |
+| `lib/client.js` | 2415 | `renderColumn` | factory | function |
+| `lib/client.js` | 2491 | `useColumnFlip` | factory | function |
+| `lib/client.js` | 2530 | `HistorySegment` | factory | function |
+| `lib/client.js` | 2591 | `renderHistoryColumn` | factory | function |
+| `lib/client.js` | 2638 | `readColumnWidths` | factory | function |
+| `lib/client.js` | 2648 | `writeColumnWidths` | factory | function |
+| `lib/client.js` | 2656 | `ColumnList` | factory | function |
+| `lib/client.js` | 2743 | `renderHistoryPlaceholder` | factory | function |
+| `lib/client.js` | 2776 | `renderColumns` | factory | function |
+| `lib/client.js` | 2804 | `clockShort` | factory | const fn |
+| `lib/client.js` | 2811 | `secondsOf` | factory | const fn |
+| `lib/client.js` | 2825 | `wbElapsed` | factory | const fn |
+| `lib/client.js` | 2833 | `wbRow` | factory | const fn |
+| `lib/client.js` | 2861 | `renderWbColumn` | factory | function |
+| `lib/client.js` | 2932 | `emptyState` | factory | function |
+| `lib/client.js` | 2937 | `SettingsCard` | factory | function |
+| `lib/client.js` | 3414 | `SettingsPanel` | factory | function |
+| `lib/client.js` | 3426 | `ProgressLogCard` | factory | function |
+| `lib/client.js` | 3511 | `SampleLogPanel` | factory | function |
+| `lib/client.js` | 3590 | `SampleLogIcon` | factory | function |
+| `lib/client.js` | 3608 | `apply` | factory | function |
 <!-- INDEX:END -->
 
 ## 绝不能做（每条都真炸过一次）
