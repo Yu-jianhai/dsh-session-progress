@@ -106,6 +106,12 @@ dsh plugin --profile desktop remove dsh-session-progress
 | `flowSpeed` | `slow` | `slow` / `normal` / `fast` | 光走一圈：慢 10.5s、标准 5.9s、快 3s |
 | `flowQuality` | `medium` | `refract` / `high` / `medium` / `low` / `off` | 表面那层的质感，见「流动的质感」 |
 | `rainbow` | `false` | 布尔 | 实验：色带换成会走的彩虹 |
+| `widget` | `true` | 布尔 | 随 DSH 启动桌面常驻小窗；找不到 exe 时静默跳过 |
+| `widgetPath` | `''` | 路径 | 小窗 exe 的显式路径；空则依次找 `DSP_WIDGET_EXE`、`~/.dsh/widgets/`、插件同级目录 |
+
+### 桌面常驻小窗
+
+`widget` 打开时，宿主会在启动后拉起 `DSHProgressWidget.exe`，把日志与配置文件路径、以及自己的 pid 交给它；DSH 退出，小窗跟着退出。小窗只读这两个文件，不额外开端口，也不碰采样逻辑：无会话时收成 36px 胶囊，最多显示 3 条会话（卡住 → 停滞 → 最近采样），点一下回到 DSH。exe 不在机器上就跳过，不影响插件本身。
 
 **思考强度以模型目录为准。** 设置页的下拉、采样时传给 adapter 的值、启动时打印的 `offered: …`，都来自同一份 `listModels()`；`resolveModelInfo()` 跟它对不上时以目录为准（`deepseek-flash` 的目录里就有 `off`）。
 

@@ -6,6 +6,9 @@ import path from 'node:path'
 import fs from 'node:fs'
 import assert from 'node:assert/strict'
 
+// The widget must never pop a window during tests.
+process.env.DSP_NO_WIDGET = '1'
+
 const ownStateFile = !process.env.DSP_STATE_FILE
 if (ownStateFile) {
   process.env.DSP_STATE_FILE = path.join(os.tmpdir(), `dsp-smoke-${process.pid}.json`)
