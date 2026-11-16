@@ -42,8 +42,8 @@
     "dev/sidebar.png"
   ],
   "scripts": {
-    "test": "node test/label.mjs && node test/wb.mjs && node test/stall.mjs && node test/look.mjs && node test/direction.mjs && node test/client-boot.mjs && node test/history.mjs && node test/host-smoke.mjs && node test/route-fallback.mjs && node test/panel-group.mjs && node test/perf-contract.mjs && node test/render.mjs",
-    "check": "node --check lib/index.js && node --check lib/client.js && node --check test/label.mjs && node --check test/wb.mjs && node --check test/look.mjs && node --check test/direction.mjs && node --check test/client-boot.mjs && node --check test/history.mjs && node --check test/host-smoke.mjs && node scripts/index.cjs --check && node --check test/perf-contract.mjs && node --check test/render.mjs",
+    "test": "node test/label.mjs && node test/context.mjs && node test/wb.mjs && node test/stall.mjs && node test/look.mjs && node test/direction.mjs && node test/client-boot.mjs && node test/history.mjs && node test/host-smoke.mjs && node test/route-fallback.mjs && node test/panel-group.mjs && node test/perf-contract.mjs && node test/render.mjs",
+    "check": "node --check lib/index.js && node --check lib/client.js && node --check test/label.mjs && node --check test/context.mjs && node --check test/wb.mjs && node --check test/look.mjs && node --check test/direction.mjs && node --check test/client-boot.mjs && node --check test/history.mjs && node --check test/host-smoke.mjs && node scripts/index.cjs --check && node --check test/perf-contract.mjs && node --check test/render.mjs",
     "index": "node scripts/index.cjs",
     "index:check": "node scripts/index.cjs --check"
   },

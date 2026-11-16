@@ -402,6 +402,8 @@ assert.equal(
 // first version called setOpen(true) and the button then had nothing left to do.
 assert.ok(
   clientSource.includes('onClick: () => setOpen((value) => !value)'),
+  clientSource.includes('dsp-detail-digest'),
+  clientSource.includes('对照：${entry.digest}'),
   'expanding a whole turn can be undone from the same button',
 )
 assert.ok(clientSource.includes("'收起'"), 'the button says what it will do next')

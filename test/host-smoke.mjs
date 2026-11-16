@@ -279,6 +279,10 @@ assert.match(lastPrompt, /用户在你工作途中补充了新的要求/, 'the s
 assert.match(lastPrompt, /当前进度：45%/, 'the prompt carries the number from last time')
 assert.match(lastPrompt, /当时阶段是「改接口」/, 'and the stage it named then')
 assert.match(lastPrompt, /进度可以往上，也可以往下/, 'the model is told either direction is allowed')
+assert.match(lastPrompt, /【本轮目标】把 side bar 的进度条做出来/, 'the ask that opened the turn is quoted back')
+assert.match(lastPrompt, /\[调用工具 grep\] \{"pattern":"sessionRow"\}/, 'tool calls carry their arguments')
+assert.match(lastPrompt, /对照要点：/, 'the digest is its own line')
+assert.match(lastPrompt, /已调用工具 1 次（grep）/, 'the digest counts the tool calls')
 
 const revisedLog = JSON.parse((await call('/plugins/dsh-session-progress/log')).body)
 assert.equal(revisedLog.entries[0].p, 20)
@@ -359,7 +363,6 @@ wbService = {
   },
 }
 await sleep(2100)
-console.log('[dbg] routes:', [...routes.keys()].join(' '))
 const pageOne = JSON.parse((await call('/plugins/dsh-session-progress/wb?limit=2')).body)
 assert.equal(pageOne.history.length, 2, 'the first page honours limit')
 assert.equal(pageOne.historyMore, true, 'and says there is more')
