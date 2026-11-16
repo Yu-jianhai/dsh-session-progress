@@ -330,6 +330,51 @@ assert.equal(calls, 1, 'the in-flight call finishing does not fire a duplicate')
 const slow = JSON.parse((await call('/plugins/dsh-session-progress/snapshot')).body)
 assert.equal(slow.sessions.find((item) => item.id === 'session-1').p, 30, 'the slow call still lands')
 
+// ---- 注入的系统消息不算插嘴 ----------------------------------------------
+// The host records the skill catalog, reminders and agent instructions as
+// role:'user' messages too. Counting those as interjections marked almost every
+// sample of an untouched turn as 重估 (P-27).
+const interjections = []
+const realLog = console.log
+console.log = (...args) => {
+  const line = args.join(' ')
+  if (line.includes('interjection (')) interjections.push(line)
+  realLog(...args)
+}
+handlers['session/event']({ id: 'session-1' }, { type: 'turn/start', data: { turn: 5 } })
+await sleep(300)
+const beforeInjected = interjections.length
+handlers['session/event'](
+  { id: 'session-1' },
+  {
+    type: 'user/message',
+    data: {
+      role: 'user',
+      source: { kind: 'skill-catalog' },
+      content: [{ type: 'text', text: '技能目录更新，共 79 个' }],
+    },
+  },
+)
+await sleep(200)
+assert.equal(
+  interjections.length,
+  beforeInjected,
+  'an injected system message is not an interjection',
+)
+handlers['session/event'](
+  { id: 'session-1' },
+  {
+    type: 'user/message',
+    data: { role: 'user', source: { kind: 'user' }, content: [{ type: 'text', text: '再加一条' }] },
+  },
+)
+await sleep(200)
+assert.equal(
+  interjections.length,
+  beforeInjected + 1,
+  'a message the user typed still counts',
+)
+console.log = realLog
 // ---- 恢复默认：宿主那份 DEFAULT_CONFIG 才是唯一副本 ------------------------
 await postConfig({ color: '#FF8800', style: 'underline', opacity: 0.4, intervalMs: 9000, maxSessions: 7 })
 const restored = JSON.parse((await postConfig({ reset: true })).body)

@@ -72,4 +72,38 @@ const tool = (text) => ({ role: 'tool', content: [{ type: 'text', text }] })
   assert.ok(built.stats.includes('还没有调用工具'))
 }
 
+/* 6. an injected system message is not the ask */
+{
+  const messages = [
+    user('把 WB 的历史轮次也做成分页'),
+    call('Bash', { command: 'npm test' }),
+    {
+      role: 'user',
+      source: { kind: 'skill-catalog' },
+      content: [{ type: 'text', text: '技能目录已更新：dsh-doc …' }],
+    },
+    say('正在跑测试'),
+  ]
+  const built = buildContext(sessionOf(messages), 4000, Date.now() - 60_000)
+  assert.match(built.text, /【本轮目标】把 WB 的历史轮次也做成分页/, 'the ask is the last thing the human typed')
+  assert.doesNotMatch(built.text, /技能目录已更新/, 'injected boilerplate is not replayed as activity')
+}
+
+/* 7. a text-only last step reads as wrapping up */
+{
+  const closing = describeTurn(
+    [call('Bash', { command: 'npm test' }), tool('ok'), say('都跑完了，我来总结')],
+    Date.now() - 30_000,
+    Date.now(),
+  )
+  assert.match(closing, /通常是在收尾/, 'a closing answer is named')
+
+  const busy = describeTurn(
+    [say('先看看代码'), call('Read', {})],
+    Date.now() - 30_000,
+    Date.now(),
+  )
+  assert.doesNotMatch(busy, /通常是在收尾/, 'a tool call in flight is not closing')
+}
+
 console.log('context assertions passed')

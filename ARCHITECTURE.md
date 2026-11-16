@@ -29,6 +29,7 @@ turn/end ──► closeTurn('completed') ──► p=100 ──► 淡出 ─�
 
 ## 判断模型看到什么（0.26.0）
 
+- 插嘴只认人类那条消息：`source.kind === 'user'` 才算（P-28）。注入的系统提示、技能目录同样是 `role: 'user'`，按 role 过滤会把它们当成"用户改需求"。
 `buildContext()` 组三段，前两段是"锚"，最后一段才是可能被截掉的部分：
 
 | 段落 | 内容 | 预算 |
@@ -113,103 +114,104 @@ turn/end ──► closeTurn('completed') ──► p=100 ──► 淡出 ─�
 | 文件 | 行 | 符号 | 位置 | 类型 |
 |---|---|---|---|---|
 | `lib/index.js` | 66 | `LOG_FILE` | module | const fn |
-| `lib/index.js` | 146 | `nextProgress` | module | const fn |
-| `lib/index.js` | 149 | `keep` | apply | const fn |
-| `lib/index.js` | 161 | `STALL_FLAT` | module | const |
-| `lib/index.js` | 162 | `STALL_SAMPLES` | module | const |
-| `lib/index.js` | 163 | `STALL_STUCK` | module | const |
-| `lib/index.js` | 165 | `LOOP_WINDOW` | module | const |
-| `lib/index.js` | 167 | `LOOP_WARN` | module | const |
-| `lib/index.js` | 168 | `LOOP_STUCK` | module | const |
-| `lib/index.js` | 170 | `LOOP_CHURN` | module | const |
-| `lib/index.js` | 171 | `LOOP_CHURN_STUCK` | module | const |
-| `lib/index.js` | 172 | `FAILURE_HINTS` | module | const |
-| `lib/index.js` | 190 | `WB_STATE_LABEL` | module | const |
-| `lib/index.js` | 199 | `wbStamp` | module | function |
-| `lib/index.js` | 212 | `normalizeWbRun` | module | function |
-| `lib/index.js` | 218 | `num` | apply | const fn |
-| `lib/index.js` | 239 | `wbPayload` | module | function |
-| `lib/index.js` | 240 | `list` | apply | const fn |
-| `lib/index.js` | 258 | `wbUnavailable` | module | const fn |
-| `lib/index.js` | 282 | `trackStall` | module | function |
-| `lib/index.js` | 337 | `name` | module | const |
-| `lib/index.js` | 338 | `inject` | module | const |
-| `lib/index.js` | 351 | `clampNumber` | module | function |
-| `lib/index.js` | 358 | `sanitizeConfig` | module | function |
-| `lib/index.js` | 393 | `readConfigFile` | module | function |
-| `lib/index.js` | 401 | `writeConfigFile` | module | function |
-| `lib/index.js` | 417 | `readLogFile` | module | function |
-| `lib/index.js` | 435 | `HISTORY_PAGE` | module | const |
-| `lib/index.js` | 438 | `slimEntry` | module | function |
-| `lib/index.js` | 448 | `writeFileAtomic` | module | function |
-| `lib/index.js` | 466 | `writeLogFile` | module | function |
-| `lib/index.js` | 475 | `resolveWidgetExe` | module | function |
-| `lib/index.js` | 495 | `resumeSeed` | module | function |
-| `lib/index.js` | 507 | `readJsonBody` | module | function |
-| `lib/index.js` | 537 | `effortIds` | module | function |
-| `lib/index.js` | 543 | `idOf` | module | function |
-| `lib/index.js` | 552 | `isLocalRequest` | module | function |
-| `lib/index.js` | 572 | `jsonResponse` | module | function |
-| `lib/index.js` | 589 | `toolLine` | module | function |
-| `lib/index.js` | 598 | `textOf` | module | function |
-| `lib/index.js` | 613 | `clip` | module | function |
-| `lib/index.js` | 622 | `topTools` | module | function |
-| `lib/index.js` | 639 | `describeTurn` | module | function |
-| `lib/index.js` | 676 | `buildContext` | module | function |
-| `lib/index.js` | 714 | `parseProgress` | module | function |
-| `lib/index.js` | 741 | `closestEffort` | module | function |
-| `lib/index.js` | 761 | `normalizeUsage` | module | function |
-| `lib/index.js` | 763 | `count` | apply | const fn |
-| `lib/index.js` | 774 | `sumTokens` | module | function |
-| `lib/index.js` | 795 | `titleOf` | module | function |
-| `lib/index.js` | 832 | `labelOf` | module | function |
-| `lib/index.js` | 867 | `cheapRank` | module | function |
-| `lib/index.js` | 877 | `pickRoute` | module | function |
-| `lib/index.js` | 891 | `apply` | module | function |
-| `lib/index.js` | 900 | `touchBeat` | apply | const fn |
-| `lib/index.js` | 1003 | `frame` | apply | const fn |
-| `lib/index.js` | 1033 | `frameText` | apply | const fn |
-| `lib/index.js` | 1038 | `writeFrame` | apply | const fn |
-| `lib/index.js` | 1049 | `push` | apply | const fn |
-| `lib/index.js` | 1062 | `broadcast` | apply | const fn |
-| `lib/index.js` | 1094 | `bumpLog` | apply | const fn |
-| `lib/index.js` | 1099 | `prune` | apply | const fn |
-| `lib/index.js` | 1114 | `persist` | apply | const fn |
-| `lib/index.js` | 1123 | `record` | apply | const fn |
-| `lib/index.js` | 1136 | `closeTurn` | apply | const fn |
-| `lib/index.js` | 1162 | `markRunning` | apply | const fn |
-| `lib/index.js` | 1174 | `clearTimer` | apply | const fn |
-| `lib/index.js` | 1187 | `onTurnStart` | apply | const fn |
-| `lib/index.js` | 1222 | `onTurnEnd` | apply | const fn |
-| `lib/index.js` | 1239 | `scheduleFadeOut` | apply | const fn |
-| `lib/index.js` | 1265 | `interject` | apply | const fn |
-| `lib/index.js` | 1325 | `trackCount` | apply | const fn |
-| `lib/index.js` | 1336 | `trimToLimit` | apply | const fn |
-| `lib/index.js` | 1358 | `schedule` | apply | const fn |
-| `lib/index.js` | 1378 | `declaredEfforts` | apply | const fn |
-| `lib/index.js` | 1394 | `probeEffort` | apply | const fn |
-| `lib/index.js` | 1419 | `findSession` | apply | const fn |
-| `lib/index.js` | 1441 | `sample` | apply | const fn |
-| `lib/index.js` | 1470 | `sampleOnce` | apply | const fn |
-| `lib/index.js` | 1653 | `reapAbandonedTurns` | apply | const fn |
-| `lib/index.js` | 1666 | `tick` | apply | const fn |
-| `lib/index.js` | 1700 | `snapshotHandler` | apply | const fn |
-| `lib/index.js` | 1705 | `debugHandler` | apply | const fn |
-| `lib/index.js` | 1744 | `noteClient` | apply | const fn |
-| `lib/index.js` | 1753 | `logHandler` | apply | const fn |
-| `lib/index.js` | 1756 | `query` | factory | const fn |
-| `lib/index.js` | 1763 | `limit` | factory | const fn |
-| `lib/index.js` | 1826 | `eventsHandler` | apply | const fn |
-| `lib/index.js` | 1841 | `getLlm` | apply | const fn |
-| `lib/index.js` | 1844 | `rescheduleAll` | apply | const fn |
-| `lib/index.js` | 1857 | `applyConfig` | apply | const fn |
-| `lib/index.js` | 1885 | `describeModels` | apply | const fn |
-| `lib/index.js` | 1941 | `ensureRoute` | apply | const fn |
-| `lib/index.js` | 1960 | `configPayload` | apply | const fn |
-| `lib/index.js` | 1984 | `wbFace` | apply | const fn |
-| `lib/index.js` | 1999 | `wbSnapshot` | apply | function |
-| `lib/index.js` | 2034 | `wbHandler` | apply | const fn |
-| `lib/index.js` | 2043 | `configHandler` | apply | const fn |
+| `lib/index.js` | 149 | `nextProgress` | module | const fn |
+| `lib/index.js` | 152 | `keep` | apply | const fn |
+| `lib/index.js` | 164 | `STALL_FLAT` | module | const |
+| `lib/index.js` | 165 | `STALL_SAMPLES` | module | const |
+| `lib/index.js` | 166 | `STALL_STUCK` | module | const |
+| `lib/index.js` | 168 | `LOOP_WINDOW` | module | const |
+| `lib/index.js` | 170 | `LOOP_WARN` | module | const |
+| `lib/index.js` | 171 | `LOOP_STUCK` | module | const |
+| `lib/index.js` | 173 | `LOOP_CHURN` | module | const |
+| `lib/index.js` | 174 | `LOOP_CHURN_STUCK` | module | const |
+| `lib/index.js` | 175 | `FAILURE_HINTS` | module | const |
+| `lib/index.js` | 193 | `WB_STATE_LABEL` | module | const |
+| `lib/index.js` | 202 | `wbStamp` | module | function |
+| `lib/index.js` | 215 | `normalizeWbRun` | module | function |
+| `lib/index.js` | 221 | `num` | apply | const fn |
+| `lib/index.js` | 242 | `wbPayload` | module | function |
+| `lib/index.js` | 243 | `list` | apply | const fn |
+| `lib/index.js` | 261 | `wbUnavailable` | module | const fn |
+| `lib/index.js` | 285 | `trackStall` | module | function |
+| `lib/index.js` | 340 | `name` | module | const |
+| `lib/index.js` | 341 | `inject` | module | const |
+| `lib/index.js` | 354 | `clampNumber` | module | function |
+| `lib/index.js` | 361 | `sanitizeConfig` | module | function |
+| `lib/index.js` | 396 | `readConfigFile` | module | function |
+| `lib/index.js` | 404 | `writeConfigFile` | module | function |
+| `lib/index.js` | 420 | `readLogFile` | module | function |
+| `lib/index.js` | 438 | `HISTORY_PAGE` | module | const |
+| `lib/index.js` | 441 | `slimEntry` | module | function |
+| `lib/index.js` | 451 | `writeFileAtomic` | module | function |
+| `lib/index.js` | 469 | `writeLogFile` | module | function |
+| `lib/index.js` | 478 | `resolveWidgetExe` | module | function |
+| `lib/index.js` | 498 | `resumeSeed` | module | function |
+| `lib/index.js` | 510 | `readJsonBody` | module | function |
+| `lib/index.js` | 540 | `effortIds` | module | function |
+| `lib/index.js` | 546 | `idOf` | module | function |
+| `lib/index.js` | 555 | `isLocalRequest` | module | function |
+| `lib/index.js` | 575 | `jsonResponse` | module | function |
+| `lib/index.js` | 592 | `toolLine` | module | function |
+| `lib/index.js` | 601 | `textOf` | module | function |
+| `lib/index.js` | 616 | `clip` | module | function |
+| `lib/index.js` | 625 | `topTools` | module | function |
+| `lib/index.js` | 642 | `isUserAsk` | module | const fn |
+| `lib/index.js` | 653 | `describeTurn` | module | function |
+| `lib/index.js` | 705 | `buildContext` | module | function |
+| `lib/index.js` | 744 | `parseProgress` | module | function |
+| `lib/index.js` | 771 | `closestEffort` | module | function |
+| `lib/index.js` | 791 | `normalizeUsage` | module | function |
+| `lib/index.js` | 793 | `count` | apply | const fn |
+| `lib/index.js` | 804 | `sumTokens` | module | function |
+| `lib/index.js` | 825 | `titleOf` | module | function |
+| `lib/index.js` | 862 | `labelOf` | module | function |
+| `lib/index.js` | 897 | `cheapRank` | module | function |
+| `lib/index.js` | 907 | `pickRoute` | module | function |
+| `lib/index.js` | 921 | `apply` | module | function |
+| `lib/index.js` | 930 | `touchBeat` | apply | const fn |
+| `lib/index.js` | 1033 | `frame` | apply | const fn |
+| `lib/index.js` | 1063 | `frameText` | apply | const fn |
+| `lib/index.js` | 1068 | `writeFrame` | apply | const fn |
+| `lib/index.js` | 1079 | `push` | apply | const fn |
+| `lib/index.js` | 1092 | `broadcast` | apply | const fn |
+| `lib/index.js` | 1124 | `bumpLog` | apply | const fn |
+| `lib/index.js` | 1129 | `prune` | apply | const fn |
+| `lib/index.js` | 1144 | `persist` | apply | const fn |
+| `lib/index.js` | 1153 | `record` | apply | const fn |
+| `lib/index.js` | 1166 | `closeTurn` | apply | const fn |
+| `lib/index.js` | 1192 | `markRunning` | apply | const fn |
+| `lib/index.js` | 1204 | `clearTimer` | apply | const fn |
+| `lib/index.js` | 1217 | `onTurnStart` | apply | const fn |
+| `lib/index.js` | 1252 | `onTurnEnd` | apply | const fn |
+| `lib/index.js` | 1269 | `scheduleFadeOut` | apply | const fn |
+| `lib/index.js` | 1295 | `interject` | apply | const fn |
+| `lib/index.js` | 1367 | `trackCount` | apply | const fn |
+| `lib/index.js` | 1378 | `trimToLimit` | apply | const fn |
+| `lib/index.js` | 1400 | `schedule` | apply | const fn |
+| `lib/index.js` | 1420 | `declaredEfforts` | apply | const fn |
+| `lib/index.js` | 1436 | `probeEffort` | apply | const fn |
+| `lib/index.js` | 1461 | `findSession` | apply | const fn |
+| `lib/index.js` | 1483 | `sample` | apply | const fn |
+| `lib/index.js` | 1512 | `sampleOnce` | apply | const fn |
+| `lib/index.js` | 1695 | `reapAbandonedTurns` | apply | const fn |
+| `lib/index.js` | 1708 | `tick` | apply | const fn |
+| `lib/index.js` | 1742 | `snapshotHandler` | apply | const fn |
+| `lib/index.js` | 1747 | `debugHandler` | apply | const fn |
+| `lib/index.js` | 1786 | `noteClient` | apply | const fn |
+| `lib/index.js` | 1795 | `logHandler` | apply | const fn |
+| `lib/index.js` | 1798 | `query` | factory | const fn |
+| `lib/index.js` | 1805 | `limit` | factory | const fn |
+| `lib/index.js` | 1868 | `eventsHandler` | apply | const fn |
+| `lib/index.js` | 1883 | `getLlm` | apply | const fn |
+| `lib/index.js` | 1886 | `rescheduleAll` | apply | const fn |
+| `lib/index.js` | 1899 | `applyConfig` | apply | const fn |
+| `lib/index.js` | 1927 | `describeModels` | apply | const fn |
+| `lib/index.js` | 1983 | `ensureRoute` | apply | const fn |
+| `lib/index.js` | 2002 | `configPayload` | apply | const fn |
+| `lib/index.js` | 2026 | `wbFace` | apply | const fn |
+| `lib/index.js` | 2041 | `wbSnapshot` | apply | function |
+| `lib/index.js` | 2076 | `wbHandler` | apply | const fn |
+| `lib/index.js` | 2085 | `configHandler` | apply | const fn |
 | `lib/client.js` | 34 | `openLogPanel` | factory | function |
 | `lib/client.js` | 125 | `styleCss` | factory | function |
 | `lib/client.js` | 159 | `normalizeHex` | factory | function |
