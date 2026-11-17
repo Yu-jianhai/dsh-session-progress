@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 
-import { buildContext, describeTurn } from '../lib/index.js'
+import { buildContext, describeTurn, parseProgress } from '../lib/index.js'
 
 /** A session stand-in: `deriveMessages` is all `buildContext` asks for. */
 const sessionOf = (messages) => ({ deriveMessages: () => messages })
@@ -104,6 +104,23 @@ const tool = (text) => ({ role: 'tool', content: [{ type: 'text', text }] })
     Date.now(),
   )
   assert.doesNotMatch(busy, /通常是在收尾/, 'a tool call in flight is not closing')
+}
+
+/* 8. a reply cut off by the token cap still yields its number */
+{
+  const full = parseProgress('{"p": 82, "note": "跑整流"}')
+  assert.equal(full.p, 82)
+  assert.ok(!full.partial)
+
+  // This is the shape the log was full of: the budget ran out mid-note.
+  const cut = parseProgress('{"p": 82, "note": "后台流水线')
+  assert.ok(cut, 'a truncated reply still parses')
+  assert.equal(cut.p, 82, 'the number arrives before the cut')
+  assert.equal(cut.note, '后台流水线', 'a partial note is kept')
+  assert.equal(cut.partial, true, 'and it is marked as salvaged')
+
+  assert.equal(parseProgress('模型说这个任务差不多了'), null, 'prose with no number is not a guess')
+  assert.equal(parseProgress('{"note": "只有注释"}'), null, 'a note without p is nothing')
 }
 
 console.log('context assertions passed')

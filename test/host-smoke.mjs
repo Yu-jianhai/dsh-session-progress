@@ -138,7 +138,9 @@ assert.equal(log.tokens.input, 812)
 assert.equal(debug.effort, 'off', 'the model catalog is the effort source of truth')
 assert.equal(seenOptions.reasoningEffort, 'off', 'no silent downgrade when the catalog offers it')
 assert.equal(seenOptions.temperature, 0)
-assert.ok(seenOptions.maxTokens > 0 && seenOptions.maxTokens <= 200, 'samples stay short')
+// Reasoning tokens share this budget: 120 used to truncate the JSON mid-string
+// on about every other sample (P-29), which showed up as "no JSON in output".
+assert.ok(seenOptions.maxTokens >= 400, 'the reply budget leaves room for reasoning')
 
 // turn ends -> 100 -> fade -> entry disappears
 handlers['session/event']({ id: 'session-1' }, { type: 'turn/end', data: { turn: 1, reason: { kind: 'completed' } } })

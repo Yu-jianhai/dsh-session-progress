@@ -239,3 +239,15 @@
   3. `describeTurn()` 增加"最近一步只有文字、没有再调用工具（通常是在收尾）"信号，系统提示补第 6 条（已进入写文件/跑测试/出产物阶段不要报个位数）；
   4. `entry.revisedBy` 记下是谁触发的重估，事后能查。
 - **谁守着它**：`test/host-smoke.mjs`「注入的系统消息不算插嘴」（`source.kind: 'skill-catalog'` 不得产生 interjection 日志，`kind: 'user'` 必须产生）；`test/context.mjs` 第 6、7 组（目标取自人类那句话、注入文本不进上下文、纯文字收尾会被点名）。
+
+## P-29 满屏「失败：no JSON in output」——回复被 120 token 截断
+
+- **现象**：进度日志里大约一半的采样是 `失败：no JSON in output`，p 显示 `—`；这些行的 `raw` 都停在 `{"p":82,"note":"后台流水线` 这种半截状态。
+- **原因**：`maxTokens: 120` 是**回复预算，包含推理 token**。回合越跑越长（工具 40 次、上下文 2.8k 字符）时，模型先写推理再写 JSON，推理一长就把 120 用光，JSON 被截在字符串中间，闭合的 `}` 永远不出现，于是 `parseProgress` 的正则匹配不到。
+  取证方式：失败行的 `tokens.output` **全部正好等于 120**，成功行是 25–73。
+- **修法**：
+  1. `maxTokens` 120 → 600（JSON 本身只有 20 来个 token，多出来的都是推理余量）；
+  2. `finish.reason.kind === 'max-tokens'` 不再被当成"没有回复"，而是记成 `输出被 maxTokens 截断`；
+  3. `parseProgress` 允许**半截 JSON**：没有闭合花括号时，只要能读到 `"p":<数字>` 就采用，`note` 读到多少算多少，并在返回值里标 `partial: true`；
+  4. 解析成功优先于失败标记——截断但拿到了数字，就不再把这条记成失败。
+- **谁守着它**：`test/context.mjs` 第 8 组（完整回复、半截回复、只有散文、只有 note 四种输入）；`test/host-smoke.mjs` 断言 `maxTokens >= 400`。
