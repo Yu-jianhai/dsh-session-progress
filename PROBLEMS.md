@@ -251,3 +251,16 @@
   3. `parseProgress` 允许**半截 JSON**：没有闭合花括号时，只要能读到 `"p":<数字>` 就采用，`note` 读到多少算多少，并在返回值里标 `partial: true`；
   4. 解析成功优先于失败标记——截断但拿到了数字，就不再把这条记成失败。
 - **谁守着它**：`test/context.mjs` 第 8 组（完整回复、半截回复、只有散文、只有 note 四种输入）；`test/host-smoke.mjs` 断言 `maxTokens >= 400`。
+
+## P-30 浅色主题下「白字白底」——叠色写成了绝对值
+
+- **现象**：把系统切到浅色主题后，进度日志面板的次级文字、卡片描边、分隔线、徽章几乎看不见；设置卡片的圆点与说明变淡到读不出。
+- **原因**：样式表是按深色写的——`rgba(255,255,255,0.05)` 这类"半透明白"在白底上等于白，`rgba(235,235,245,0.5)` 这种接近纯白的灰在白底上等于空白。告警/失败的琥珀与浅红也是为深色挑的，压在纸上时对比度只有 1.5:1 上下。
+- **修法**：
+  1. 在 `BASE_CSS` 开头立一组 `--dsp-*` 变量（`surface / ink / ink-2 / ink-3 / raise-1..4 / hairline(-soft) / shadow / warn / danger / ok / accent`），浅色是基底；
+  2. 深色只写一份覆盖：`[data-ds-dark-theme] :is(.dsp-panel, .dsp-loglink, [data-row-key^="session:"])`。宿主只设 `body[data-ds-dark-theme]` 这一个标记，所以用 `[data-ds-dark-theme]` 祖先而不是 body 直选，预览页才能在自己的容器上切换；
+  3. 所有叠色改成 `color-mix(in srgb, var(--dsp-ink) N%, transparent)`——同一处定义在白纸上是一条发丝线，在碳灰上也是；
+  4. 强调色分主题给值；浅色三级文字用 `#6b6f77`（对白底 4.96:1），旧的 `#83868d` 只有 3.59:1；
+  5. 色带扫光的两个颜色提成变量 `--dsp-sheen-tail|edge|swell`，浅色加大暗尾（0.26）、深色保持亮边（0.92）——白边压浅蓝上本来就看不见，这是 P-10 的同一条教训。
+- **谁守着它**：`test/render.mjs` 第 19 段（浅色基底三条定义存在、深色覆盖存在、`rgba(235,235,245,…)` 归零、任何含 `rgba(255,255,255,…)` 的行都必须带 `--dsp-` 前缀、apple 皮肤画的是 `var(--dsp-surface)`、告警/失败走 palette 强调色）。
+- **复发记录**：给这段调色板写注释时又在 `BASE_CSS` 模板字符串里写了反引号，`SyntaxError: Unexpected identifier 'body'`——P-04 第四次。

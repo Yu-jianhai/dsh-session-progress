@@ -149,56 +149,67 @@ const column = (group, index) => {
   </section>`
 }
 
+
+const panelHead = () => `
+  <div class="dsp-panel-head">
+    <div class="dsp-panel-title">进度日志</div>
+    <div class="dsp-panel-sub">
+      <span class="dsp-sub-group">deepseek-account/deepseek-flash · 强度 off · 每 30 秒</span>
+      <span class="dsp-sub-group">本轮 2 次 · 历史 583（中断 2）</span>
+      <span class="dsp-sub-group dsp-tokens">1.1M tok</span>
+    </div>
+  </div>`
+
+// Both skins × both themes: the palette has a light base and a dark override
+// keyed on [data-ds-dark-theme], so the preview must show all four.
+const panel = (skin, theme) => `
+<h2 class="cap cap-${theme}">${theme === 'dark' ? '深色' : '浅色'} · ${skin === 'apple' ? '分组卡片' : '紧凑列表'}（${skin}）</h2>
+<div class="stage stage-${theme}" data-stage="${theme}"${theme === 'dark' ? ' data-ds-dark-theme' : ''}>
+  <div class="dsp-panel dsp-skin-${skin}" data-skin="${skin}" data-theme="${theme}">
+    ${panelHead()}
+    <div class="dsp-panel-body">
+      <div class="dsp-columns">
+        ${wbColumn()}${columns.map(column).join('')}
+      </div>
+    </div>
+  </div>
+</div>`
+
 const html = `<!doctype html>
 <meta charset="utf-8">
-<title>log panel</title>
+<title>log panel · light + dark</title>
 <style>
   ${base}
-  body { margin: 0; padding: 18px; background: #17181c; color: #e6e8eb; font: 13px/1.5 system-ui, "Segoe UI", sans-serif; }
+  body { margin: 0; padding: 18px; background: #f4f5f7; color: #1b1d22; font: 13px/1.5 system-ui, "Segoe UI", sans-serif; }
+  .stage { padding: 14px; border-radius: 14px; }
+  .stage-light { background: #f4f5f7; }
+  .stage-dark { background: #17181c; }
   .dsp-panel { height: 560px; width: 1180px; border: 1px solid rgba(128,128,128,.22); border-radius: 12px; padding: 14px; box-sizing: border-box; }
-  .cap { margin: 10px 0 6px; font: 600 12px/1.4 ui-monospace, monospace; color: #8b93a1; }
+  .cap { margin: 12px 0 6px; font: 600 12px/1.4 ui-monospace, monospace; color: #6b7280; }
+  .cap-dark { color: #8b93a1; }
   .dsp-skin-apple { padding: 0; }
 </style>
-<h2 class="cap">新 · 分组卡片（apple）</h2>
-<div class="dsp-panel dsp-skin-apple" data-skin="apple">
-  <div class="dsp-panel-head">
-    <div class="dsp-panel-title">进度日志</div>
-    <div class="dsp-panel-sub">
-      <span class="dsp-sub-group">deepseek-account/deepseek-flash · 强度 off · 每 30 秒</span>
-      <span class="dsp-sub-group">本轮 2 次 · 历史 583（中断 2）</span>
-      <span class="dsp-sub-group dsp-tokens">1.1M tok</span>
-    </div>
-  </div>
-  <div class="dsp-panel-body">
-    <div class="dsp-columns">
-      ${wbColumn()}${columns.map(column).join('')}
-    </div>
-  </div>
-</div>
-
-<h2 class="cap">旧 · 紧凑列表（classic）</h2>
-<div class="dsp-panel dsp-skin-classic" data-skin="classic">
-  <div class="dsp-panel-head">
-    <div class="dsp-panel-title">进度日志</div>
-    <div class="dsp-panel-sub">
-      <span class="dsp-sub-group">deepseek-account/deepseek-flash · 强度 off · 每 30 秒</span>
-      <span class="dsp-sub-group">本轮 2 次 · 历史 583（中断 2）</span>
-      <span class="dsp-sub-group dsp-tokens">1.1M tok</span>
-    </div>
-  </div>
-  <div class="dsp-panel-body">
-    <div class="dsp-columns">
-      ${wbColumn()}${columns.map(column).join('')}
-    </div>
-  </div>
-</div>
+${panel('apple', 'light')}
+${panel('apple', 'dark')}
+${panel('classic', 'light')}
+${panel('classic', 'dark')}
 <script>
+const style = (node, prop, pseudo) => node ? getComputedStyle(node, pseudo || null)[prop] : null;
 window.__probe = () => ({
-  skins: [...document.querySelectorAll('[data-skin]')].map((n) => [n.dataset.skin, getComputedStyle(n).backgroundColor, n.querySelector('.dsp-column') ? getComputedStyle(n.querySelector('.dsp-column')).borderRadius : null]),
+  skins: [...document.querySelectorAll('[data-skin]')].map((n) => [
+    n.dataset.skin,
+    n.dataset.theme,
+    style(n, 'backgroundColor'),
+    style(n.querySelector('.dsp-row-note'), 'color'),
+    style(n.querySelector('.dsp-column-body'), 'backgroundColor'),
+    style(n.querySelector('.dsp-column-head'), 'backgroundColor'),
+  ]),
   rows: document.querySelectorAll('.dsp-row').length,
   rowHeights: [...document.querySelectorAll('.dsp-row')].slice(0, 4).map((n) => Math.round(n.getBoundingClientRect().height)),
   noteLines: [...document.querySelectorAll('.dsp-row-note')].slice(0, 4).map((n) => n.scrollWidth > n.clientWidth + 1),
   detail: document.querySelectorAll('.dsp-row-detail').length,
+  stall: [...document.querySelectorAll('.dsp-stall')].slice(0, 3).map((n) => style(n, 'color')),
+  wb: [...document.querySelectorAll('.dsp-wb-run')].slice(0, 2).map((n) => style(n, 'backgroundColor')),
 });
 <\/script>`
 

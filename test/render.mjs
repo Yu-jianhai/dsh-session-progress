@@ -568,6 +568,47 @@ wbServed = { ...wbServed, historyMore: false }
 await refreshBoth()
 assert.equal(classesOf().has('dsp-wb-more'), false, 'the paging button disappears at the end of the list')
 
+// 19) Light theme. The sheet used to paint white washes and near-white greys
+// straight onto a dark surface; on white paper that reads as invisible text and
+// dirty cards. Everything now goes through one palette whose base is light and
+// whose dark half is keyed on the same flag the host sets.
+const lightPalette = [
+  '--dsp-surface: var(--dsw-alias-bg-base, #fdfdfe);',
+  '--dsp-ink: var(--dsw-alias-label-primary, #1b1d22);',
+  '--dsp-ink-3: var(--dsw-alias-label-tertiary, #6b6f77);',
+]
+for (const line of lightPalette) {
+  assert.equal(clientSource.includes(line), true, `the palette defines a light base: ${line.slice(0, 24)}`)
+}
+assert.equal(
+  clientSource.includes('[data-ds-dark-theme] :is(.dsp-panel, .dsp-loglink, [data-row-key^="session:"])'),
+  true,
+  'and the dark half is keyed on the host theme flag',
+)
+assert.equal(
+  (clientSource.match(/rgba\(235, 235, 245/g) || []).length,
+  0,
+  'no colour is left that only reads on a dark surface',
+)
+const whiteWashes = clientSource
+  .split('\n')
+  .filter((line) => line.includes('rgba(255, 255, 255') && !line.includes('--dsp-'))
+assert.deepEqual(
+  whiteWashes,
+  [],
+  'white washes only survive as palette values, never inside a component rule',
+)
+assert.equal(
+  /\.dsp-skin-apple \{\s*background: var\(--dsp-surface\)/.test(clientSource),
+  true,
+  'the apple skin paints the themed surface, not a hardcoded near-black',
+)
+assert.equal(
+  clientSource.includes('color: var(--dsp-warn);') && clientSource.includes('color: var(--dsp-danger);'),
+  true,
+  'warnings and failures use palette accents that both themes can show',
+)
+
 console.log('render assertions passed')
 // The store schedules its next poll, which would keep the runner alive forever.
 process.exit(0)

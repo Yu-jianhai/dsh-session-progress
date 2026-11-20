@@ -1,8 +1,49 @@
 <!doctype html>
 <meta charset="utf-8">
-<title>log panel</title>
+<title>log panel · light + dark</title>
 <style>
   
+/* ── Palette ──────────────────────────────────────────────────────────
+   Light is the base; dark overrides it at the end of this sheet. Every wash
+   that used to be a hardcoded white or black now reads one of these, so a
+   single definition works on white paper, on charcoal, and on the tinted
+   session header. The washes mix against the label colour: 6% of near-black
+   on white is a hairline; 6% of near-white on charcoal is the same hairline. */
+.dsp-panel,
+.dsp-loglink,
+[data-row-key^="session:"] {
+  --dsp-surface: var(--dsw-alias-bg-base, #fdfdfe);
+  --dsp-ink: var(--dsw-alias-label-primary, #1b1d22);
+  --dsp-ink-2: var(--dsw-alias-label-secondary, #55585f);
+  --dsp-ink-3: var(--dsw-alias-label-tertiary, #83868d);
+  --dsp-raise-1: color-mix(in srgb, var(--dsp-ink) 4%, transparent);
+  --dsp-raise-2: color-mix(in srgb, var(--dsp-ink) 6%, transparent);
+  --dsp-raise-3: color-mix(in srgb, var(--dsp-ink) 9%, transparent);
+  --dsp-raise-4: color-mix(in srgb, var(--dsp-ink) 14%, transparent);
+  --dsp-hairline: color-mix(in srgb, var(--dsp-ink) 12%, transparent);
+  --dsp-hairline-soft: color-mix(in srgb, var(--dsp-ink) 8%, transparent);
+  --dsp-shadow: color-mix(in srgb, var(--dsp-ink) 16%, transparent);
+  --dsp-head-ink: var(--dsp-ink);
+  --dsp-warn: #8a5a00;
+  --dsp-danger: #b02318;
+  --dsp-ok: #1c6b41;
+  --dsp-accent: #5145b8;
+}
+/* The only theme flag the host sets is body[data-ds-dark-theme] (see the
+   ThemePresenter in the client bundle): present = dark, absent = light. */
+.dsp-panel[data-ds-dark-theme],
+[data-ds-dark-theme] :is(.dsp-panel, .dsp-loglink, [data-row-key^="session:"]) {
+  --dsp-surface: var(--dsw-alias-bg-base, #101114);
+  --dsp-ink: var(--dsw-alias-label-primary, #e6e8eb);
+  --dsp-ink-2: var(--dsw-alias-label-secondary, #b9bcc4);
+  --dsp-ink-3: var(--dsw-alias-label-tertiary, #8f939b);
+  --dsp-shadow: rgba(0, 0, 0, 0.5);
+  --dsp-head-ink: rgba(255, 255, 255, 0.95);
+  --dsp-warn: rgb(255, 196, 92);
+  --dsp-danger: rgb(255, 129, 120);
+  --dsp-ok: rgb(126, 202, 158);
+  --dsp-accent: rgb(186, 166, 255);
+}
 @property --dsp-p {
   syntax: "<percentage>";
   /* must inherit: the value is set on the row, the band is drawn by ::after */
@@ -180,7 +221,7 @@ html[data-dsp-hidden] [data-row-key^="session:"]::before {
   padding: 4px 10px;
   border-radius: 6px;
   background: rgba(255, 107, 107, 0.12);
-  color: #ff8080;
+  color: var(--dsp-danger);
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 11px;
 }
@@ -238,7 +279,7 @@ html[data-dsp-hidden] [data-row-key^="session:"]::before {
   font-variant-numeric: tabular-nums;
 }
 .dsp-row-p.bad {
-  color: #ff8080;
+  color: var(--dsp-danger);
 }
 .dsp-row-delta {
   flex: none;
@@ -270,17 +311,17 @@ html[data-dsp-hidden] [data-row-key^="session:"]::before {
   border-radius: 999px;
   font-size: 10px;
   line-height: 16px;
-  border: 1px solid rgba(255, 196, 92, 0.55);
-  color: rgb(255, 196, 92);
-  background: rgba(255, 196, 92, 0.12);
+  border: 1px solid color-mix(in srgb, var(--dsp-warn) 55%, transparent);
+  color: var(--dsp-warn);
+  background: color-mix(in srgb, var(--dsp-warn) 14%, transparent);
 }
 .dsp-stall.stuck {
-  border-color: rgba(255, 129, 120, 0.6);
-  color: rgb(255, 129, 120);
-  background: rgba(255, 129, 120, 0.14);
+  border-color: color-mix(in srgb, var(--dsp-danger) 60%, transparent);
+  color: var(--dsp-danger);
+  background: color-mix(in srgb, var(--dsp-danger) 14%, transparent);
 }
 .dsp-row.failed .dsp-row-note {
-  color: #ff8080;
+  color: var(--dsp-danger);
 }
 .dsp-row-ms {
   flex: none;
@@ -570,14 +611,14 @@ html[data-dsp-hidden] [data-row-key^="session:"]::before {
   padding: 8px 10px;
   border-radius: 10px;
   border: 1px solid rgba(128, 128, 128, 0.16);
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--dsp-raise-1);
 }
 .dsp-wb-run + .dsp-wb-run {
   margin-top: 6px;
 }
 .dsp-wb-run.live {
-  border-color: rgba(167, 139, 255, 0.4);
-  background: rgba(167, 139, 255, 0.08);
+  border-color: color-mix(in srgb, var(--dsp-accent) 45%, transparent);
+  background: color-mix(in srgb, var(--dsp-accent) 10%, transparent);
 }
 .dsp-wb-top {
   display: flex;
@@ -595,24 +636,24 @@ html[data-dsp-hidden] [data-row-key^="session:"]::before {
   color: var(--dsw-alias-label-secondary, #b9bcc4);
 }
 .dsp-wb-state.running {
-  border-color: rgba(167, 139, 255, 0.55);
-  color: rgb(186, 166, 255);
+  border-color: color-mix(in srgb, var(--dsp-accent) 60%, transparent);
+  color: var(--dsp-accent);
 }
 .dsp-wb-state.ok {
-  border-color: rgba(126, 202, 158, 0.5);
-  color: rgb(126, 202, 158);
+  border-color: color-mix(in srgb, var(--dsp-ok) 55%, transparent);
+  color: var(--dsp-ok);
 }
 .dsp-wb-state.fail {
-  border-color: rgba(255, 129, 120, 0.5);
-  color: rgb(255, 129, 120);
+  border-color: color-mix(in srgb, var(--dsp-danger) 50%, transparent);
+  color: var(--dsp-danger);
 }
 .dsp-wb-state.killed {
-  border-color: rgba(255, 196, 92, 0.5);
-  color: rgb(255, 196, 92);
+  border-color: color-mix(in srgb, var(--dsp-warn) 50%, transparent);
+  color: var(--dsp-warn);
 }
 .dsp-wb-state.stale {
-  border-color: rgba(128, 128, 128, 0.35);
-  color: rgba(235, 235, 245, 0.45);
+  border-color: var(--dsp-hairline);
+  color: var(--dsp-ink-3);
 }
 .dsp-wb-title {
   flex: 1;
@@ -625,20 +666,20 @@ html[data-dsp-hidden] [data-row-key^="session:"]::before {
 }
 .dsp-wb-meta {
   font-size: 11px;
-  color: rgba(235, 235, 245, 0.42);
+  color: var(--dsp-ink-3);
   font-variant-numeric: tabular-nums;
 }
 .dsp-wb .dsp-seg-more {
   margin: 8px auto 6px;
 }
 .dsp-wb-run.live .dsp-wb-meta {
-  color: rgba(196, 176, 255, 0.9);
+  color: color-mix(in srgb, var(--dsp-accent) 70%, var(--dsp-ink));
   font-variant-numeric: tabular-nums;
 }
 .dsp-wb-hint {
   margin-top: 8px;
   font-size: 10.5px;
-  color: rgba(235, 235, 245, 0.34);
+  color: var(--dsp-ink-3);
 }
 .dsp-seg-head {
   display: flex;
@@ -666,14 +707,14 @@ html[data-dsp-hidden] [data-row-key^="session:"]::before {
   flex: none;
   padding: 0 5px;
   border-radius: 999px;
-  border: 1px solid rgba(120, 190, 140, 0.55);
-  color: rgb(120, 190, 140);
+  border: 1px solid color-mix(in srgb, var(--dsp-ok) 55%, transparent);
+  color: var(--dsp-ok);
   font-size: 10px;
   line-height: 15px;
 }
 .dsp-seg-outcome.interrupted {
-  border-color: rgba(255, 183, 94, 0.55);
-  color: rgb(255, 183, 94);
+  border-color: color-mix(in srgb, var(--dsp-warn) 55%, transparent);
+  color: var(--dsp-warn);
 }
 .dsp-seg-body {
   display: flex;
@@ -739,8 +780,8 @@ html[data-dsp-hidden] [data-row-key^="session:"]::before {
 .dsp-revised {
   padding: 0 5px;
   border-radius: 999px;
-  border: 1px solid rgba(255, 183, 94, 0.55);
-  color: rgb(255, 183, 94);
+  border: 1px solid color-mix(in srgb, var(--dsp-warn) 55%, transparent);
+  color: var(--dsp-warn);
   font-size: 10px;
 }
 .dsp-delta {
@@ -756,6 +797,12 @@ html[data-dsp-hidden] [data-row-key^="session:"]::before {
 .dsp-delta.down {
   color: rgb(255, 168, 120);
   background: rgba(255, 168, 120, 0.14);
+}
+.dsp-detail-digest {
+  margin: 2px 0 6px;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--dsw-alias-label-tertiary, #8a8f98);
 }
 .dsp-raw {
   margin: 0;
@@ -943,7 +990,7 @@ html[data-dsp-hidden] [data-row-key^="session:"]::before {
    gutters, hairline separators and pill buttons. Only the log panel uses this;
    the sidebar band is untouched. Everything is opt-out via 面板样式 → 旧. */
 .dsp-skin-apple {
-  background: var(--dsw-alias-bg-base, #101114);
+  background: var(--dsp-surface);
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI Variable Text",
     "Segoe UI", system-ui, sans-serif;
   letter-spacing: 0;
@@ -951,8 +998,8 @@ html[data-dsp-hidden] [data-row-key^="session:"]::before {
 .dsp-skin-apple .dsp-panel-head {
   padding: 20px 22px 14px;
   gap: 8px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0));
+  border-bottom: 1px solid var(--dsp-hairline-soft);
+  background: linear-gradient(180deg, var(--dsp-raise-1), transparent);
 }
 .dsp-skin-apple .dsp-panel-title {
   font-size: 20px;
@@ -963,23 +1010,23 @@ html[data-dsp-hidden] [data-row-key^="session:"]::before {
   font-family: inherit;
   font-size: 12px;
   gap: 6px 14px;
-  color: rgba(235, 235, 245, 0.55);
+  color: var(--dsp-ink-3);
 }
 .dsp-skin-apple .dsp-panel-body {
   padding: 16px;
   gap: 16px;
 }
 .dsp-skin-apple .dsp-column {
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  border: 1px solid var(--dsp-hairline);
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.03);
-  box-shadow: 0 14px 30px -26px rgba(0, 0, 0, 0.95);
+  background: var(--dsp-raise-1);
+  box-shadow: 0 14px 30px -26px var(--dsp-shadow);
 }
 .dsp-skin-apple .dsp-column-head {
   padding: 12px 16px 11px;
   gap: 6px;
   border-bottom: none;
-  background: var(--dsp-tint, rgba(255, 255, 255, 0.05));
+  background: var(--dsp-tint, var(--dsp-raise-2));
   border-radius: 18px 18px 0 0;
 }
 .dsp-skin-apple .dsp-column-head-top {
@@ -997,11 +1044,11 @@ html[data-dsp-hidden] [data-row-key^="session:"]::before {
   font-size: 16px;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
-  color: rgba(255, 255, 255, 0.92);
+  color: var(--dsp-head-ink);
 }
 .dsp-skin-apple .dsp-column-time {
   font-size: 11px;
-  color: rgba(235, 235, 245, 0.5);
+  color: var(--dsp-ink-3);
 }
 .dsp-skin-apple .dsp-column-body {
   /* The scrollbar only eats from the right, so anything centred in the content
@@ -1017,7 +1064,7 @@ html[data-dsp-hidden] [data-row-key^="session:"]::before {
   gap: 8px;
 }
 .dsp-skin-apple .dsp-row + .dsp-row {
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid var(--dsp-hairline-soft);
 }
 .dsp-skin-apple .dsp-row-line {
   /* 11px of padding was Apple's "comfortable" row for touch; a log list is
@@ -1027,12 +1074,12 @@ html[data-dsp-hidden] [data-row-key^="session:"]::before {
   border-radius: 10px;
 }
 .dsp-skin-apple .dsp-row-line:hover {
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--dsp-raise-2);
 }
 .dsp-skin-apple .dsp-row-time {
   width: 62px;
   font-size: 11px;
-  color: rgba(235, 235, 245, 0.5);
+  color: var(--dsp-ink-3);
 }
 .dsp-skin-apple .dsp-row-p {
   width: 42px;
@@ -1041,27 +1088,27 @@ html[data-dsp-hidden] [data-row-key^="session:"]::before {
 }
 .dsp-skin-apple .dsp-row-note {
   font-size: 13px;
-  color: rgba(235, 235, 245, 0.88);
+  color: var(--dsp-ink);
 }
 .dsp-skin-apple .dsp-row-ms {
   width: 38px;
   font-size: 11px;
-  color: rgba(235, 235, 245, 0.42);
+  color: var(--dsp-ink-3);
 }
 .dsp-skin-apple .dsp-row-detail {
   margin: 0 10px 10px;
   padding: 10px 12px;
   border-left: none;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--dsp-raise-2);
 }
 .dsp-skin-apple .dsp-history .dsp-column-head {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--dsp-raise-2);
 }
 .dsp-skin-apple .dsp-seg {
   border: none;
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--dsp-raise-1);
 }
 .dsp-skin-apple .dsp-seg-head {
   border-bottom: none;
@@ -1071,10 +1118,10 @@ html[data-dsp-hidden] [data-row-key^="session:"]::before {
 }
 .dsp-skin-apple .dsp-btn.ghost {
   border-color: transparent;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--dsp-raise-3);
 }
 .dsp-skin-apple .dsp-btn.ghost:hover {
-  background: rgba(255, 255, 255, 0.14);
+  background: var(--dsp-raise-4);
 }
 .dsp-skin-apple .dsp-seg-more,
 .dsp-skin-apple .dsp-history-more {
@@ -1084,8 +1131,8 @@ html[data-dsp-hidden] [data-row-key^="session:"]::before {
   margin: 6px 0 10px;
   padding: 6px 16px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.1);
-  color: rgba(235, 235, 245, 0.92);
+  background: var(--dsp-raise-3);
+  color: var(--dsp-ink);
   font-size: 12.5px;
   font-weight: 500;
   letter-spacing: 0.1px;
@@ -1107,16 +1154,16 @@ html[data-dsp-hidden] [data-row-key^="session:"]::before {
 }
 .dsp-skin-apple .dsp-seg-more:hover,
 .dsp-skin-apple .dsp-history-more:hover {
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--dsp-raise-4);
   text-decoration: none;
 }
 .dsp-skin-apple .dsp-column-empty {
   padding: 18px 12px;
   text-align: center;
-  color: rgba(235, 235, 245, 0.4);
+  color: var(--dsp-ink-3);
 }
 .dsp-skin-apple .dsp-column-head .dsp-column-title {
-  color: rgba(255, 255, 255, 0.95);
+  color: var(--dsp-head-ink);
 }
 /* The default scrollbar is a bright slab next to a rounded card. */
 .dsp-skin-apple .dsp-column-body::-webkit-scrollbar,
@@ -1126,23 +1173,30 @@ html[data-dsp-hidden] [data-row-key^="session:"]::before {
 }
 .dsp-skin-apple .dsp-column-body::-webkit-scrollbar-thumb {
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.14);
+  background: var(--dsp-raise-3);
 }
 .dsp-skin-apple .dsp-column-body::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.24);
+  background: var(--dsp-raise-4);
 }
 /* One hairline inside the header block keeps the tint from looking flat. */
 .dsp-skin-apple .dsp-column-head {
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 1px 0 var(--dsp-raise-2);
 }
 
-  body { margin: 0; padding: 18px; background: #17181c; color: #e6e8eb; font: 13px/1.5 system-ui, "Segoe UI", sans-serif; }
+  body { margin: 0; padding: 18px; background: #f4f5f7; color: #1b1d22; font: 13px/1.5 system-ui, "Segoe UI", sans-serif; }
+  .stage { padding: 14px; border-radius: 14px; }
+  .stage-light { background: #f4f5f7; }
+  .stage-dark { background: #17181c; }
   .dsp-panel { height: 560px; width: 1180px; border: 1px solid rgba(128,128,128,.22); border-radius: 12px; padding: 14px; box-sizing: border-box; }
-  .cap { margin: 10px 0 6px; font: 600 12px/1.4 ui-monospace, monospace; color: #8b93a1; }
+  .cap { margin: 12px 0 6px; font: 600 12px/1.4 ui-monospace, monospace; color: #6b7280; }
+  .cap-dark { color: #8b93a1; }
   .dsp-skin-apple { padding: 0; }
 </style>
-<h2 class="cap">新 · 分组卡片（apple）</h2>
-<div class="dsp-panel dsp-skin-apple" data-skin="apple">
+
+<h2 class="cap cap-light">浅色 · 分组卡片（apple）</h2>
+<div class="stage stage-light" data-stage="light">
+  <div class="dsp-panel dsp-skin-apple" data-skin="apple" data-theme="light">
+    
   <div class="dsp-panel-head">
     <div class="dsp-panel-title">进度日志</div>
     <div class="dsp-panel-sub">
@@ -1151,9 +1205,9 @@ html[data-dsp-hidden] [data-row-key^="session:"]::before {
       <span class="dsp-sub-group dsp-tokens">1.1M tok</span>
     </div>
   </div>
-  <div class="dsp-panel-body">
-    <div class="dsp-columns">
-      
+    <div class="dsp-panel-body">
+      <div class="dsp-columns">
+        
       <section class="dsp-column dsp-wb" style="--dsp-tint: hsla(268, 58%, 60%, 0.16)">
         <div class="dsp-column-head">
           <div class="dsp-column-head-top">
@@ -1373,12 +1427,15 @@ html[data-dsp-hidden] [data-row-key^="session:"]::before {
     <span class="dsp-row-caret">›</span>
   </button></div><button class="dsp-btn dsp-btn-xs dsp-history-more" type="button">再看 40 轮</button></div>
   </section>
+      </div>
     </div>
   </div>
 </div>
 
-<h2 class="cap">旧 · 紧凑列表（classic）</h2>
-<div class="dsp-panel dsp-skin-classic" data-skin="classic">
+<h2 class="cap cap-dark">深色 · 分组卡片（apple）</h2>
+<div class="stage stage-dark" data-stage="dark" data-ds-dark-theme>
+  <div class="dsp-panel dsp-skin-apple" data-skin="apple" data-theme="dark">
+    
   <div class="dsp-panel-head">
     <div class="dsp-panel-title">进度日志</div>
     <div class="dsp-panel-sub">
@@ -1387,9 +1444,9 @@ html[data-dsp-hidden] [data-row-key^="session:"]::before {
       <span class="dsp-sub-group dsp-tokens">1.1M tok</span>
     </div>
   </div>
-  <div class="dsp-panel-body">
-    <div class="dsp-columns">
-      
+    <div class="dsp-panel-body">
+      <div class="dsp-columns">
+        
       <section class="dsp-column dsp-wb" style="--dsp-tint: hsla(268, 58%, 60%, 0.16)">
         <div class="dsp-column-head">
           <div class="dsp-column-head-top">
@@ -1609,15 +1666,504 @@ html[data-dsp-hidden] [data-row-key^="session:"]::before {
     <span class="dsp-row-caret">›</span>
   </button></div><button class="dsp-btn dsp-btn-xs dsp-history-more" type="button">再看 40 轮</button></div>
   </section>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h2 class="cap cap-light">浅色 · 紧凑列表（classic）</h2>
+<div class="stage stage-light" data-stage="light">
+  <div class="dsp-panel dsp-skin-classic" data-skin="classic" data-theme="light">
+    
+  <div class="dsp-panel-head">
+    <div class="dsp-panel-title">进度日志</div>
+    <div class="dsp-panel-sub">
+      <span class="dsp-sub-group">deepseek-account/deepseek-flash · 强度 off · 每 30 秒</span>
+      <span class="dsp-sub-group">本轮 2 次 · 历史 583（中断 2）</span>
+      <span class="dsp-sub-group dsp-tokens">1.1M tok</span>
+    </div>
+  </div>
+    <div class="dsp-panel-body">
+      <div class="dsp-columns">
+        
+      <section class="dsp-column dsp-wb" style="--dsp-tint: hsla(268, 58%, 60%, 0.16)">
+        <div class="dsp-column-head">
+          <div class="dsp-column-head-top">
+            <span class="dsp-dot" style="background:hsl(268 62% 66%)"></span>
+            <span class="dsp-column-title">WB 运行</span>
+            <span class="dsp-wb-tag">wb</span>
+          </div>
+          <div class="dsp-column-head-sub">
+            <span class="dsp-column-stat">1 条在跑 · 共 29 次</span>
+            <span class="dsp-column-time">128 tok</span>
+          </div>
+        </div>
+        <div class="dsp-column-body">
+          <div class="dsp-wb-run running live">
+            <div class="dsp-wb-top"><span class="dsp-wb-state running">运行中</span><span class="dsp-wb-title">改上海师范大学的课表</span></div>
+            <div class="dsp-wb-meta">auto · 第 2 轮 · 1m 12s</div>
+          </div>
+          <div class="dsp-wb-run ok">
+            <div class="dsp-wb-top"><span class="dsp-wb-state ok">完成</span><span class="dsp-wb-title">渲染验收</span></div>
+            <div class="dsp-wb-meta">auto · 第 4 轮 · 1m 1s · 128 tok</div>
+          </div>
+          <button type="button" class="dsp-seg-more dsp-wb-more">再看 40 轮</button>
+        </div>
+      </section><section class="dsp-column" style="--dsp-tint: hsla(187, 58%, 56%, 0.15)">
+    <div class="dsp-column-head">
+      <div class="dsp-column-head-top">
+        <span class="dsp-dot" style="background:hsl(187 72% 62%)"></span>
+        <span class="dsp-column-title">每分钟进度条插件方案</span>
+        <span class="dsp-stall dsp-stall-chip warn">停滞</span>
+      </div>
+      <div class="dsp-column-head-sub">
+        <span class="dsp-column-stat">52% · 72 次</span>
+        <span class="dsp-column-time">14:00:25</span>
+        <svg class="dsp-spark" width="60" height="18" viewBox="0 0 60 18"><polyline points="0.0,6.5 2.6,5.9 5.2,5.1 7.8,4.5 10.4,4.8 13.0,4.5 15.7,3.7 18.3,3.0 20.9,14.6 23.5,11.8 26.1,9.7 28.7,7.3 31.3,5.9 33.9,3.7 36.5,14.6 39.1,13.5 41.7,12.4 44.3,10.1 47.0,8.3 49.6,9.3 52.2,10.1 54.8,11.1 57.4,9.7 60.0,8.7" fill="none" stroke="hsl(187 72% 62%)" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/></svg>
+      </div>
+    </div>
+    <div class="dsp-column-body"><div class="dsp-row"><button type="button" class="dsp-row-line" aria-expanded="false">
+    <span class="dsp-row-time">14:00:25</span>
+    <span class="dsp-row-p">52%</span>
+    <span class="dsp-row-delta up">+7</span>
+    <span class="dsp-row-note">改刷新逻辑，补丁重试</span>
+    
+    
+    <span class="dsp-row-ms">1s</span>
+    <span class="dsp-row-caret">›</span>
+  </button></div><div class="dsp-row"><button type="button" class="dsp-row-line" aria-expanded="true">
+    <span class="dsp-row-time">13:59:54</span>
+    <span class="dsp-row-p">45%</span>
+    <span class="dsp-row-delta up">+10</span>
+    <span class="dsp-row-note">性能测试通过，改刷新逻辑</span>
+    
+    <span class="dsp-stall warn">停滞</span>
+    <span class="dsp-row-ms">0.9s</span>
+    <span class="dsp-row-caret open">›</span>
+  </button><div class="dsp-row-detail">
+    <div class="dsp-detail-meta">
+      <span>deepseek-account/deepseek-flash</span><span>强度 off</span>
+      <span>2292 in / 15 out / 0 cache</span>
+    </div>
+    <pre class="dsp-raw">{&quot;p&quot;:45,&quot;note&quot;:&quot;性能测试通过，改刷新逻辑&quot;}</pre></div></div><div class="dsp-row"><button type="button" class="dsp-row-line" aria-expanded="false">
+    <span class="dsp-row-time">13:59:23</span>
+    <span class="dsp-row-p">35%</span>
+    <span class="dsp-row-delta down">-7</span>
+    <span class="dsp-row-note">新需求插入，测试返工</span>
+    <span class="dsp-revised">重估</span>
+    
+    <span class="dsp-row-ms">0.9s</span>
+    <span class="dsp-row-caret">›</span>
+  </button></div><div class="dsp-row"><button type="button" class="dsp-row-line" aria-expanded="false">
+    <span class="dsp-row-time">13:59:08</span>
+    <span class="dsp-row-p">42%</span>
+    <span class="dsp-row-delta down">-6</span>
+    <span class="dsp-row-note">测试仍失败，排查中</span>
+    
+    
+    <span class="dsp-row-ms">0.7s</span>
+    <span class="dsp-row-caret">›</span>
+  </button></div><div class="dsp-row"><button type="button" class="dsp-row-line" aria-expanded="false">
+    <span class="dsp-row-time">13:58:37</span>
+    <span class="dsp-row-p">48%</span>
+    <span class="dsp-row-delta down">-7</span>
+    <span class="dsp-row-note">轮询改动致测试失败</span>
+    
+    
+    <span class="dsp-row-ms">1s</span>
+    <span class="dsp-row-caret">›</span>
+  </button></div><div class="dsp-row"><button type="button" class="dsp-row-line" aria-expanded="false">
+    <span class="dsp-row-time">13:58:06</span>
+    <span class="dsp-row-p">55%</span>
+    <span class="dsp-row-delta up">+13</span>
+    <span class="dsp-row-note">改轮询后跑测试</span>
+    
+    
+    <span class="dsp-row-ms">1.1s</span>
+    <span class="dsp-row-caret">›</span>
+  </button></div><div class="dsp-row"><button type="button" class="dsp-row-line" aria-expanded="false">
+    <span class="dsp-row-time">13:57:35</span>
+    <span class="dsp-row-p">42%</span>
+    <span class="dsp-row-delta up">+16</span>
+    <span class="dsp-row-note">改日志轮询逻辑</span>
+    
+    
+    <span class="dsp-row-ms">0.5s</span>
+    <span class="dsp-row-caret">›</span>
+  </button></div><div class="dsp-row"><button type="button" class="dsp-row-line" aria-expanded="false">
+    <span class="dsp-row-time">13:57:04</span>
+    <span class="dsp-row-p">26%</span>
+    <span class="dsp-row-delta up">+8</span>
+    <span class="dsp-row-note">读日志轮询代码</span>
+    
+    
+    <span class="dsp-row-ms">1s</span>
+    <span class="dsp-row-caret">›</span>
+  </button></div><div class="dsp-row"><button type="button" class="dsp-row-line" aria-expanded="false">
+    <span class="dsp-row-time">13:56:33</span>
+    <span class="dsp-row-p">18%</span>
+    <span class="dsp-row-delta up">+8</span>
+    <span class="dsp-row-note">排查日志路径</span>
+    
+    
+    <span class="dsp-row-ms">0.8s</span>
+    <span class="dsp-row-caret">›</span>
+  </button></div><button class="dsp-btn dsp-btn-xs dsp-history-more" type="button">再看 40 轮</button></div>
+  </section><section class="dsp-column" style="--dsp-tint: hsla(135, 58%, 56%, 0.15)">
+    <div class="dsp-column-head">
+      <div class="dsp-column-head-top">
+        <span class="dsp-dot" style="background:hsl(135 72% 62%)"></span>
+        <span class="dsp-column-title">安装 dsh-bili-whale 插件</span>
+        
+      </div>
+      <div class="dsp-column-head-sub">
+        <span class="dsp-column-stat">55% · 14 次</span>
+        <span class="dsp-column-time">13:25:03</span>
+        <svg class="dsp-spark" width="60" height="18" viewBox="0 0 60 18"><polyline points="0.0,14.6 4.6,12.5 9.2,10.4 13.8,8.3 18.5,14.6 23.1,13.5 27.7,12.5 32.3,13.2 36.9,11.1 41.5,14.6 46.2,14.6 50.8,11.1 55.4,11.1 60.0,8.3" fill="none" stroke="hsl(135 72% 62%)" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/></svg>
+      </div>
+    </div>
+    <div class="dsp-column-body"><div class="dsp-row"><button type="button" class="dsp-row-line" aria-expanded="false">
+    <span class="dsp-row-time">13:25:03</span>
+    <span class="dsp-row-p">55%</span>
+    <span class="dsp-row-delta up">+20</span>
+    <span class="dsp-row-note">依赖体检通过，查会话</span>
+    
+    
+    <span class="dsp-row-ms">0.7s</span>
+    <span class="dsp-row-caret">›</span>
+  </button></div><div class="dsp-row"><button type="button" class="dsp-row-line" aria-expanded="false">
+    <span class="dsp-row-time">13:24:32</span>
+    <span class="dsp-row-p">35%</span>
+    <span class="dsp-row-delta up">+31</span>
+    <span class="dsp-row-note">登录成功，依赖体检</span>
+    
+    
+    <span class="dsp-row-ms">0.8s</span>
+    <span class="dsp-row-caret">›</span>
+  </button></div><div class="dsp-row"><button type="button" class="dsp-row-line" aria-expanded="false">
+    <span class="dsp-row-time">13:23:20</span>
+    <span class="dsp-row-p">35%</span>
+    <span class="dsp-row-delta up">+25</span>
+    <span class="dsp-row-note">调试扫码接口</span>
+    
+    
+    <span class="dsp-row-ms">1s</span>
+    <span class="dsp-row-caret">›</span>
+  </button></div><div class="dsp-row"><button type="button" class="dsp-row-line" aria-expanded="false">
+    <span class="dsp-row-time">13:22:49</span>
+    <span class="dsp-row-p">10%</span>
+    <span class="dsp-row-delta up">+6</span>
+    <span class="dsp-row-note">等用户补充信息</span>
+    
+    
+    <span class="dsp-row-ms">0.6s</span>
+    <span class="dsp-row-caret">›</span>
+  </button></div><div class="dsp-row"><button type="button" class="dsp-row-line" aria-expanded="false">
+    <span class="dsp-row-time">13:22:13</span>
+    <span class="dsp-row-p">10%</span>
+    <span class="dsp-row-delta up">+6</span>
+    <span class="dsp-row-note">排查失效，重启任务</span>
+    
+    
+    <span class="dsp-row-ms">0.7s</span>
+    <span class="dsp-row-caret">›</span>
+  </button></div><div class="dsp-row"><button type="button" class="dsp-row-line" aria-expanded="false">
+    <span class="dsp-row-time">13:21:26</span>
+    <span class="dsp-row-p">35%</span>
+    <span class="dsp-row-delta up">+31</span>
+    <span class="dsp-row-note">修登录脚本</span>
+    
+    
+    <span class="dsp-row-ms">0.6s</span>
+    <span class="dsp-row-caret">›</span>
+  </button></div><div class="dsp-row"><button type="button" class="dsp-row-line" aria-expanded="false">
+    <span class="dsp-row-time">13:20:32</span>
+    <span class="dsp-row-p">20%</span>
+    <span class="dsp-row-delta down">-5</span>
+    <span class="dsp-row-note">排查登录脚本失败</span>
+    <span class="dsp-revised">重估</span>
+    
+    <span class="dsp-row-ms">0.6s</span>
+    <span class="dsp-row-caret">›</span>
+  </button></div><div class="dsp-row"><button type="button" class="dsp-row-line" aria-expanded="false">
+    <span class="dsp-row-time">13:20:02</span>
+    <span class="dsp-row-p">25%</span>
+    <span class="dsp-row-delta up">+7</span>
+    <span class="dsp-row-note">排查浏览器连接</span>
+    
+    
+    <span class="dsp-row-ms">0.9s</span>
+    <span class="dsp-row-caret">›</span>
+  </button></div><div class="dsp-row"><button type="button" class="dsp-row-line" aria-expanded="false">
+    <span class="dsp-row-time">13:19:31</span>
+    <span class="dsp-row-p">18%</span>
+    <span class="dsp-row-delta up">+8</span>
+    <span class="dsp-row-note">排查浏览器连接</span>
+    
+    
+    <span class="dsp-row-ms">0.7s</span>
+    <span class="dsp-row-caret">›</span>
+  </button></div><button class="dsp-btn dsp-btn-xs dsp-history-more" type="button">再看 40 轮</button></div>
+  </section>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h2 class="cap cap-dark">深色 · 紧凑列表（classic）</h2>
+<div class="stage stage-dark" data-stage="dark" data-ds-dark-theme>
+  <div class="dsp-panel dsp-skin-classic" data-skin="classic" data-theme="dark">
+    
+  <div class="dsp-panel-head">
+    <div class="dsp-panel-title">进度日志</div>
+    <div class="dsp-panel-sub">
+      <span class="dsp-sub-group">deepseek-account/deepseek-flash · 强度 off · 每 30 秒</span>
+      <span class="dsp-sub-group">本轮 2 次 · 历史 583（中断 2）</span>
+      <span class="dsp-sub-group dsp-tokens">1.1M tok</span>
+    </div>
+  </div>
+    <div class="dsp-panel-body">
+      <div class="dsp-columns">
+        
+      <section class="dsp-column dsp-wb" style="--dsp-tint: hsla(268, 58%, 60%, 0.16)">
+        <div class="dsp-column-head">
+          <div class="dsp-column-head-top">
+            <span class="dsp-dot" style="background:hsl(268 62% 66%)"></span>
+            <span class="dsp-column-title">WB 运行</span>
+            <span class="dsp-wb-tag">wb</span>
+          </div>
+          <div class="dsp-column-head-sub">
+            <span class="dsp-column-stat">1 条在跑 · 共 29 次</span>
+            <span class="dsp-column-time">128 tok</span>
+          </div>
+        </div>
+        <div class="dsp-column-body">
+          <div class="dsp-wb-run running live">
+            <div class="dsp-wb-top"><span class="dsp-wb-state running">运行中</span><span class="dsp-wb-title">改上海师范大学的课表</span></div>
+            <div class="dsp-wb-meta">auto · 第 2 轮 · 1m 12s</div>
+          </div>
+          <div class="dsp-wb-run ok">
+            <div class="dsp-wb-top"><span class="dsp-wb-state ok">完成</span><span class="dsp-wb-title">渲染验收</span></div>
+            <div class="dsp-wb-meta">auto · 第 4 轮 · 1m 1s · 128 tok</div>
+          </div>
+          <button type="button" class="dsp-seg-more dsp-wb-more">再看 40 轮</button>
+        </div>
+      </section><section class="dsp-column" style="--dsp-tint: hsla(187, 58%, 56%, 0.15)">
+    <div class="dsp-column-head">
+      <div class="dsp-column-head-top">
+        <span class="dsp-dot" style="background:hsl(187 72% 62%)"></span>
+        <span class="dsp-column-title">每分钟进度条插件方案</span>
+        <span class="dsp-stall dsp-stall-chip warn">停滞</span>
+      </div>
+      <div class="dsp-column-head-sub">
+        <span class="dsp-column-stat">52% · 72 次</span>
+        <span class="dsp-column-time">14:00:25</span>
+        <svg class="dsp-spark" width="60" height="18" viewBox="0 0 60 18"><polyline points="0.0,6.5 2.6,5.9 5.2,5.1 7.8,4.5 10.4,4.8 13.0,4.5 15.7,3.7 18.3,3.0 20.9,14.6 23.5,11.8 26.1,9.7 28.7,7.3 31.3,5.9 33.9,3.7 36.5,14.6 39.1,13.5 41.7,12.4 44.3,10.1 47.0,8.3 49.6,9.3 52.2,10.1 54.8,11.1 57.4,9.7 60.0,8.7" fill="none" stroke="hsl(187 72% 62%)" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/></svg>
+      </div>
+    </div>
+    <div class="dsp-column-body"><div class="dsp-row"><button type="button" class="dsp-row-line" aria-expanded="false">
+    <span class="dsp-row-time">14:00:25</span>
+    <span class="dsp-row-p">52%</span>
+    <span class="dsp-row-delta up">+7</span>
+    <span class="dsp-row-note">改刷新逻辑，补丁重试</span>
+    
+    
+    <span class="dsp-row-ms">1s</span>
+    <span class="dsp-row-caret">›</span>
+  </button></div><div class="dsp-row"><button type="button" class="dsp-row-line" aria-expanded="true">
+    <span class="dsp-row-time">13:59:54</span>
+    <span class="dsp-row-p">45%</span>
+    <span class="dsp-row-delta up">+10</span>
+    <span class="dsp-row-note">性能测试通过，改刷新逻辑</span>
+    
+    <span class="dsp-stall warn">停滞</span>
+    <span class="dsp-row-ms">0.9s</span>
+    <span class="dsp-row-caret open">›</span>
+  </button><div class="dsp-row-detail">
+    <div class="dsp-detail-meta">
+      <span>deepseek-account/deepseek-flash</span><span>强度 off</span>
+      <span>2292 in / 15 out / 0 cache</span>
+    </div>
+    <pre class="dsp-raw">{&quot;p&quot;:45,&quot;note&quot;:&quot;性能测试通过，改刷新逻辑&quot;}</pre></div></div><div class="dsp-row"><button type="button" class="dsp-row-line" aria-expanded="false">
+    <span class="dsp-row-time">13:59:23</span>
+    <span class="dsp-row-p">35%</span>
+    <span class="dsp-row-delta down">-7</span>
+    <span class="dsp-row-note">新需求插入，测试返工</span>
+    <span class="dsp-revised">重估</span>
+    
+    <span class="dsp-row-ms">0.9s</span>
+    <span class="dsp-row-caret">›</span>
+  </button></div><div class="dsp-row"><button type="button" class="dsp-row-line" aria-expanded="false">
+    <span class="dsp-row-time">13:59:08</span>
+    <span class="dsp-row-p">42%</span>
+    <span class="dsp-row-delta down">-6</span>
+    <span class="dsp-row-note">测试仍失败，排查中</span>
+    
+    
+    <span class="dsp-row-ms">0.7s</span>
+    <span class="dsp-row-caret">›</span>
+  </button></div><div class="dsp-row"><button type="button" class="dsp-row-line" aria-expanded="false">
+    <span class="dsp-row-time">13:58:37</span>
+    <span class="dsp-row-p">48%</span>
+    <span class="dsp-row-delta down">-7</span>
+    <span class="dsp-row-note">轮询改动致测试失败</span>
+    
+    
+    <span class="dsp-row-ms">1s</span>
+    <span class="dsp-row-caret">›</span>
+  </button></div><div class="dsp-row"><button type="button" class="dsp-row-line" aria-expanded="false">
+    <span class="dsp-row-time">13:58:06</span>
+    <span class="dsp-row-p">55%</span>
+    <span class="dsp-row-delta up">+13</span>
+    <span class="dsp-row-note">改轮询后跑测试</span>
+    
+    
+    <span class="dsp-row-ms">1.1s</span>
+    <span class="dsp-row-caret">›</span>
+  </button></div><div class="dsp-row"><button type="button" class="dsp-row-line" aria-expanded="false">
+    <span class="dsp-row-time">13:57:35</span>
+    <span class="dsp-row-p">42%</span>
+    <span class="dsp-row-delta up">+16</span>
+    <span class="dsp-row-note">改日志轮询逻辑</span>
+    
+    
+    <span class="dsp-row-ms">0.5s</span>
+    <span class="dsp-row-caret">›</span>
+  </button></div><div class="dsp-row"><button type="button" class="dsp-row-line" aria-expanded="false">
+    <span class="dsp-row-time">13:57:04</span>
+    <span class="dsp-row-p">26%</span>
+    <span class="dsp-row-delta up">+8</span>
+    <span class="dsp-row-note">读日志轮询代码</span>
+    
+    
+    <span class="dsp-row-ms">1s</span>
+    <span class="dsp-row-caret">›</span>
+  </button></div><div class="dsp-row"><button type="button" class="dsp-row-line" aria-expanded="false">
+    <span class="dsp-row-time">13:56:33</span>
+    <span class="dsp-row-p">18%</span>
+    <span class="dsp-row-delta up">+8</span>
+    <span class="dsp-row-note">排查日志路径</span>
+    
+    
+    <span class="dsp-row-ms">0.8s</span>
+    <span class="dsp-row-caret">›</span>
+  </button></div><button class="dsp-btn dsp-btn-xs dsp-history-more" type="button">再看 40 轮</button></div>
+  </section><section class="dsp-column" style="--dsp-tint: hsla(135, 58%, 56%, 0.15)">
+    <div class="dsp-column-head">
+      <div class="dsp-column-head-top">
+        <span class="dsp-dot" style="background:hsl(135 72% 62%)"></span>
+        <span class="dsp-column-title">安装 dsh-bili-whale 插件</span>
+        
+      </div>
+      <div class="dsp-column-head-sub">
+        <span class="dsp-column-stat">55% · 14 次</span>
+        <span class="dsp-column-time">13:25:03</span>
+        <svg class="dsp-spark" width="60" height="18" viewBox="0 0 60 18"><polyline points="0.0,14.6 4.6,12.5 9.2,10.4 13.8,8.3 18.5,14.6 23.1,13.5 27.7,12.5 32.3,13.2 36.9,11.1 41.5,14.6 46.2,14.6 50.8,11.1 55.4,11.1 60.0,8.3" fill="none" stroke="hsl(135 72% 62%)" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/></svg>
+      </div>
+    </div>
+    <div class="dsp-column-body"><div class="dsp-row"><button type="button" class="dsp-row-line" aria-expanded="false">
+    <span class="dsp-row-time">13:25:03</span>
+    <span class="dsp-row-p">55%</span>
+    <span class="dsp-row-delta up">+20</span>
+    <span class="dsp-row-note">依赖体检通过，查会话</span>
+    
+    
+    <span class="dsp-row-ms">0.7s</span>
+    <span class="dsp-row-caret">›</span>
+  </button></div><div class="dsp-row"><button type="button" class="dsp-row-line" aria-expanded="false">
+    <span class="dsp-row-time">13:24:32</span>
+    <span class="dsp-row-p">35%</span>
+    <span class="dsp-row-delta up">+31</span>
+    <span class="dsp-row-note">登录成功，依赖体检</span>
+    
+    
+    <span class="dsp-row-ms">0.8s</span>
+    <span class="dsp-row-caret">›</span>
+  </button></div><div class="dsp-row"><button type="button" class="dsp-row-line" aria-expanded="false">
+    <span class="dsp-row-time">13:23:20</span>
+    <span class="dsp-row-p">35%</span>
+    <span class="dsp-row-delta up">+25</span>
+    <span class="dsp-row-note">调试扫码接口</span>
+    
+    
+    <span class="dsp-row-ms">1s</span>
+    <span class="dsp-row-caret">›</span>
+  </button></div><div class="dsp-row"><button type="button" class="dsp-row-line" aria-expanded="false">
+    <span class="dsp-row-time">13:22:49</span>
+    <span class="dsp-row-p">10%</span>
+    <span class="dsp-row-delta up">+6</span>
+    <span class="dsp-row-note">等用户补充信息</span>
+    
+    
+    <span class="dsp-row-ms">0.6s</span>
+    <span class="dsp-row-caret">›</span>
+  </button></div><div class="dsp-row"><button type="button" class="dsp-row-line" aria-expanded="false">
+    <span class="dsp-row-time">13:22:13</span>
+    <span class="dsp-row-p">10%</span>
+    <span class="dsp-row-delta up">+6</span>
+    <span class="dsp-row-note">排查失效，重启任务</span>
+    
+    
+    <span class="dsp-row-ms">0.7s</span>
+    <span class="dsp-row-caret">›</span>
+  </button></div><div class="dsp-row"><button type="button" class="dsp-row-line" aria-expanded="false">
+    <span class="dsp-row-time">13:21:26</span>
+    <span class="dsp-row-p">35%</span>
+    <span class="dsp-row-delta up">+31</span>
+    <span class="dsp-row-note">修登录脚本</span>
+    
+    
+    <span class="dsp-row-ms">0.6s</span>
+    <span class="dsp-row-caret">›</span>
+  </button></div><div class="dsp-row"><button type="button" class="dsp-row-line" aria-expanded="false">
+    <span class="dsp-row-time">13:20:32</span>
+    <span class="dsp-row-p">20%</span>
+    <span class="dsp-row-delta down">-5</span>
+    <span class="dsp-row-note">排查登录脚本失败</span>
+    <span class="dsp-revised">重估</span>
+    
+    <span class="dsp-row-ms">0.6s</span>
+    <span class="dsp-row-caret">›</span>
+  </button></div><div class="dsp-row"><button type="button" class="dsp-row-line" aria-expanded="false">
+    <span class="dsp-row-time">13:20:02</span>
+    <span class="dsp-row-p">25%</span>
+    <span class="dsp-row-delta up">+7</span>
+    <span class="dsp-row-note">排查浏览器连接</span>
+    
+    
+    <span class="dsp-row-ms">0.9s</span>
+    <span class="dsp-row-caret">›</span>
+  </button></div><div class="dsp-row"><button type="button" class="dsp-row-line" aria-expanded="false">
+    <span class="dsp-row-time">13:19:31</span>
+    <span class="dsp-row-p">18%</span>
+    <span class="dsp-row-delta up">+8</span>
+    <span class="dsp-row-note">排查浏览器连接</span>
+    
+    
+    <span class="dsp-row-ms">0.7s</span>
+    <span class="dsp-row-caret">›</span>
+  </button></div><button class="dsp-btn dsp-btn-xs dsp-history-more" type="button">再看 40 轮</button></div>
+  </section>
+      </div>
     </div>
   </div>
 </div>
 <script>
+const style = (node, prop, pseudo) => node ? getComputedStyle(node, pseudo || null)[prop] : null;
 window.__probe = () => ({
-  skins: [...document.querySelectorAll('[data-skin]')].map((n) => [n.dataset.skin, getComputedStyle(n).backgroundColor, n.querySelector('.dsp-column') ? getComputedStyle(n.querySelector('.dsp-column')).borderRadius : null]),
+  skins: [...document.querySelectorAll('[data-skin]')].map((n) => [
+    n.dataset.skin,
+    n.dataset.theme,
+    style(n, 'backgroundColor'),
+    style(n.querySelector('.dsp-row-note'), 'color'),
+    style(n.querySelector('.dsp-column-body'), 'backgroundColor'),
+    style(n.querySelector('.dsp-column-head'), 'backgroundColor'),
+  ]),
   rows: document.querySelectorAll('.dsp-row').length,
   rowHeights: [...document.querySelectorAll('.dsp-row')].slice(0, 4).map((n) => Math.round(n.getBoundingClientRect().height)),
   noteLines: [...document.querySelectorAll('.dsp-row-note')].slice(0, 4).map((n) => n.scrollWidth > n.clientWidth + 1),
   detail: document.querySelectorAll('.dsp-row-detail').length,
+  stall: [...document.querySelectorAll('.dsp-stall')].slice(0, 3).map((n) => style(n, 'color')),
+  wb: [...document.querySelectorAll('.dsp-wb-run')].slice(0, 2).map((n) => style(n, 'backgroundColor')),
 });
 </script>

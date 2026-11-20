@@ -221,60 +221,60 @@ turn/end ──► closeTurn('completed') ──► p=100 ──► 淡出 ─�
 | `lib/client.js` | 405 | `sheetCss` | factory | function |
 | `lib/client.js` | 410 | `styleRules` | factory | function |
 | `lib/client.js` | 507 | `ensureWaterFilter` | factory | function |
-| `lib/client.js` | 1669 | `cssEscape` | factory | function |
-| `lib/client.js` | 1680 | `shortId` | factory | function |
-| `lib/client.js` | 1686 | `formatTokens` | factory | function |
-| `lib/client.js` | 1694 | `clockOf` | factory | function |
-| `lib/client.js` | 1703 | `useConfig` | factory | function |
-| `lib/client.js` | 1765 | `logNotify` | factory | const fn |
-| `lib/client.js` | 1769 | `logHidden` | factory | const fn |
-| `lib/client.js` | 1776 | `logFetch` | factory | const fn |
-| `lib/client.js` | 1847 | `logWantHistory` | factory | const fn |
-| `lib/client.js` | 1855 | `logMoreHistory` | factory | const fn |
-| `lib/client.js` | 1867 | `logMoreRows` | factory | const fn |
-| `lib/client.js` | 1872 | `logSchedule` | factory | const fn |
-| `lib/client.js` | 1885 | `logRefresh` | factory | const fn |
-| `lib/client.js` | 1891 | `logWatchVisibility` | factory | const fn |
-| `lib/client.js` | 1900 | `useLog` | factory | function |
-| `lib/client.js` | 1952 | `wbNotify` | factory | const fn |
-| `lib/client.js` | 1956 | `wbFetch` | factory | const fn |
-| `lib/client.js` | 2015 | `wbMoreHistory` | factory | const fn |
-| `lib/client.js` | 2029 | `wbRefresh` | factory | const fn |
-| `lib/client.js` | 2035 | `wbSchedule` | factory | const fn |
-| `lib/client.js` | 2045 | `useWb` | factory | function |
-| `lib/client.js` | 2076 | `metaLine` | factory | function |
-| `lib/client.js` | 2118 | `routeWarning` | factory | function |
-| `lib/client.js` | 2144 | `LogRow` | factory | function |
-| `lib/client.js` | 2231 | `stallLabel` | factory | const fn |
-| `lib/client.js` | 2237 | `stallTitle` | factory | const fn |
-| `lib/client.js` | 2246 | `stallClass` | factory | const fn |
-| `lib/client.js` | 2252 | `renderEntry` | factory | function |
-| `lib/client.js` | 2263 | `routeLook` | factory | function |
-| `lib/client.js` | 2306 | `hueOf` | factory | function |
-| `lib/client.js` | 2319 | `groupBySession` | factory | function |
-| `lib/client.js` | 2349 | `groupHistory` | factory | function |
-| `lib/client.js` | 2391 | `renderSpark` | factory | function |
-| `lib/client.js` | 2424 | `renderColumn` | factory | function |
-| `lib/client.js` | 2500 | `useColumnFlip` | factory | function |
-| `lib/client.js` | 2539 | `HistorySegment` | factory | function |
-| `lib/client.js` | 2600 | `renderHistoryColumn` | factory | function |
-| `lib/client.js` | 2647 | `readColumnWidths` | factory | function |
-| `lib/client.js` | 2657 | `writeColumnWidths` | factory | function |
-| `lib/client.js` | 2665 | `ColumnList` | factory | function |
-| `lib/client.js` | 2752 | `renderHistoryPlaceholder` | factory | function |
-| `lib/client.js` | 2785 | `renderColumns` | factory | function |
-| `lib/client.js` | 2813 | `clockShort` | factory | const fn |
-| `lib/client.js` | 2820 | `secondsOf` | factory | const fn |
-| `lib/client.js` | 2834 | `wbElapsed` | factory | const fn |
-| `lib/client.js` | 2842 | `wbRow` | factory | const fn |
-| `lib/client.js` | 2870 | `renderWbColumn` | factory | function |
-| `lib/client.js` | 2941 | `emptyState` | factory | function |
-| `lib/client.js` | 2946 | `SettingsCard` | factory | function |
-| `lib/client.js` | 3423 | `SettingsPanel` | factory | function |
-| `lib/client.js` | 3435 | `ProgressLogCard` | factory | function |
-| `lib/client.js` | 3520 | `SampleLogPanel` | factory | function |
-| `lib/client.js` | 3599 | `SampleLogIcon` | factory | function |
-| `lib/client.js` | 3617 | `apply` | factory | function |
+| `lib/client.js` | 1721 | `cssEscape` | factory | function |
+| `lib/client.js` | 1732 | `shortId` | factory | function |
+| `lib/client.js` | 1738 | `formatTokens` | factory | function |
+| `lib/client.js` | 1746 | `clockOf` | factory | function |
+| `lib/client.js` | 1755 | `useConfig` | factory | function |
+| `lib/client.js` | 1817 | `logNotify` | factory | const fn |
+| `lib/client.js` | 1821 | `logHidden` | factory | const fn |
+| `lib/client.js` | 1828 | `logFetch` | factory | const fn |
+| `lib/client.js` | 1899 | `logWantHistory` | factory | const fn |
+| `lib/client.js` | 1907 | `logMoreHistory` | factory | const fn |
+| `lib/client.js` | 1919 | `logMoreRows` | factory | const fn |
+| `lib/client.js` | 1924 | `logSchedule` | factory | const fn |
+| `lib/client.js` | 1937 | `logRefresh` | factory | const fn |
+| `lib/client.js` | 1943 | `logWatchVisibility` | factory | const fn |
+| `lib/client.js` | 1952 | `useLog` | factory | function |
+| `lib/client.js` | 2004 | `wbNotify` | factory | const fn |
+| `lib/client.js` | 2008 | `wbFetch` | factory | const fn |
+| `lib/client.js` | 2067 | `wbMoreHistory` | factory | const fn |
+| `lib/client.js` | 2081 | `wbRefresh` | factory | const fn |
+| `lib/client.js` | 2087 | `wbSchedule` | factory | const fn |
+| `lib/client.js` | 2097 | `useWb` | factory | function |
+| `lib/client.js` | 2128 | `metaLine` | factory | function |
+| `lib/client.js` | 2170 | `routeWarning` | factory | function |
+| `lib/client.js` | 2196 | `LogRow` | factory | function |
+| `lib/client.js` | 2283 | `stallLabel` | factory | const fn |
+| `lib/client.js` | 2289 | `stallTitle` | factory | const fn |
+| `lib/client.js` | 2298 | `stallClass` | factory | const fn |
+| `lib/client.js` | 2304 | `renderEntry` | factory | function |
+| `lib/client.js` | 2315 | `routeLook` | factory | function |
+| `lib/client.js` | 2358 | `hueOf` | factory | function |
+| `lib/client.js` | 2371 | `groupBySession` | factory | function |
+| `lib/client.js` | 2401 | `groupHistory` | factory | function |
+| `lib/client.js` | 2443 | `renderSpark` | factory | function |
+| `lib/client.js` | 2476 | `renderColumn` | factory | function |
+| `lib/client.js` | 2552 | `useColumnFlip` | factory | function |
+| `lib/client.js` | 2591 | `HistorySegment` | factory | function |
+| `lib/client.js` | 2652 | `renderHistoryColumn` | factory | function |
+| `lib/client.js` | 2699 | `readColumnWidths` | factory | function |
+| `lib/client.js` | 2709 | `writeColumnWidths` | factory | function |
+| `lib/client.js` | 2717 | `ColumnList` | factory | function |
+| `lib/client.js` | 2804 | `renderHistoryPlaceholder` | factory | function |
+| `lib/client.js` | 2837 | `renderColumns` | factory | function |
+| `lib/client.js` | 2865 | `clockShort` | factory | const fn |
+| `lib/client.js` | 2872 | `secondsOf` | factory | const fn |
+| `lib/client.js` | 2886 | `wbElapsed` | factory | const fn |
+| `lib/client.js` | 2894 | `wbRow` | factory | const fn |
+| `lib/client.js` | 2922 | `renderWbColumn` | factory | function |
+| `lib/client.js` | 2993 | `emptyState` | factory | function |
+| `lib/client.js` | 2998 | `SettingsCard` | factory | function |
+| `lib/client.js` | 3475 | `SettingsPanel` | factory | function |
+| `lib/client.js` | 3487 | `ProgressLogCard` | factory | function |
+| `lib/client.js` | 3572 | `SampleLogPanel` | factory | function |
+| `lib/client.js` | 3651 | `SampleLogIcon` | factory | function |
+| `lib/client.js` | 3669 | `apply` | factory | function |
 <!-- INDEX:END -->
 
 ## 绝不能做（每条都真炸过一次）
@@ -324,6 +324,7 @@ turn/end ──► closeTurn('completed') ──► p=100 ──► 淡出 ─�
 - **同步时钟**：`BASE_CSS` 在行上声明 `--dsp-progress-ms: 900ms`、`--dsp-progress-ease`、`--dsp-fade-ms: 280ms`，填充与表面**两层的 `transition` 都引用这三个变量** —— 一个属性、一条缓动，物理上不可能错位（0.11.0 那次「瞬移」就是两层各用一套插值）。
 - **两层同宽**：两层都写 `width: var(--dsp-p)`，表面另有**恒定**的 `clip-path: inset(0 round var(--dsw-radius-md, 8px))`。`width` 负责跟随进度，`clip-path` 负责裁住滤镜外溢的像素（滤镜区域是 `-25% … 150%`，`border-radius` 裁不住）；裁剪不参与过渡，所以不会把 0.11.0 的问题带回来。
 - **水波质感（0.11.0，参数照 32px 真实行高调的）**：`#dsp-water` 是 `feTurbulence`（`baseFrequency="0.006 0.022"`、`numOctaves="2"`）→ `feDisplacementMap scale="18"` → `feGaussianBlur 0.45`。第一版 `0.014 0.045 / scale 5` 在 32px 行上几乎看不见。注入失败时返回 `null`、`filtersReady = false`，整套滤镜声明被跳过 —— **不能抛错**，否则 render 停摆、色带整条消失（0.4.2 的形态）。
+- **调色板（0.27.0）**：`BASE_CSS` 开头一组 `--dsp-*` 变量，浅色是基底，深色由 `[data-ds-dark-theme] :is(.dsp-panel, .dsp-loglink, [data-row-key^="session:"])` 整体覆盖（宿主只设这一个主题标记，见 client bundle 里的 `ThemePresenter`）。所有"半透明白/黑"的叠色都写成 `color-mix(in srgb, var(--dsp-ink) N%, transparent)`：同一处定义在白纸上是发丝线，在碳灰上也是发丝线。告警/失败/完成/强调各有 `--dsp-warn|danger|ok|accent` 一对取值。色带扫光的两个颜色也提成变量（`--dsp-sheen-tail|edge|swell`），浅色下暗尾 0.26、深色下亮边 0.92——为什么必须这样，见 `PROBLEMS.md` 的白高光那条。
 - **实验 · 流光（0.14.0，0.15.0 并入同一套动作）**：`refract` 档「表面自己在流」——`CROSS_LIGHT` 向右、`CROSS_SHADE` 向左（周期都等于位移），表面 `blur(1.5px) saturate(1.06)`，填充层加浮雕内阴影（上沿提亮、下沿压暗）。它**永远在文字下面**；0.13.0 那版把水膜盖到文字上方用 `backdrop-filter` 扭字形，效果真实但把字抹糊、整层重合成也贵，已撤。锥形光（`conic-gradient` + 动画角度）试过，32px 扁条上会被拉成一片亮，读不出「在转」。
 - **列里的东西不许缩**- **列里的东西不许缩**：`.dsp-column-body` 在面板里是有明确高度的 flex 容器，子项默认 `flex-shrink: 1` 会把自己压扁而不是溢出——历史列曾因此把 12 轮压成 39px 且永远不出滚动条（0.8.1）。`.dsp-column-body > *` 与 `.dsp-seg-body > *` 都锁 `flex: none`；几何用 `dev/history-scroll.html` 的 `window.__probe()` 量。
 
